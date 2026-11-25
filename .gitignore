@@ -15,3 +15,7 @@ stopguard-demo/
 state/
 *.jsonl
 .env
+# persönliche Portfolio-Daten
+portfolio.json
+*.db
+*.csv

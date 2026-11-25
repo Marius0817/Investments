@@ -1,4 +1,4 @@
-# stopguard – dynamische Stop-Loss-Verwaltung für Scalable Capital
+# stopguard – Stop-Loss-Verwaltung und Portfolio-Tracking für Scalable Capital
 
 `stopguard` hält die Schutz-Orders in deinem Scalable-Capital-Depot aktuell, und zwar nach Regeln, die die App selbst nicht kennt:
 
@@ -7,6 +7,8 @@
 - **Phasen-Logik:** z. B. „bis 20 % Verlust tolerieren, bis **erstmals** 5 % IRR erreicht sind, danach max. 5 % Verlust“.
 
 Dazu kommen Backtests, Kursalarme, Push-Benachrichtigungen aufs Handy, ein Audit-Log und ein Betriebsmodus für den Server.
+
+Außerdem gibt es ein **Portfolio-Tracking** (`stopguard portfolio …`, Abschnitt 11) als Ersatz für Notion: IRR je Trade, Position und Depot, Trade-Vergleich gegen einen Benchmark, kreditfinanzierte Trades nach Steuern und Scalable-Zinsen sowie diagrammfertige Daten als JSON/API für eine eigene UI.
 
 > **Kein Anlageberater.** stopguard führt nur Regeln aus, die du selbst festlegst. Stop-Orders schützen nicht vor Kurslücken. Teste neue Strategien zuerst mit `execution = "watch"` oder in der Demo.
 
@@ -265,7 +267,7 @@ remind_after_hours = 24
 
 ```bash
 pip install -e ".[dev]"
-pytest                    # 48 Tests: XIRR (Excel-Referenz), Phasen, Planung, kompletter Order-Ablauf gegen simuliertes Backend
+pytest                    # 59 Tests: XIRR (Excel-Referenz), Phasen, Planung, Order-Ablauf, Steuern, Kredit, Portfolio-API
 ```
 
 | Modul | Aufgabe |
@@ -277,5 +279,45 @@ pytest                    # 48 Tests: XIRR (Excel-Referenz), Phasen, Planung, ko
 | `executor.py` | Zweistufiger Order-Ablauf mit Bestätigung, Recovery |
 | `state.py` | Zustand (Phasen, Hochpunkte, verwaltete Orders), Audit-Log, Prozess-Sperre |
 | `fake_sc.py` | Simulierte Scalable CLI für Demo und Tests |
+| `portfolio/` | Portfolio-Tracking: `store` (SQLite), `sync`, `ledger` (Kassenbuch), `lots` (FIFO), `credit`, `tax`, `metrics`, `analysis`, `api`, `importers` |
+
+---
+
+## 11. Portfolio-Tracking (Ersatz für die Notion-Tabellen)
+
+Die Scalable-App zeigt keine IRR, keinen Trade-Vergleich und rechnet Kredit- und Steuereffekte nicht ein. `stopguard portfolio` schließt diese Lücken:
+
+| Problem | Lösung |
+|---|---|
+| Keine IRR | XIRR **je Trade, je Position und fürs Depot**, jeweils vor Steuern, nach Steuern und – bei Kredit – auf das Eigenkapital. Dazu IRR des Kontos (Ein-/Auszahlungen gegen Nettovermögen), zeitgewichtete Rendite (TWR), IRR-Verlauf und Drawdown. |
+| Kein Trade-Vergleich | Jeder Kauf ist ein Trade (FIFO wie beim Finanzamt) mit Haltedauer, Gewinn, IRR vor und nach Steuern sowie **Benchmark-IRR im selben Zeitraum** und Alpha. Filter z. B. offen/geschlossen, ohne Sparpläne, nur Kredit. |
+| Kreditfinanzierte Trades | Kredittranchen werden **aus dem Scalable-Kassenbuch rekonstruiert**, die **echten Sollzinsen** werden verursachungsgerecht verteilt. Ergebnis: Eigenkapital-IRR nach Steuern und Zinsen, Nettogewinn, effektiver Zinssatz, Break-even-Rendite (Zinsen sind nicht absetzbar), Beleihung und Stresstest. |
+
+**Steuern:** Abgeltungsteuer + Soli (+ Kirchensteuer), Teilfreistellung je Fondsart, Vorabpauschale mit Anrechnung beim Verkauf, latente Steuer auf offene Gewinne. Die Jahresübersicht enthält Verlusttöpfe und Freistellungsauftrag und schlägt vor, wie sich der restliche Freibetrag nutzen lässt.
+
+```bash
+stopguard portfolio sync                 # Daten von Scalable laden (nur lesend; erster Lauf dauert länger)
+stopguard portfolio summary              # Kennzahlen
+stopguard portfolio trades --no-plans    # Trade-Vergleich (Sortierung --sort irr|profit|holding_days)
+stopguard portfolio credit               # Kredit-Trades, Zinsen, Stresstest
+stopguard portfolio taxes                # Steuern je Jahr, Freibetrag, latente Steuer
+stopguard portfolio positions | income | instruments
+stopguard portfolio export --out portfolio.json   # komplette Auswertung für eine UI
+stopguard portfolio serve                # lokale JSON-API: http://127.0.0.1:8765/api/v1/summary
+```
+
+**Notion-Historie übernehmen:** In Notion die Datenbank „Trades“ exportieren (••• → Export → Markdown & CSV) und so importieren:
+
+```bash
+stopguard portfolio import Trades.csv --source notion
+```
+
+Erkannt werden die Spalten `Name Investment, Ticker, Open, Open (€), Close, Close (€), Units, Dividends (€), Current (€), Kreditfinanziert?`.
+
+- Ticker wie `EUNL.DE` ordnest du in der Konfiguration einer ISIN zu (`[instruments."IE00B4L5Y983"] ticker = "EUNL.DE"`).
+- Trades, die auch in den Scalable-Daten stehen, werden automatisch als Dubletten erkannt. Ihre Kredit-Markierung wird übernommen.
+- Bei Trades anderer Broker ohne Scalable-Zinsbuchungen werden die Zinsen mit `credit.fallback_rate_pct` geschätzt.
+
+**Für die spätere UI:** Datenvertrag, API und Methodik stehen in [`docs/portfolio-data.md`](docs/portfolio-data.md). Ein Beispiel-Export aus der Demo liegt in [`docs/examples/portfolio-demo.json`](docs/examples/portfolio-demo.json), inklusive `chart_hints` mit Vorschlägen für Diagramme.
 
 **Ideen für später:** Bestätigung per Telegram-Button (Vorschau aufs Handy, „Platzieren“ tippen), HTML-Report, Positionsgrößen-/Risiko-Check pro Depot, Take-Profit-Stufen.

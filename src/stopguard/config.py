@@ -220,6 +220,59 @@ class PositionConfig:
 
 
 @dataclass
+class PortfolioSettings:
+    benchmark_isin: str | None = "IE00B4L5Y983"  # iShares Core MSCI World
+    benchmark_name: str = "MSCI World"
+    resolution: str = "weekly"  # daily | weekly | monthly – Raster der Zeitreihen im Export
+    fetch_details: bool = True  # Gebühren/Steuern je Transaktion laden (einmalig, wird zwischengespeichert)
+    details_delay_seconds: float = 0.25  # Pause zwischen Detail-Abfragen (Rate-Limits schonen)
+    price_history: str = "max"  # Zeitraum für den ersten Kursabruf
+    notion_dividends: str = "net"  # Dividenden im Notion-Export: net (nach Steuern) | gross
+    dedupe_days: int = 3  # Import-Trades gelten als identisch mit Scalable-Trades bei ±N Tagen und gleicher Stückzahl
+    auto_sync_hours: float = 12.0  # 'stopguard run'/'daemon' aktualisiert die Portfolio-Daten in diesem Abstand (0 = aus)
+
+
+@dataclass
+class TaxSettings:
+    enabled: bool = True
+    church_tax_pct: float = 0.0  # 0, 8 oder 9
+    loss_offset: bool = True  # Verluste mindern die Steuer (Verrechnung mit anderen Gewinnen angenommen)
+    vorabpauschale: bool = True
+    allowance_eur: float = 1000.0  # Freistellungsauftrag bei Scalable (für die Jahresübersicht)
+    method: str = "model"  # model (Grenzsteuer-Modell je Trade) | actual (einbehaltene Steuern laut Scalable)
+    interest_deductible: bool = False  # Kreditzinsen sind bei Abgeltungsteuer nicht abzugsfähig (§ 20 Abs. 9 EStG)
+    basiszins: dict[int, float] = field(default_factory=dict)  # Prozent; ergänzt die eingebauten Werte
+
+
+@dataclass
+class CreditSettings:
+    mode: str = "auto"  # auto (aus dem Kassenbuch) | flags (nur markierte Trades) | off
+    fallback_rate_pct: float = 4.5  # Zinssatz p.a. für Trades ohne Scalable-Zinsbuchungen (z. B. Notion-Import)
+    deposit_earmark_days: int = 5  # Einzahlungen finanzieren zuerst Käufe der nächsten N Tage (z. B. Sparpläne), erst dann Tilgung
+    loan_interest_keywords: list[str] = field(
+        default_factory=lambda: ["kredit", "sollzins", "darlehen", "lombard", "loan", "credit", "overdraft", "debit interest"]
+    )
+
+
+@dataclass
+class InstrumentConfig:
+    isin: str
+    ticker: str | None = None
+    name: str | None = None
+    kind: str | None = None
+    distributing: bool | None = None
+    tags: list[str] = field(default_factory=list)
+    benchmark: str | None = None
+
+
+@dataclass
+class CreditFlag:
+    isin: str
+    open_date: datetime
+    amount: float | None = None
+
+
+@dataclass
 class Config:
     scalable: ScalableSettings
     engine: EngineSettings
@@ -229,6 +282,11 @@ class Config:
     positions: dict[str, PositionConfig]
     state_dir: Path
     source: Path | None = None
+    portfolio: PortfolioSettings = field(default_factory=PortfolioSettings)
+    tax: TaxSettings = field(default_factory=TaxSettings)
+    credit: CreditSettings = field(default_factory=CreditSettings)
+    instruments: dict[str, InstrumentConfig] = field(default_factory=dict)
+    credit_flags: list[CreditFlag] = field(default_factory=list)
 
     def position_for(self, isin: str) -> PositionConfig | None:
         pos = self.positions.get(isin)
@@ -396,7 +454,12 @@ def load_config(path: Path | None = None) -> Config:
 
 
 def parse_config(raw: dict[str, Any], source: Path | None = None) -> Config:
-    _check_keys(raw, {"scalable", "engine", "schedule", "notify", "paths", "strategies", "positions"}, "root")
+    _check_keys(
+        raw,
+        {"scalable", "engine", "schedule", "notify", "paths", "strategies", "positions", "portfolio", "tax", "credit",
+         "instruments", "credit_flags"},
+        "root",
+    )
 
     sc_raw = raw.get("scalable", {})
     _check_keys(sc_raw, {"sc_command", "portfolio_id", "quote_source", "venue", "timeout_seconds"}, "scalable")
@@ -494,6 +557,67 @@ def parse_config(raw: dict[str, Any], source: Path | None = None) -> Config:
     if os.environ.get("STOPGUARD_STATE_DIR"):
         state_dir = Path(os.environ["STOPGUARD_STATE_DIR"])
 
+    pf_raw = raw.get("portfolio", {})
+    _check_keys(pf_raw, set(PortfolioSettings.__dataclass_fields__), "portfolio")
+    pf_defaults = PortfolioSettings()
+    pf_values = _typed(pf_defaults, {k: v for k, v in pf_raw.items() if k != "benchmark_isin"}, "portfolio")
+    pf_values["benchmark_isin"] = pf_raw.get("benchmark_isin", pf_defaults.benchmark_isin) or None
+    portfolio = PortfolioSettings(**pf_values)
+    if portfolio.resolution not in ("daily", "weekly", "monthly"):
+        raise ConfigError("portfolio.resolution muss daily, weekly oder monthly sein")
+    if portfolio.notion_dividends not in ("net", "gross"):
+        raise ConfigError("portfolio.notion_dividends muss 'net' oder 'gross' sein")
+
+    tax_raw = dict(raw.get("tax", {}))
+    _check_keys(tax_raw, set(TaxSettings.__dataclass_fields__), "tax")
+    basiszins_raw = tax_raw.pop("basiszins", {}) or {}
+    tax = TaxSettings(**_typed(TaxSettings(), tax_raw, "tax"))
+    try:
+        tax.basiszins = {int(k): float(v) for k, v in basiszins_raw.items()}
+    except (TypeError, ValueError) as exc:
+        raise ConfigError("tax.basiszins: Format {2026 = 3.2} (Jahr = Prozent)") from exc
+    if tax.church_tax_pct not in (0, 8, 9):
+        raise ConfigError("tax.church_tax_pct muss 0, 8 oder 9 sein")
+    if tax.method not in ("model", "actual"):
+        raise ConfigError("tax.method muss 'model' oder 'actual' sein")
+
+    cr_raw = raw.get("credit", {})
+    _check_keys(cr_raw, set(CreditSettings.__dataclass_fields__), "credit")
+    credit = CreditSettings(**_typed(CreditSettings(), cr_raw, "credit"))
+    if credit.mode not in ("auto", "flags", "off"):
+        raise ConfigError("credit.mode muss auto, flags oder off sein")
+
+    from stopguard.portfolio.model import TEILFREISTELLUNG
+
+    instruments: dict[str, InstrumentConfig] = {}
+    for key, spec in (raw.get("instruments") or {}).items():
+        isin = str(key).strip().upper()
+        where = f"instruments.{isin}"
+        if len(isin) != 12:
+            raise ConfigError(f"[{where}]: Schlüssel muss eine ISIN sein")
+        _check_keys(spec, {"ticker", "name", "kind", "distributing", "tags", "benchmark"}, where)
+        kind = spec.get("kind")
+        if kind is not None and kind not in TEILFREISTELLUNG:
+            raise ConfigError(f"{where}.kind muss einer von {', '.join(TEILFREISTELLUNG)} sein")
+        instruments[isin] = InstrumentConfig(
+            isin=isin,
+            ticker=spec.get("ticker"),
+            name=spec.get("name"),
+            kind=kind,
+            distributing=spec.get("distributing"),
+            tags=[str(t) for t in spec.get("tags", [])],
+            benchmark=spec.get("benchmark"),
+        )
+
+    credit_flags: list[CreditFlag] = []
+    for i, f in enumerate(raw.get("credit_flags") or []):
+        where = f"credit_flags[{i}]"
+        _check_keys(f, {"isin", "open_date", "amount"}, where)
+        when = _parse_date(f.get("open_date"), where + ".open_date")
+        if not f.get("isin") or when is None:
+            raise ConfigError(f"{where}: isin und open_date sind erforderlich")
+        credit_flags.append(CreditFlag(str(f["isin"]).upper(), when, float(f["amount"]) if f.get("amount") is not None else None))
+
     return Config(
         scalable=scalable,
         engine=engine,
@@ -503,4 +627,9 @@ def parse_config(raw: dict[str, Any], source: Path | None = None) -> Config:
         positions=positions,
         state_dir=state_dir,
         source=source,
+        portfolio=portfolio,
+        tax=tax,
+        credit=credit,
+        instruments=instruments,
+        credit_flags=credit_flags,
     )

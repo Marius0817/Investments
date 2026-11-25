@@ -43,7 +43,51 @@ remind_after_hours = 24           # gleiche Meldung frühestens nach 24 h erneut
 # telegram_chat_id = "123456789"
 
 # [paths]
-# state_dir = "~/.local/state/stopguard"
+# state_dir = "~/.local/state/stopguard"   # Zustand, Audit-Log und portfolio.db
+
+# ----------------------------------------------------------------------------
+#  Portfolio-Tracking  (stopguard portfolio …)
+# ----------------------------------------------------------------------------
+
+[portfolio]
+benchmark_isin = "IE00B4L5Y983"   # Vergleich je Trade und für die TWR (hier: iShares Core MSCI World)
+benchmark_name = "MSCI World"
+resolution = "weekly"             # Zeitreihen im Export: daily | weekly | monthly
+fetch_details = true              # Gebühren/Steuern je Transaktion (einmalig, wird gespeichert)
+details_delay_seconds = 0.25      # Pause zwischen Detailabfragen (Rate-Limits schonen)
+notion_dividends = "net"          # Dividenden im Notion-Export sind netto (nach Steuern) | "gross"
+dedupe_days = 3                   # Import-Trade = Scalable-Trade bei gleicher ISIN/Stückzahl und ±3 Tagen
+auto_sync_hours = 12              # 'stopguard run'/'daemon' aktualisiert die Portfolio-Daten alle 12 h (0 = aus)
+
+[tax]
+enabled = true
+church_tax_pct = 0                # 0, 8 (BY/BW) oder 9
+loss_offset = true                # Verluste mindern die Steuer (Verrechnung angenommen)
+vorabpauschale = true             # für thesaurierende Fonds
+allowance_eur = 1000              # Freistellungsauftrag bei Scalable (Jahresübersicht)
+method = "model"                  # model (vergleichbar je Trade) | actual (einbehaltene Steuern laut Scalable)
+interest_deductible = false       # Kreditzinsen sind bei Abgeltungsteuer nicht absetzbar
+# basiszins = { 2026 = 3.20 }     # Basiszins für die Vorabpauschale ergänzen (Prozent)
+
+[credit]
+mode = "auto"                     # auto: aus dem Kassenbuch | flags: nur markierte Trades | off
+fallback_rate_pct = 4.5           # Zinssatz für Trades ohne Scalable-Zinsbuchungen (z. B. andere Broker)
+deposit_earmark_days = 5          # Einzahlungen bezahlen zuerst Käufe der nächsten Tage (Sparpläne)
+
+# Kredit-Markierung für einzelne Trades (Modus "flags" oder Ergänzung zu Importen):
+# [[credit_flags]]
+# isin = "IE00B4L5Y983"
+# open_date = "2025-03-14"
+# amount = 5000                   # optional, Standard: gesamter Kaufbetrag
+
+# Wertpapier-Stammdaten: Ticker (für den Notion-Import), Fondsart (Teilfreistellung), Tags
+#   kind: stock | equity_fund (30 %) | mixed_fund (15 %) | real_estate_fund (60 %)
+#         | foreign_real_estate_fund (80 %) | bond_fund | other
+# [instruments.IE00B4L5Y983]
+# ticker = "EUNL.DE"
+# kind = "equity_fund"
+# distributing = false
+# tags = ["ETF", "Welt"]
 
 # ----------------------------------------------------------------------------
 #  Strategien

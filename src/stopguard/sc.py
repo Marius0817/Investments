@@ -338,6 +338,15 @@ class ScClient:
     def remove_price_alert(self, alert_id: str) -> None:
         self.run(["broker", "price-alerts", "remove", "--alert-id", alert_id], read_only=False)
 
+    def cash_breakdown(self) -> dict[str, Any]:
+        """Cash, Kaufkraft, Kreditlinie (``available_credit_line``) und Kredit (``loaned``)."""
+        return self.run(["broker", "cash-breakdown"]) or {}
+
+    def portfolio_chart(self, timeframe: str = "max") -> list[dict[str, Any]]:
+        """Historische Depotbewertung: Punkte mit ``valuation``, ``absolute_return``, ``timestamp_utc``."""
+        data = self.run(["broker", "chart", "--timeframe", timeframe]) or {}
+        return list(data.get("data_points") or [])
+
     def candlesticks(self, isin: str, timeframe: str = "one_year") -> list[dict[str, Any]]:
         data = self.run(["broker", "candlesticks", "--isin", isin, "--timeframe", timeframe, "--quote-source", self.quote_source])
         return list((data or {}).get("candlesticks", []))
