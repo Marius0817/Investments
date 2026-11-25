@@ -1,0 +1,28 @@
+# Linux-Server ohne Docker (Debian 13 / Ubuntu 24.04 o. ä. – die Scalable CLI braucht glibc >= 2.38).
+# Installation (als root):
+#   useradd -m -s /usr/sbin/nologin stopguard
+#   python3 -m venv /opt/stopguard && /opt/stopguard/bin/pip install /pfad/zum/repo
+#   install -m 0755 sc /usr/local/bin/sc     # offizielles Release, siehe README
+#   sudo -u stopguard mkdir -p ~stopguard/.config/scalable-cli
+#   printf '[auth]\nsession_backend = "file"\n' | sudo -u stopguard tee ~stopguard/.config/scalable-cli/config.toml
+#   sudo -u stopguard /opt/stopguard/bin/stopguard init && sudo -u stopguard /opt/stopguard/bin/stopguard login
+#   cp stopguard.service stopguard.timer /etc/systemd/system/ && systemctl enable --now stopguard.timer
+[Unit]
+Description=stopguard – Stop-Loss-Überwachung (Scalable Capital)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=stopguard
+ExecStart=/opt/stopguard/bin/stopguard run --quiet
+# Exit 20 = Login erforderlich (wird per Benachrichtigung gemeldet) – kein Fehlerzustand für systemd
+SuccessExitStatus=20
+Environment=TZ=Europe/Berlin
+# Geheimnisse (ntfy/Telegram-Token) z. B. in /etc/stopguard.env als STOPGUARD_TELEGRAM_TOKEN=...
+EnvironmentFile=-/etc/stopguard.env
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/stopguard

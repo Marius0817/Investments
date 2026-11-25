@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# persönliche Konfiguration / Zustand / Demo nie committen
+config/
+stopguard.toml
+stopguard-demo/
+state/
+*.jsonl
+.env

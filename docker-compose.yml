@@ -1,0 +1,26 @@
+# Betrieb auf dem Server:
+#   1. mkdir config && cp src/stopguard/data/config.example.toml config/stopguard.toml  (anpassen!)
+#   2. docker compose build
+#   3. docker compose run --rm stopguard login      # Device-Login: Link im Browser öffnen, Code bestätigen
+#   4. docker compose run --rm stopguard doctor
+#   5. docker compose up -d                         # Überwachung im Hintergrund
+#   Order-Änderungen bestätigen:  docker compose run --rm stopguard apply
+services:
+  stopguard:
+    build: .
+    image: stopguard:latest
+    restart: unless-stopped
+    init: true
+    environment:
+      TZ: Europe/Berlin
+      STOPGUARD_CONFIG: /config/stopguard.toml
+      # Geheimnisse nur über die Umgebung (z. B. .env-Datei neben dieser Datei):
+      STOPGUARD_NTFY_TOKEN: ${STOPGUARD_NTFY_TOKEN:-}
+      STOPGUARD_TELEGRAM_TOKEN: ${STOPGUARD_TELEGRAM_TOKEN:-}
+    volumes:
+      - ./config:/config:ro
+      - stopguard-home:/home/stopguard
+    command: ["daemon"]
+
+volumes:
+  stopguard-home:

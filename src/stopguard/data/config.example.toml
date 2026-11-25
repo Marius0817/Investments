@@ -1,0 +1,109 @@
+# ============================================================================
+#  stopguard – Konfiguration
+#  Speicherort: ~/.config/stopguard/config.toml  (oder ./stopguard.toml,
+#  oder Pfad per Umgebungsvariable STOPGUARD_CONFIG / Option -c)
+# ============================================================================
+
+[scalable]
+# Aufruf der offiziellen Scalable CLI. Auf dem Server z. B. mit dediziertem Nutzer:
+# sc_command = ["sudo", "-n", "-u", "scalable-cli-user", "/usr/local/bin/sc"]
+sc_command = "sc"
+# Optional: erwartete Portfolio-ID. Weicht der aktive CLI-Kontext ab, bricht stopguard ab.
+# portfolio_id = "..."
+quote_source = "consolidated"     # consolidated | gettex | eix | vestima
+venue = "gettex"                  # Handelsplatz für Stop-Orders: gettex | eix | xetra
+timeout_seconds = 90
+
+[engine]
+price_basis = "bid"               # Bewertung mit Geldkurs (realistischer Verkaufspreis) oder "mid"
+min_change_pct = 1.0              # Hysterese: Stop erst nachziehen, wenn er um ≥ 1 % steigt
+min_distance_pct = 1.0            # Stop liegt mind. 1 % unter dem Kurs (sonst sofortige Auslösung)
+only_raise = true                 # Ratchet: Stops werden nie gesenkt
+price_decimals = 2
+exit_costs_eur = 0.0              # Verkaufskosten in der IRR-Untergrenze berücksichtigen (z. B. 0.99)
+renew_before_days = 14            # Orders gelten max. 360 Tage → rechtzeitig erneuern
+unlisted_positions = "watch"      # nicht konfigurierte Positionen: "watch" (anzeigen) | "ignore"
+adopt_existing_orders = true      # vorhandene Stop-Orders übernehmen und aktuell halten
+on_breach = "propose_sell"        # Kurs unter Soll-Stop: "propose_sell" (Verkauf vorschlagen) | "notify"
+default_strategy = "irr_gate"
+default_execution = "order"       # order (echte Stop-Order) | alert (Kursalarm in der App) | watch
+
+[schedule]                        # nur für 'stopguard daemon' (Docker/Server)
+interval_minutes = 30
+active_hours = "07:30-22:30"      # gettex/EIX handeln 8–22 Uhr
+weekdays_only = true
+timezone = "Europe/Berlin"
+
+[notify]
+channels = ["console"]            # console | macos | ntfy | telegram
+remind_after_hours = 24           # gleiche Meldung frühestens nach 24 h erneut (dringende nach 6 h)
+# ntfy_url = "https://ntfy.sh/dein-geheimes-topic-xyz"   # Push aufs Handy (App „ntfy“)
+# ntfy_token_env = "STOPGUARD_NTFY_TOKEN"                # optional bei eigenem ntfy-Server
+# telegram_token_env = "STOPGUARD_TELEGRAM_TOKEN"        # Bot-Token als Umgebungsvariable
+# telegram_chat_id = "123456789"
+
+# [paths]
+# state_dir = "~/.local/state/stopguard"
+
+# ----------------------------------------------------------------------------
+#  Strategien
+#  Eingebaut: irr_gate, irr_gate_open, trailing_5, irr_lock, watch_only
+#  ('stopguard strategies' zeigt alle). Eigene Strategien wie folgt:
+#
+#  Jede Strategie besteht aus Phasen. Phase 1 gilt sofort, jede weitere Phase
+#  wird aktiv, sobald ihre Bedingung ERSTMALS erfüllt ist (sticky = true) –
+#  sie bleibt dann aktiv, auch wenn die Rendite später wieder fällt.
+#
+#  Stop-Komponenten einer Phase (wirksam ist der HÖCHSTE Wert):
+#    max_loss_pct   – Einstandskurs × (1 − x %)
+#    trailing_pct   – Hochpunkt seit Phasenbeginn × (1 − x %)
+#    irr_floor_pct  – Kurs, bei dem die Position genau x % IRR p.a. hätte
+#                     (steigt mit der Zeit automatisch mit!)
+#    lock_gain_pct  – Einstandskurs × (1 + x %), 0 = Break-even
+#    stop_price     – fester Kurs
+#  Keine Komponente = kein Stop (Verluste unbegrenzt hinnehmen).
+#
+#  Aktivierungsbedingungen (alle gesetzten müssen gelten):
+#    irr_pct, gain_pct, total_return_pct, min_holding_days, price_above
+#
+#  order_type: "auto" (Standard: natives Trailing-Stop beim Broker, wenn die
+#  Phase nur trailing_pct nutzt – sonst Stop mit Nachziehen), "stop",
+#  "stop-limit" (mit limit_offset_pct) oder "trailing-stop".
+# ----------------------------------------------------------------------------
+
+[strategies.mein_gate]
+description = "Bis 20 % Verlust tolerieren, ab 5 % IRR (frühestens nach 60 Tagen) max. 5 % unter Hoch, ab 15 % Gewinn zusätzlich Break-even sichern"
+
+[[strategies.mein_gate.phases]]
+name = "Aufbau"
+max_loss_pct = 20
+
+[[strategies.mein_gate.phases]]
+name = "Gewinne sichern"
+activate = { irr_pct = 5, min_holding_days = 60 }
+trailing_pct = 5
+
+[[strategies.mein_gate.phases]]
+name = "Gewinn verteidigen"
+activate = { gain_pct = 15 }
+trailing_pct = 7
+lock_gain_pct = 5
+order_type = "stop-limit"
+limit_offset_pct = 1.5
+
+# ----------------------------------------------------------------------------
+#  Positionen
+#  execution: "order" – echte Stop-Order bei Scalable (Änderungen per 'stopguard apply' bestätigen)
+#             "alert" – nur Kursalarm in der Scalable-App (wird vollautomatisch gepflegt)
+#             "watch" – nur beobachten und benachrichtigen
+# ----------------------------------------------------------------------------
+
+# [[positions]]
+# isin = "US0378331005"
+# label = "Apple"
+# strategy = "irr_gate"
+# execution = "order"
+# protect_pct = 100              # Anteil der Stücke, der abgesichert wird
+# venue = "gettex"
+# entry_date = "2024-03-15"      # nur nötig, wenn die Historie fehlt (z. B. Depotübertrag)
+# entry_price = 171.20

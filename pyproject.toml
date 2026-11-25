@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stopguard"
+version = "0.1.0"
+description = "Dynamische Stop-Loss-Verwaltung (IRR-basiert, Trailing, Phasen) für das Scalable-Capital-Depot über die offizielle Scalable CLI"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []  # bewusst nur Standardbibliothek: läuft ohne Abhängigkeiten auf macOS, Server und im Container
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+stopguard = "stopguard.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+stopguard = ["data/*.json", "data/*.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

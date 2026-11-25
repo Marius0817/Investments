@@ -1,0 +1,10 @@
+[Unit]
+Description=stopguard alle 30 Minuten (außerhalb der Handelszeit nur Session-Keepalive)
+
+[Timer]
+OnCalendar=*-*-* *:00,30:00
+RandomizedDelaySec=120
+Persistent=true
+
+[Install]
+WantedBy=timers.target
