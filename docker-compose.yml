@@ -22,5 +22,21 @@ services:
       - stopguard-home:/home/stopguard
     command: ["daemon"]
 
+  # Optional: Portfolio-API für eine UI (liest nur die lokale Datenbank, nur vom Host erreichbar)
+  #   docker compose --profile api up -d   →   http://127.0.0.1:8765/api/v1/summary
+  stopguard-api:
+    image: stopguard:latest
+    profiles: ["api"]
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Berlin
+      STOPGUARD_CONFIG: /config/stopguard.toml
+    volumes:
+      - ./config:/config:ro
+      - stopguard-home:/home/stopguard
+    command: ["portfolio", "serve", "--host", "0.0.0.0", "--port", "8765"]
+    ports:
+      - "127.0.0.1:8765:8765"
+
 volumes:
   stopguard-home:

@@ -168,7 +168,7 @@ def _order_summary(oid: str, o: dict[str, Any]) -> dict[str, Any]:
 
 
 def cmd_transactions(world: dict[str, Any], a: argparse.Namespace) -> dict[str, Any]:
-    items = [dict(t) for t in world["transactions"]]
+    items = [{k: v for k, v in t.items() if k != "_details"} for t in world["transactions"]]
     items += [_order_summary(oid, o) for oid, o in world["orders"].items()]
     if a.status:
         items = [t for t in items if t.get("status") in a.status]
@@ -230,6 +230,22 @@ def cmd_details(world: dict[str, Any], a: argparse.Namespace) -> dict[str, Any]:
         }
     for t in world["transactions"]:
         if t["id"] == oid:
+            if t.get("_details"):
+                return {"id": oid, "type": t.get("type"), "status": t.get("status"), **t["_details"]}
+            if t.get("summary_type") == "BrokerSecurityTransactionSummary":
+                q = D(t["quantity"])
+                return {
+                    "id": oid,
+                    "type": t.get("type"),
+                    "security": {"isin": t.get("isin"), "name": world["securities"].get(t.get("isin"), {}).get("name")},
+                    "security_trade": {
+                        "status": t.get("status"),
+                        "side": t.get("side"),
+                        "number_of_shares": {"filled": t["quantity"], "total": t["quantity"]},
+                        "average_price": s(D(t["amount"]) / q),
+                        "trade_transaction_amounts": {"transaction_fee": "0", "venue_fee": "0", "tax_amount": "0"},
+                    },
+                }
             return {"id": oid, "type": t.get("type"), "status": t.get("status"), "security_trade": {"status": t.get("status")}}
     raise Fail("broker_transaction_not_found", f"BROKER_TRANSACTION_NOT_FOUND: {oid}")
 
@@ -259,26 +275,67 @@ def cmd_alerts(world: dict[str, Any], a: argparse.Namespace) -> dict[str, Any]:
     return {"count": len(items), "items": items}
 
 
-def _candles(world: dict[str, Any], isin: str, days: int) -> list[dict[str, Any]]:
-    """Deterministische synthetische Tageskerzen, die beim aktuellen Kurs enden."""
+def _anchors(world: dict[str, Any], isin: str) -> list[tuple[datetime, float]]:
+    """Bekannte Kurse (Käufe/Verkäufe + aktueller Kurs), durch die der Kursverlauf laufen soll."""
+    pts: list[tuple[datetime, float]] = []
+    for t in world["transactions"]:
+        if t.get("isin") == isin and t.get("side") in ("BUY", "SELL") and t.get("quantity"):
+            price = (t.get("_details") or {}).get("security_trade", {}).get("average_price")
+            price = float(price) if price else float(D(t["amount"]) / D(t["quantity"]))
+            pts.append((datetime.fromisoformat(t["last_event_datetime"].replace("Z", "+00:00")), price))
+    pts.append((now(world), float(D(world["securities"][isin]["bid"]))))
+    pts.sort()
+    return pts
+
+
+def price_path(world: dict[str, Any], isin: str, days: int) -> list[tuple[datetime, float]]:
+    """Deterministischer Tagesverlauf (Brownsche Brücke zwischen den Ankerpunkten)."""
     seed = int(hashlib.sha256(isin.encode()).hexdigest()[:8], 16)
     rng = random.Random(seed)
     sec = world["securities"][isin]
     drift = float(sec.get("drift", 0.10)) / 252
     vol = float(sec.get("vol", 0.25)) / math.sqrt(252)
-    rets = [rng.gauss(drift, vol) for _ in range(days)]
-    end_price = float(D(sec["bid"]))
-    closes = [end_price]
-    for r in reversed(rets[1:]):
-        closes.append(closes[-1] / math.exp(r))
-    closes.reverse()
-    out = []
+    anchors = _anchors(world, isin)
     t_end = now(world).replace(hour=17, minute=30, second=0, microsecond=0)
-    for i, close in enumerate(closes):
-        day = t_end - timedelta(days=len(closes) - 1 - i)
-        prev = closes[i - 1] if i else close
-        hi = max(prev, close) * (1 + abs(rng.gauss(0, vol / 2)))
-        lo = min(prev, close) * (1 - abs(rng.gauss(0, vol / 2)))
+    first_day = min(t_end - timedelta(days=days), anchors[0][0] - timedelta(days=30))
+    n_days = (t_end - first_day).days
+    day_list = [t_end - timedelta(days=n_days - i) for i in range(n_days + 1)]
+    # Ankerpunkte auf Tagesindizes abbilden
+    idx_anchor: list[tuple[int, float]] = []
+    for t, p in anchors:
+        i = max(0, min(n_days, (t.replace(hour=17, minute=30, second=0, microsecond=0) - first_day).days))
+        idx_anchor = [a for a in idx_anchor if a[0] != i] + [(i, p)]
+    idx_anchor.sort()
+    logp = [0.0] * (n_days + 1)
+    a0, p0 = idx_anchor[0]
+    logp[a0] = math.log(p0)
+    for i in range(a0 - 1, -1, -1):  # vor dem ersten Anker: Random Walk rückwärts
+        logp[i] = logp[i + 1] - rng.gauss(drift, vol)
+    for (ia, pa), (ib, pb) in zip(idx_anchor, idx_anchor[1:], strict=False):
+        n = ib - ia
+        walk = [0.0]
+        for _ in range(n):
+            walk.append(walk[-1] + rng.gauss(0, vol))
+        for k in range(n + 1):
+            frac = k / n if n else 1.0
+            logp[ia + k] = math.log(pa) + frac * (math.log(pb) - math.log(pa)) + walk[k] - frac * walk[n]
+    last_i, last_p = idx_anchor[-1]
+    for i in range(last_i + 1, n_days + 1):
+        logp[i] = logp[i - 1] + rng.gauss(drift, vol)
+    path = [(d, math.exp(lp)) for d, lp in zip(day_list, logp, strict=False)]
+    return path[-(days + 1):]
+
+
+def _candles(world: dict[str, Any], isin: str, days: int) -> list[dict[str, Any]]:
+    seed = int(hashlib.sha256((isin + "hl").encode()).hexdigest()[:8], 16)
+    rng = random.Random(seed)
+    vol = float(world["securities"][isin].get("vol", 0.25)) / math.sqrt(252)
+    path = price_path(world, isin, days)
+    out = []
+    for i, (day, close) in enumerate(path):
+        prev = path[i - 1][1] if i else close
+        hi = max(prev, close) * (1 + abs(rng.gauss(0, vol / 3)))
+        lo = min(prev, close) * (1 - abs(rng.gauss(0, vol / 3)))
         out.append(
             {
                 "open": f"{prev:.4f}",
@@ -290,6 +347,59 @@ def _candles(world: dict[str, Any], isin: str, days: int) -> list[dict[str, Any]
             }
         )
     return out
+
+
+def cmd_chart(world: dict[str, Any], a: argparse.Namespace) -> dict[str, Any]:
+    """Depotverlauf wie 'sc broker chart': wöchentliche Bewertung + absolute Rendite."""
+    txs = sorted(
+        (t for t in world["transactions"] if t.get("side") in ("BUY", "SELL") and t.get("status") in ("FILLED", "SETTLED")),
+        key=lambda t: t["last_event_datetime"],
+    )
+    if not txs:
+        return {"target": "portfolio", "timeframe": a.timeframe, "closing_reference_point": None, "point_count": 0, "data_points": []}
+    start = datetime.fromisoformat(txs[0]["last_event_datetime"].replace("Z", "+00:00"))
+    end = now(world)  # einmal festhalten – sonst läuft die Schleife ewig hinter "jetzt" her
+    days = (end - start).days + 2
+    paths = {isin: dict((d.date(), p) for d, p in price_path(world, isin, days)) for isin in world["securities"]}
+    points = []
+    t = start
+    while True:
+        units: dict[str, Decimal] = {}
+        invested = Decimal(0)
+        for tx in txs:
+            if datetime.fromisoformat(tx["last_event_datetime"].replace("Z", "+00:00")) > t:
+                break
+            q = D(tx["quantity"])
+            sign = 1 if tx["side"] == "BUY" else -1
+            units[tx["isin"]] = units.get(tx["isin"], Decimal(0)) + sign * q
+            invested += sign * D(tx["amount"])
+        value = sum(
+            float(u) * paths[i].get(t.date(), next(iter(paths[i].values())))
+            for i, u in units.items()
+            if u > 0 and i in paths
+        )
+        points.append(
+            {"valuation": round(value, 2), "absolute_return": round(value - float(invested), 2), "timestamp_utc": iso(t)}
+        )
+        if t >= end:
+            break
+        t = min(t + timedelta(days=7), end)
+    return {"target": "portfolio", "timeframe": a.timeframe, "closing_reference_point": None, "point_count": len(points), "data_points": points}
+
+
+def cmd_cash_breakdown(world: dict[str, Any], a: argparse.Namespace) -> dict[str, Any]:
+    acc = world.get("account") or {}
+    return {
+        "account_id": "demo-account",
+        "portfolio_id": world.get("portfolio_id"),
+        "cash_balance": acc.get("cash_balance"),
+        "buying_power": acc.get("buying_power"),
+        "buying_power_without_credit": acc.get("buying_power_without_credit"),
+        "available_credit_line": acc.get("available_credit_line"),
+        "loaned": acc.get("loaned"),
+        "pending_buy_orders_amount": "0",
+        "possible_taxes": None,
+    }
 
 
 TIMEFRAME_DAYS = {"one_month": 30, "three_months": 91, "six_months": 182, "year_to_date": 330, "one_year": 365, "max": 1825}
@@ -511,6 +621,14 @@ def build_parser() -> argparse.ArgumentParser:
     x.add_argument("--transaction-id", required=True)
     x.add_argument("--portfolio-id")
     x.add_argument("--json", action="store_true")
+    x = broker.add_parser("chart")
+    x.add_argument("--timeframe", default="1y")
+    x.add_argument("--portfolio-id")
+    x.add_argument("--isin")
+    x.add_argument("--json", action="store_true")
+    x = broker.add_parser("cash-breakdown")
+    x.add_argument("--portfolio-id")
+    x.add_argument("--json", action="store_true")
     x = broker.add_parser("order-venues")
     x.add_argument("--json", action="store_true")
     x = broker.add_parser("candlesticks")
@@ -566,6 +684,10 @@ def dispatch(world: dict[str, Any], a: argparse.Namespace) -> tuple[str, dict[st
             return "broker transactions", cmd_transactions(world, a)
         if a.bcmd == "transaction":
             return "broker transaction details", cmd_details(world, a)
+        if a.bcmd == "chart":
+            return "broker chart", cmd_chart(world, a)
+        if a.bcmd == "cash-breakdown":
+            return "broker cash-breakdown", cmd_cash_breakdown(world, a)
         if a.bcmd == "order-venues":
             return "broker order-venues", {"count": 3, "venues": [{"venue": v, "label": v} for v in ("gettex", "eix", "xetra")]}
         if a.bcmd == "candlesticks":

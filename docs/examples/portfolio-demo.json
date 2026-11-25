@@ -1,0 +1,5313 @@
+{
+  "schema": "stopguard.portfolio/1",
+  "generator": "stopguard 0.1.0",
+  "generated_at": "2026-11-25T18:06:49.309795+00:00",
+  "as_of": "2026-11-25T18:06:49.286247+00:00",
+  "currency": "EUR",
+  "settings": {
+    "benchmark": {
+      "isin": "IE00B4L5Y983",
+      "name": "MSCI World (Demo)"
+    },
+    "tax": {
+      "enabled": true,
+      "method": "model",
+      "effective_rate": 0.26375,
+      "church_tax_pct": 0.0,
+      "loss_offset": true,
+      "vorabpauschale": true,
+      "interest_deductible": false,
+      "allowance_eur": 1000.0
+    },
+    "credit_mode": "auto",
+    "resolution": "weekly"
+  },
+  "positions": [
+    {
+      "isin": "LU0274208692",
+      "name": "Xtrackers MSCI World Swap (Demo)",
+      "ticker": "XDWD.DE",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt",
+        "Kredit"
+      ],
+      "status": "open",
+      "units": 45.0,
+      "avg_buy_price": 100.0165,
+      "current_price": 111.111,
+      "cost_basis": 4500.74,
+      "value": 4999.99,
+      "weight": 0.28718,
+      "unrealized_pl": 499.25,
+      "unrealized_pct": 0.110926,
+      "realized_pl": 118.76,
+      "dividends": 0,
+      "fees": 1.98,
+      "profit": 618.02,
+      "irr": 0.233631,
+      "irr_after_tax": 0.188553,
+      "equity_irr": 0.49277,
+      "latent_tax": 92.17,
+      "credit_outstanding": 1414.84,
+      "interest": 65.01,
+      "first_buy": "2026-05-29",
+      "holding_days": 180.4,
+      "trades": 1,
+      "open_trades": 1,
+      "stopguard": {
+        "strategy": "irr_gate",
+        "phase": "Gewinne sichern",
+        "target_stop": "105.55",
+        "order_id": null
+      }
+    },
+    {
+      "isin": "IE00B4L5Y983",
+      "name": "iShares Core MSCI World (Demo)",
+      "ticker": "EUNL.DE",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "units": 31.132569,
+      "avg_buy_price": 89.938,
+      "current_price": 104.3042,
+      "cost_basis": 2800.0,
+      "value": 3247.24,
+      "weight": 0.18651,
+      "unrealized_pl": 447.24,
+      "unrealized_pct": 0.159729,
+      "realized_pl": 0,
+      "dividends": 0,
+      "fees": 0,
+      "profit": 447.24,
+      "irr": 0.261295,
+      "irr_after_tax": 0.21215,
+      "equity_irr": null,
+      "latent_tax": 82.03,
+      "credit_outstanding": 0.0,
+      "interest": 0,
+      "first_buy": "2025-09-28",
+      "holding_days": 423.4,
+      "trades": 14,
+      "open_trades": 14,
+      "stopguard": {
+        "strategy": "irr_lock",
+        "phase": "Rendite sichern",
+        "target_stop": "93.78",
+        "order_id": null
+      }
+    },
+    {
+      "isin": "IE00BK5BQT80",
+      "name": "Vanguard FTSE All-World (Demo)",
+      "ticker": "VWCE.DE",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "units": 20.0,
+      "avg_buy_price": 121.2995,
+      "current_price": 128.6285,
+      "cost_basis": 2425.99,
+      "value": 2572.57,
+      "weight": 0.14776,
+      "unrealized_pl": 146.58,
+      "unrealized_pct": 0.060421,
+      "realized_pl": 0,
+      "dividends": 0,
+      "fees": 0.99,
+      "profit": 146.58,
+      "irr": 0.073894,
+      "irr_after_tax": 0.060181,
+      "equity_irr": null,
+      "latent_tax": 27.06,
+      "credit_outstanding": 0.0,
+      "interest": 0,
+      "first_buy": "2026-01-29",
+      "holding_days": 300.4,
+      "trades": 1,
+      "open_trades": 1,
+      "stopguard": {
+        "strategy": "irr_gate",
+        "phase": "Gewinne sichern",
+        "target_stop": "122.19",
+        "order_id": null
+      }
+    },
+    {
+      "isin": "US0378331005",
+      "name": "Apple Inc. (Demo)",
+      "ticker": "APC.DE",
+      "kind": "stock",
+      "tags": [
+        "Tech",
+        "USA"
+      ],
+      "status": "open",
+      "units": 10.0,
+      "avg_buy_price": 180.099,
+      "current_price": 216.216,
+      "cost_basis": 1800.99,
+      "value": 2162.16,
+      "weight": 0.12419,
+      "unrealized_pl": 361.17,
+      "unrealized_pct": 0.20054,
+      "realized_pl": 0,
+      "dividends": 0,
+      "fees": 0.99,
+      "profit": 361.17,
+      "irr": 1.914793,
+      "irr_after_tax": 1.239091,
+      "equity_irr": null,
+      "latent_tax": 95.26,
+      "credit_outstanding": 0.0,
+      "interest": 0,
+      "first_buy": "2026-09-24",
+      "holding_days": 62.4,
+      "trades": 1,
+      "open_trades": 1,
+      "stopguard": {
+        "strategy": "trailing_5",
+        "phase": "Trailing",
+        "target_stop": "205.2",
+        "order_id": "order-legacy-1"
+      }
+    },
+    {
+      "isin": "DE0008404005",
+      "name": "Allianz SE (Demo)",
+      "ticker": null,
+      "kind": "stock",
+      "tags": [],
+      "status": "open",
+      "units": 6.0,
+      "avg_buy_price": 290.165,
+      "current_price": 352.7524,
+      "cost_basis": 1740.99,
+      "value": 2116.51,
+      "weight": 0.12156,
+      "unrealized_pl": 375.52,
+      "unrealized_pct": 0.215693,
+      "realized_pl": 0,
+      "dividends": 112.44,
+      "fees": 0.99,
+      "profit": 487.96,
+      "irr": 0.260448,
+      "irr_after_tax": 0.190822,
+      "equity_irr": null,
+      "latent_tax": 99.04,
+      "credit_outstanding": 0.0,
+      "interest": 0,
+      "first_buy": "2025-10-21",
+      "holding_days": 400.4,
+      "trades": 1,
+      "open_trades": 1,
+      "stopguard": {
+        "strategy": "trailing_5",
+        "phase": "Trailing",
+        "target_stop": "334.78",
+        "order_id": null
+      }
+    },
+    {
+      "isin": "DE0007164600",
+      "name": "SAP SE (Demo)",
+      "ticker": null,
+      "kind": "stock",
+      "tags": [],
+      "status": "open",
+      "units": 8.0,
+      "avg_buy_price": 200.1238,
+      "current_price": 214.214,
+      "cost_basis": 1600.99,
+      "value": 1713.71,
+      "weight": 0.09843,
+      "unrealized_pl": 112.72,
+      "unrealized_pct": 0.070406,
+      "realized_pl": 0,
+      "dividends": 0,
+      "fees": 0.99,
+      "profit": 112.72,
+      "irr": 0.167504,
+      "irr_after_tax": 0.121911,
+      "equity_irr": null,
+      "latent_tax": 29.73,
+      "credit_outstanding": 0.0,
+      "interest": 0,
+      "first_buy": "2026-06-18",
+      "holding_days": 160.4,
+      "trades": 1,
+      "open_trades": 1,
+      "stopguard": {
+        "strategy": "irr_gate",
+        "phase": "Gewinne sichern",
+        "target_stop": "203.29",
+        "order_id": null
+      }
+    },
+    {
+      "isin": "US67066G1040",
+      "name": "NVIDIA Corp. (Demo)",
+      "ticker": "NVD.DE",
+      "kind": "stock",
+      "tags": [
+        "Tech",
+        "USA"
+      ],
+      "status": "open",
+      "units": 5.0,
+      "avg_buy_price": 130.198,
+      "current_price": 119.7196,
+      "cost_basis": 650.99,
+      "value": 598.6,
+      "weight": 0.03438,
+      "unrealized_pl": -52.39,
+      "unrealized_pct": -0.080477,
+      "realized_pl": 0,
+      "dividends": 0,
+      "fees": 0.99,
+      "profit": -52.39,
+      "irr": -0.777817,
+      "irr_after_tax": -0.665491,
+      "equity_irr": null,
+      "latent_tax": -13.82,
+      "credit_outstanding": 0.0,
+      "interest": 0,
+      "first_buy": "2026-11-05",
+      "holding_days": 20.4,
+      "trades": 1,
+      "open_trades": 1,
+      "stopguard": {
+        "strategy": "irr_gate",
+        "phase": "Aufbau",
+        "target_stop": "104.15",
+        "order_id": null
+      }
+    },
+    {
+      "isin": "US88160R1014",
+      "name": "Tesla Inc. (Demo)",
+      "ticker": null,
+      "kind": "stock",
+      "tags": [],
+      "status": "closed",
+      "units": 0,
+      "avg_buy_price": null,
+      "current_price": null,
+      "cost_basis": 0,
+      "value": 0,
+      "weight": 0.0,
+      "unrealized_pl": 0,
+      "unrealized_pct": null,
+      "realized_pl": 298.02,
+      "dividends": 0,
+      "fees": 1.98,
+      "profit": 298.02,
+      "irr": 0.609009,
+      "irr_after_tax": 0.435777,
+      "equity_irr": null,
+      "latent_tax": 0,
+      "credit_outstanding": 0.0,
+      "interest": 0,
+      "first_buy": "2026-01-29",
+      "holding_days": 300.4,
+      "trades": 1,
+      "open_trades": 0,
+      "stopguard": null
+    },
+    {
+      "isin": "DE000ZAL1111",
+      "name": "Zalando SE (Demo)",
+      "ticker": null,
+      "kind": "stock",
+      "tags": [],
+      "status": "closed",
+      "units": 0,
+      "avg_buy_price": null,
+      "current_price": null,
+      "cost_basis": 0,
+      "value": 0,
+      "weight": 0.0,
+      "unrealized_pl": 0,
+      "unrealized_pct": null,
+      "realized_pl": -301.98,
+      "dividends": 0,
+      "fees": 1.98,
+      "profit": -301.98,
+      "irr": -0.495025,
+      "irr_after_tax": -0.385916,
+      "equity_irr": null,
+      "latent_tax": 0,
+      "credit_outstanding": 0.0,
+      "interest": 0,
+      "first_buy": "2026-03-20",
+      "holding_days": 250.4,
+      "trades": 1,
+      "open_trades": 0,
+      "stopguard": null
+    }
+  ],
+  "trades": [
+    {
+      "id": "L-tx-demo-005",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2025-09-28",
+      "close_date": null,
+      "holding_days": 423.4,
+      "units": 2.5,
+      "remaining_units": 2.5,
+      "buy_price": 80.0,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 260.76,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 60.76,
+      "profit": 60.76,
+      "return_pct": 0.303802,
+      "irr": 0.256985,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.22,
+        "latent": 11.0,
+        "total": 11.22
+      },
+      "profit_after_tax": 49.54,
+      "irr_after_tax": 0.210054,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2025-09-28",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-01-02",
+          "type": "vap_tax",
+          "amount": -0.22
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 260.76
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -11.0
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-037",
+      "source": "scalable",
+      "origin": "single",
+      "isin": "DE0008404005",
+      "ticker": null,
+      "name": "Allianz SE (Demo)",
+      "kind": "stock",
+      "tags": [],
+      "status": "open",
+      "open_date": "2025-10-21",
+      "close_date": null,
+      "holding_days": 400.4,
+      "units": 6.0,
+      "remaining_units": 6.0,
+      "buy_price": 290.0,
+      "avg_sell_price": null,
+      "current_price": 352.7524,
+      "invested": 1740.99,
+      "fees": 0.99,
+      "proceeds": 0.0,
+      "current_value": 2116.51,
+      "dividends": 112.44,
+      "realized_pl": 0.0,
+      "unrealized_pl": 375.52,
+      "profit": 487.96,
+      "return_pct": 0.28028,
+      "irr": 0.260448,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 29.66,
+        "vorabpauschale": 0.0,
+        "latent": 99.04,
+        "total": 128.7
+      },
+      "profit_after_tax": 359.26,
+      "irr_after_tax": 0.190822,
+      "credit": null,
+      "benchmark": {
+        "isin": "IE00B4L5Y983",
+        "irr": 0.24263,
+        "profit": 468.43,
+        "alpha_irr": 0.017817,
+        "outperformance": 19.54
+      },
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2025-10-21",
+          "type": "buy",
+          "amount": -1740.99
+        },
+        {
+          "date": "2026-05-09",
+          "type": "dividend",
+          "amount": 112.44
+        },
+        {
+          "date": "2026-05-09",
+          "type": "dividend_tax",
+          "amount": -29.66
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 2116.51
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -99.04
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-007",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2025-10-28",
+      "close_date": null,
+      "holding_days": 393.4,
+      "units": 2.45098,
+      "remaining_units": 2.45098,
+      "buy_price": 81.6,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 255.65,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 55.65,
+      "profit": 55.65,
+      "return_pct": 0.278238,
+      "irr": 0.255815,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.16,
+        "latent": 10.11,
+        "total": 10.27
+      },
+      "profit_after_tax": 45.37,
+      "irr_after_tax": 0.20878,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2025-10-28",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-01-02",
+          "type": "vap_tax",
+          "amount": -0.16
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 255.65
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -10.11
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-009",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2025-11-27",
+      "close_date": null,
+      "holding_days": 363.4,
+      "units": 2.403846,
+      "remaining_units": 2.403846,
+      "buy_price": 83.2,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 250.73,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 50.73,
+      "profit": 50.73,
+      "return_pct": 0.253656,
+      "irr": 0.254937,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.1,
+        "latent": 9.26,
+        "total": 9.37
+      },
+      "profit_after_tax": 41.36,
+      "irr_after_tax": 0.207753,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2025-11-27",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-01-02",
+          "type": "vap_tax",
+          "amount": -0.1
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 250.73
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -9.26
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-011",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2025-12-27",
+      "close_date": null,
+      "holding_days": 333.4,
+      "units": 2.358491,
+      "remaining_units": 2.358491,
+      "buy_price": 84.8,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 246.0,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 46.0,
+      "profit": 46.0,
+      "return_pct": 0.230002,
+      "irr": 0.25441,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.05,
+        "latent": 8.44,
+        "total": 8.49
+      },
+      "profit_after_tax": 37.51,
+      "irr_after_tax": 0.207019,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2025-12-27",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-01-02",
+          "type": "vap_tax",
+          "amount": -0.05
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 246.0
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -8.44
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-013",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2026-01-26",
+      "close_date": null,
+      "holding_days": 303.4,
+      "units": 2.314815,
+      "remaining_units": 2.314815,
+      "buy_price": 86.4,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 241.44,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 41.44,
+      "profit": 41.44,
+      "return_pct": 0.207225,
+      "irr": 0.254316,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 7.65,
+        "total": 7.65
+      },
+      "profit_after_tax": 33.79,
+      "irr_after_tax": 0.206643,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-01-26",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 241.44
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -7.65
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-039",
+      "source": "scalable",
+      "origin": "single",
+      "isin": "IE00BK5BQT80",
+      "ticker": "VWCE.DE",
+      "name": "Vanguard FTSE All-World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2026-01-29",
+      "close_date": null,
+      "holding_days": 300.4,
+      "units": 20.0,
+      "remaining_units": 20.0,
+      "buy_price": 121.25,
+      "avg_sell_price": null,
+      "current_price": 128.6285,
+      "invested": 2425.99,
+      "fees": 0.99,
+      "proceeds": 0.0,
+      "current_value": 2572.57,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 146.58,
+      "profit": 146.58,
+      "return_pct": 0.060421,
+      "irr": 0.073894,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 27.06,
+        "total": 27.06
+      },
+      "profit_after_tax": 119.52,
+      "irr_after_tax": 0.060181,
+      "credit": null,
+      "benchmark": {
+        "isin": "IE00B4L5Y983",
+        "irr": 0.249193,
+        "profit": 487.45,
+        "alpha_irr": -0.175299,
+        "outperformance": -340.87
+      },
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-01-29",
+          "type": "buy",
+          "amount": -2425.99
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 2572.57
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -27.06
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-040",
+      "source": "scalable",
+      "origin": "single",
+      "isin": "US88160R1014",
+      "ticker": null,
+      "name": "Tesla Inc. (Demo)",
+      "kind": "stock",
+      "tags": [],
+      "status": "closed",
+      "open_date": "2026-01-29",
+      "close_date": "2026-08-17",
+      "holding_days": 200.0,
+      "units": 5.0,
+      "remaining_units": 0.0,
+      "buy_price": 200.0,
+      "avg_sell_price": 260.0,
+      "current_price": null,
+      "invested": 1000.99,
+      "fees": 1.98,
+      "proceeds": 1299.01,
+      "current_value": 0.0,
+      "dividends": 0.0,
+      "realized_pl": 298.02,
+      "unrealized_pl": 0.0,
+      "profit": 298.02,
+      "return_pct": 0.297725,
+      "irr": 0.609009,
+      "taxes": {
+        "method": "model",
+        "sale": 78.6,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 0.0,
+        "total": 78.6
+      },
+      "profit_after_tax": 219.42,
+      "irr_after_tax": 0.435777,
+      "credit": null,
+      "benchmark": {
+        "isin": "IE00B4L5Y983",
+        "irr": 0.248144,
+        "profit": 129.27,
+        "alpha_irr": 0.360865,
+        "outperformance": 168.75
+      },
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-01-29",
+          "type": "buy",
+          "amount": -1000.99
+        },
+        {
+          "date": "2026-08-17",
+          "type": "sell",
+          "amount": 1299.01
+        },
+        {
+          "date": "2026-08-17",
+          "type": "tax",
+          "amount": -78.6
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-015",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2026-02-25",
+      "close_date": null,
+      "holding_days": 273.4,
+      "units": 2.272727,
+      "remaining_units": 2.272727,
+      "buy_price": 88.0,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 237.05,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 37.05,
+      "profit": 37.05,
+      "return_pct": 0.185275,
+      "irr": 0.254776,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 6.84,
+        "total": 6.84
+      },
+      "profit_after_tax": 30.21,
+      "irr_after_tax": 0.20666,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-02-25",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 237.05
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -6.84
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-041",
+      "source": "scalable",
+      "origin": "single",
+      "isin": "DE000ZAL1111",
+      "ticker": null,
+      "name": "Zalando SE (Demo)",
+      "kind": "stock",
+      "tags": [],
+      "status": "closed",
+      "open_date": "2026-03-20",
+      "close_date": "2026-07-18",
+      "holding_days": 120.0,
+      "units": 50.0,
+      "remaining_units": 0.0,
+      "buy_price": 30.0,
+      "avg_sell_price": 24.0,
+      "current_price": null,
+      "invested": 1500.99,
+      "fees": 1.98,
+      "proceeds": 1199.01,
+      "current_value": 0.0,
+      "dividends": 0.0,
+      "realized_pl": -301.98,
+      "unrealized_pl": 0.0,
+      "profit": -301.98,
+      "return_pct": -0.201187,
+      "irr": -0.495025,
+      "taxes": {
+        "method": "model",
+        "sale": -79.65,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 0.0,
+        "total": -79.65
+      },
+      "profit_after_tax": -222.33,
+      "irr_after_tax": -0.385916,
+      "credit": null,
+      "benchmark": {
+        "isin": "IE00B4L5Y983",
+        "irr": 0.176342,
+        "profit": 82.32,
+        "alpha_irr": -0.671367,
+        "outperformance": -384.3
+      },
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-03-20",
+          "type": "buy",
+          "amount": -1500.99
+        },
+        {
+          "date": "2026-07-18",
+          "type": "sell",
+          "amount": 1199.01
+        },
+        {
+          "date": "2026-07-18",
+          "type": "tax",
+          "amount": 79.65
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-017",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2026-03-27",
+      "close_date": null,
+      "holding_days": 243.4,
+      "units": 2.232143,
+      "remaining_units": 2.232143,
+      "buy_price": 89.6,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 232.82,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 32.82,
+      "profit": 32.82,
+      "return_pct": 0.164109,
+      "irr": 0.255973,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 6.06,
+        "total": 6.06
+      },
+      "profit_after_tax": 26.76,
+      "irr_after_tax": 0.207264,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-03-27",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 232.82
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -6.06
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-019",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2026-04-26",
+      "close_date": null,
+      "holding_days": 213.4,
+      "units": 2.192982,
+      "remaining_units": 2.192982,
+      "buy_price": 91.2,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 228.74,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 28.74,
+      "profit": 28.74,
+      "return_pct": 0.143686,
+      "irr": 0.258194,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 5.31,
+        "total": 5.31
+      },
+      "profit_after_tax": 23.43,
+      "irr_after_tax": 0.20868,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-04-26",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 228.74
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -5.31
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-021",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2026-05-26",
+      "close_date": null,
+      "holding_days": 183.4,
+      "units": 2.155172,
+      "remaining_units": 2.155172,
+      "buy_price": 92.8,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 224.79,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 24.79,
+      "profit": 24.79,
+      "return_pct": 0.123968,
+      "irr": 0.261921,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 4.58,
+        "total": 4.58
+      },
+      "profit_after_tax": 20.22,
+      "irr_after_tax": 0.211284,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-05-26",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 224.79
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -4.58
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-044",
+      "source": "scalable",
+      "origin": "single",
+      "isin": "LU0274208692",
+      "ticker": "XDWD.DE",
+      "name": "Xtrackers MSCI World Swap (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt",
+        "Kredit"
+      ],
+      "status": "partial",
+      "open_date": "2026-05-29",
+      "close_date": null,
+      "holding_days": 180.4,
+      "units": 60.0,
+      "remaining_units": 45.0,
+      "buy_price": 100.0,
+      "avg_sell_price": 108.0,
+      "current_price": 111.111,
+      "invested": 6000.99,
+      "fees": 1.98,
+      "proceeds": 1619.01,
+      "current_value": 4999.99,
+      "dividends": 0.0,
+      "realized_pl": 118.76,
+      "unrealized_pl": 499.25,
+      "profit": 618.02,
+      "return_pct": 0.102986,
+      "irr": 0.233631,
+      "taxes": {
+        "method": "model",
+        "sale": 21.93,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 92.17,
+        "total": 114.1
+      },
+      "profit_after_tax": 503.91,
+      "irr_after_tax": 0.188553,
+      "credit": {
+        "financed": 5657.05,
+        "leverage": 0.9427,
+        "outstanding": 1414.84,
+        "interest": 65.01,
+        "interest_estimated": false,
+        "effective_rate": 0.03637,
+        "equity_invested": 6000.99,
+        "equity_irr": 0.49277,
+        "return_on_equity": 0.073139,
+        "profit_net": 438.9,
+        "break_even_irr": 0.044606,
+        "spread": 0.19726
+      },
+      "benchmark": {
+        "isin": "IE00B4L5Y983",
+        "irr": 0.210014,
+        "profit": 558.55,
+        "alpha_irr": 0.023617,
+        "outperformance": 59.47
+      },
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-05-29",
+          "type": "buy",
+          "amount": -6000.99
+        },
+        {
+          "date": "2026-05-29",
+          "type": "loan_draw",
+          "amount": 5592.04
+        },
+        {
+          "date": "2026-06-01",
+          "type": "loan_draw",
+          "amount": 1.79
+        },
+        {
+          "date": "2026-06-01",
+          "type": "interest",
+          "amount": -1.79
+        },
+        {
+          "date": "2026-06-21",
+          "type": "loan_repayment",
+          "amount": -49.01
+        },
+        {
+          "date": "2026-07-01",
+          "type": "loan_draw",
+          "amount": 17.47
+        },
+        {
+          "date": "2026-07-01",
+          "type": "interest",
+          "amount": -17.47
+        },
+        {
+          "date": "2026-07-18",
+          "type": "loan_repayment",
+          "amount": -1199.01
+        },
+        {
+          "date": "2026-08-01",
+          "type": "loan_draw",
+          "amount": 16.59
+        },
+        {
+          "date": "2026-08-01",
+          "type": "interest",
+          "amount": -16.59
+        },
+        {
+          "date": "2026-08-17",
+          "type": "loan_repayment",
+          "amount": -1299.01
+        },
+        {
+          "date": "2026-09-01",
+          "type": "loan_draw",
+          "amount": 12.38
+        },
+        {
+          "date": "2026-09-01",
+          "type": "interest",
+          "amount": -12.38
+        },
+        {
+          "date": "2026-09-27",
+          "type": "loan_repayment",
+          "amount": -49.01
+        },
+        {
+          "date": "2026-10-01",
+          "type": "loan_draw",
+          "amount": 9.44
+        },
+        {
+          "date": "2026-10-01",
+          "type": "interest",
+          "amount": -9.44
+        },
+        {
+          "date": "2026-10-16",
+          "type": "sell",
+          "amount": 1619.01
+        },
+        {
+          "date": "2026-10-16",
+          "type": "tax",
+          "amount": -21.93
+        },
+        {
+          "date": "2026-10-16",
+          "type": "loan_repayment",
+          "amount": -1597.16
+        },
+        {
+          "date": "2026-11-01",
+          "type": "loan_draw",
+          "amount": 7.34
+        },
+        {
+          "date": "2026-11-01",
+          "type": "interest",
+          "amount": -7.34
+        },
+        {
+          "date": "2026-11-05",
+          "type": "loan_repayment",
+          "amount": -49.01
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 4999.99
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -92.17
+        },
+        {
+          "date": "2026-11-25",
+          "type": "loan_outstanding",
+          "amount": -1414.84
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-036",
+      "source": "scalable",
+      "origin": "single",
+      "isin": "DE0007164600",
+      "ticker": null,
+      "name": "SAP SE (Demo)",
+      "kind": "stock",
+      "tags": [],
+      "status": "open",
+      "open_date": "2026-06-18",
+      "close_date": null,
+      "holding_days": 160.4,
+      "units": 8.0,
+      "remaining_units": 8.0,
+      "buy_price": 200.0,
+      "avg_sell_price": null,
+      "current_price": 214.214,
+      "invested": 1600.99,
+      "fees": 0.99,
+      "proceeds": 0.0,
+      "current_value": 1713.71,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 112.72,
+      "profit": 112.72,
+      "return_pct": 0.070408,
+      "irr": 0.167504,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 29.73,
+        "total": 29.73
+      },
+      "profit_after_tax": 82.99,
+      "irr_after_tax": 0.121911,
+      "credit": null,
+      "benchmark": {
+        "isin": "IE00B4L5Y983",
+        "irr": 0.179729,
+        "profit": 120.58,
+        "alpha_irr": -0.012225,
+        "outperformance": -7.86
+      },
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-06-18",
+          "type": "buy",
+          "amount": -1600.99
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 1713.71
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -29.73
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-023",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2026-06-25",
+      "close_date": null,
+      "holding_days": 153.4,
+      "units": 2.118644,
+      "remaining_units": 2.118644,
+      "buy_price": 94.4,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 220.98,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 20.98,
+      "profit": 20.98,
+      "return_pct": 0.104917,
+      "irr": 0.268021,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 3.87,
+        "total": 3.87
+      },
+      "profit_after_tax": 17.11,
+      "irr_after_tax": 0.215752,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-06-25",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 220.98
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -3.87
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-025",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2026-07-25",
+      "close_date": null,
+      "holding_days": 123.4,
+      "units": 2.083333,
+      "remaining_units": 2.083333,
+      "buy_price": 96.0,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 217.3,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 17.3,
+      "profit": 17.3,
+      "return_pct": 0.086502,
+      "irr": 0.27823,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 3.19,
+        "total": 3.19
+      },
+      "profit_after_tax": 14.11,
+      "irr_after_tax": 0.223434,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-07-25",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 217.3
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -3.19
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-027",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2026-08-24",
+      "close_date": null,
+      "holding_days": 93.4,
+      "units": 2.04918,
+      "remaining_units": 2.04918,
+      "buy_price": 97.6,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 213.74,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 13.74,
+      "profit": 13.74,
+      "return_pct": 0.068691,
+      "irr": 0.296585,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 2.54,
+        "total": 2.54
+      },
+      "profit_after_tax": 11.2,
+      "irr_after_tax": 0.23746,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-08-24",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 213.74
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -2.54
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-029",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2026-09-23",
+      "close_date": null,
+      "holding_days": 63.4,
+      "units": 2.016129,
+      "remaining_units": 2.016129,
+      "buy_price": 99.2,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 210.29,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 10.29,
+      "profit": 10.29,
+      "return_pct": 0.051454,
+      "irr": 0.335147,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 1.9,
+        "total": 1.9
+      },
+      "profit_after_tax": 8.39,
+      "irr_after_tax": 0.267134,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-09-23",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 210.29
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -1.9
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-003",
+      "source": "scalable",
+      "origin": "single",
+      "isin": "US0378331005",
+      "ticker": "APC.DE",
+      "name": "Apple Inc. (Demo)",
+      "kind": "stock",
+      "tags": [
+        "Tech",
+        "USA"
+      ],
+      "status": "open",
+      "open_date": "2026-09-24",
+      "close_date": null,
+      "holding_days": 62.4,
+      "units": 10.0,
+      "remaining_units": 10.0,
+      "buy_price": 180.0,
+      "avg_sell_price": null,
+      "current_price": 216.216,
+      "invested": 1800.99,
+      "fees": 0.99,
+      "proceeds": 0.0,
+      "current_value": 2162.16,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 361.17,
+      "profit": 361.17,
+      "return_pct": 0.20054,
+      "irr": 1.914793,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 95.26,
+        "total": 95.26
+      },
+      "profit_after_tax": 265.91,
+      "irr_after_tax": 1.239091,
+      "credit": null,
+      "benchmark": {
+        "isin": "IE00B4L5Y983",
+        "irr": 0.351718,
+        "profit": 95.16,
+        "alpha_irr": 1.563076,
+        "outperformance": 266.01
+      },
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-09-24",
+          "type": "buy",
+          "amount": -1800.99
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 2162.16
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -95.26
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-031",
+      "source": "scalable",
+      "origin": "savings_plan",
+      "isin": "IE00B4L5Y983",
+      "ticker": "EUNL.DE",
+      "name": "iShares Core MSCI World (Demo)",
+      "kind": "equity_fund",
+      "tags": [
+        "ETF",
+        "Welt"
+      ],
+      "status": "open",
+      "open_date": "2026-10-23",
+      "close_date": null,
+      "holding_days": 33.4,
+      "units": 1.984127,
+      "remaining_units": 1.984127,
+      "buy_price": 100.8,
+      "avg_sell_price": null,
+      "current_price": 104.3042,
+      "invested": 200.0,
+      "fees": 0,
+      "proceeds": 0.0,
+      "current_value": 206.95,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": 6.95,
+      "profit": 6.95,
+      "return_pct": 0.034764,
+      "irr": 0.453407,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": 1.28,
+        "total": 1.28
+      },
+      "profit_after_tax": 5.67,
+      "irr_after_tax": 0.357754,
+      "credit": null,
+      "benchmark": null,
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-10-23",
+          "type": "buy",
+          "amount": -200.0
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 206.95
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": -1.28
+        }
+      ]
+    },
+    {
+      "id": "L-tx-demo-034",
+      "source": "scalable",
+      "origin": "single",
+      "isin": "US67066G1040",
+      "ticker": "NVD.DE",
+      "name": "NVIDIA Corp. (Demo)",
+      "kind": "stock",
+      "tags": [
+        "Tech",
+        "USA"
+      ],
+      "status": "open",
+      "open_date": "2026-11-05",
+      "close_date": null,
+      "holding_days": 20.4,
+      "units": 5.0,
+      "remaining_units": 5.0,
+      "buy_price": 130.0,
+      "avg_sell_price": null,
+      "current_price": 119.7196,
+      "invested": 650.99,
+      "fees": 0.99,
+      "proceeds": 0.0,
+      "current_value": 598.6,
+      "dividends": 0.0,
+      "realized_pl": 0.0,
+      "unrealized_pl": -52.39,
+      "profit": -52.39,
+      "return_pct": -0.08048,
+      "irr": -0.777817,
+      "taxes": {
+        "method": "model",
+        "sale": 0.0,
+        "dividends": 0.0,
+        "vorabpauschale": 0.0,
+        "latent": -13.82,
+        "total": -13.82
+      },
+      "profit_after_tax": -38.57,
+      "irr_after_tax": -0.665491,
+      "credit": null,
+      "benchmark": {
+        "isin": "IE00B4L5Y983",
+        "irr": 0.604132,
+        "profit": 17.39,
+        "alpha_irr": -1.381949,
+        "outperformance": -69.78
+      },
+      "notes": [],
+      "cashflows": [
+        {
+          "date": "2026-11-05",
+          "type": "buy",
+          "amount": -650.99
+        },
+        {
+          "date": "2026-11-25",
+          "type": "valuation",
+          "amount": 598.6
+        },
+        {
+          "date": "2026-11-25",
+          "type": "latent_tax",
+          "amount": 13.82
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "securities_value": 17410.78,
+    "cash": 0.0,
+    "loan": 1414.84,
+    "net_worth": 15995.94,
+    "cost_basis_open": 15520.69,
+    "unrealized_pl": 1890.09,
+    "realized_pl": 114.8,
+    "dividends": 112.44,
+    "fees": 10.89,
+    "interest_paid": 65.01,
+    "latent_tax": 411.47,
+    "net_deposits": 14000.0,
+    "irr": {
+      "trades": 0.2062171912652342,
+      "trades_after_tax": 0.16023673966307395,
+      "trades_after_tax_and_interest": 0.18506042678517803,
+      "account": 0.17876990894978267
+    },
+    "counts": {
+      "positions_open": 7,
+      "trades": 22,
+      "trades_open": 20,
+      "trades_closed": 2,
+      "trades_credit": 1,
+      "win_rate_closed": 0.5
+    },
+    "best_trades": [
+      {
+        "id": "L-tx-demo-003",
+        "name": "Apple Inc. (Demo)",
+        "irr": 1.914793,
+        "profit": 361.17,
+        "status": "open"
+      },
+      {
+        "id": "L-tx-demo-040",
+        "name": "Tesla Inc. (Demo)",
+        "irr": 0.609009,
+        "profit": 298.02,
+        "status": "closed"
+      },
+      {
+        "id": "L-tx-demo-031",
+        "name": "iShares Core MSCI World (Demo)",
+        "irr": 0.453407,
+        "profit": 6.95,
+        "status": "open"
+      }
+    ],
+    "worst_trades": [
+      {
+        "id": "L-tx-demo-041",
+        "name": "Zalando SE (Demo)",
+        "irr": -0.495025,
+        "profit": -301.98,
+        "status": "closed"
+      },
+      {
+        "id": "L-tx-demo-039",
+        "name": "Vanguard FTSE All-World (Demo)",
+        "irr": 0.073894,
+        "profit": 146.58,
+        "status": "open"
+      },
+      {
+        "id": "L-tx-demo-036",
+        "name": "SAP SE (Demo)",
+        "irr": 0.167504,
+        "profit": 112.72,
+        "status": "open"
+      }
+    ],
+    "twr": {
+      "since_start": 0.1479,
+      "annualized": 0.12639,
+      "ytd": 0.07349,
+      "one_year": 0.21263,
+      "benchmark_since_start": 0.3025,
+      "max_drawdown": -0.10787
+    }
+  },
+  "credit": {
+    "mode": "auto",
+    "loan": 1414.84,
+    "available_credit_line": 7281.87,
+    "loan_to_value": 0.0813,
+    "interest_total": 65.01,
+    "interest_12m": 65.01,
+    "interest_12m_estimated": 0,
+    "effective_rate_12m": 0.037,
+    "interest_unallocated": 0.0,
+    "overdraft_draws": 0.0,
+    "artifacts_removed": 0,
+    "stress": {
+      "utilization": 0.1627,
+      "drop_until_limit": 0.8373,
+      "assumption": "Kreditlinie schwankt proportional zum Depotwert (vereinfachte Schätzung)"
+    },
+    "trades": [
+      {
+        "id": "L-tx-demo-044",
+        "source": "scalable",
+        "origin": "single",
+        "isin": "LU0274208692",
+        "ticker": "XDWD.DE",
+        "name": "Xtrackers MSCI World Swap (Demo)",
+        "kind": "equity_fund",
+        "tags": [
+          "ETF",
+          "Welt",
+          "Kredit"
+        ],
+        "status": "partial",
+        "open_date": "2026-05-29",
+        "close_date": null,
+        "holding_days": 180.4,
+        "units": 60.0,
+        "remaining_units": 45.0,
+        "buy_price": 100.0,
+        "avg_sell_price": 108.0,
+        "current_price": 111.111,
+        "invested": 6000.99,
+        "fees": 1.98,
+        "proceeds": 1619.01,
+        "current_value": 4999.99,
+        "dividends": 0.0,
+        "realized_pl": 118.76,
+        "unrealized_pl": 499.25,
+        "profit": 618.02,
+        "return_pct": 0.102986,
+        "irr": 0.233631,
+        "taxes": {
+          "method": "model",
+          "sale": 21.93,
+          "dividends": 0.0,
+          "vorabpauschale": 0.0,
+          "latent": 92.17,
+          "total": 114.1
+        },
+        "profit_after_tax": 503.91,
+        "irr_after_tax": 0.188553,
+        "credit": {
+          "financed": 5657.05,
+          "leverage": 0.9427,
+          "outstanding": 1414.84,
+          "interest": 65.01,
+          "interest_estimated": false,
+          "effective_rate": 0.03637,
+          "equity_invested": 6000.99,
+          "equity_irr": 0.49277,
+          "return_on_equity": 0.073139,
+          "profit_net": 438.9,
+          "break_even_irr": 0.044606,
+          "spread": 0.19726
+        },
+        "benchmark": {
+          "isin": "IE00B4L5Y983",
+          "irr": 0.210014,
+          "profit": 558.55,
+          "alpha_irr": 0.023617,
+          "outperformance": 59.47
+        },
+        "notes": [],
+        "cashflows": [
+          {
+            "date": "2026-05-29",
+            "type": "buy",
+            "amount": -6000.99
+          },
+          {
+            "date": "2026-05-29",
+            "type": "loan_draw",
+            "amount": 5592.04
+          },
+          {
+            "date": "2026-06-01",
+            "type": "loan_draw",
+            "amount": 1.79
+          },
+          {
+            "date": "2026-06-01",
+            "type": "interest",
+            "amount": -1.79
+          },
+          {
+            "date": "2026-06-21",
+            "type": "loan_repayment",
+            "amount": -49.01
+          },
+          {
+            "date": "2026-07-01",
+            "type": "loan_draw",
+            "amount": 17.47
+          },
+          {
+            "date": "2026-07-01",
+            "type": "interest",
+            "amount": -17.47
+          },
+          {
+            "date": "2026-07-18",
+            "type": "loan_repayment",
+            "amount": -1199.01
+          },
+          {
+            "date": "2026-08-01",
+            "type": "loan_draw",
+            "amount": 16.59
+          },
+          {
+            "date": "2026-08-01",
+            "type": "interest",
+            "amount": -16.59
+          },
+          {
+            "date": "2026-08-17",
+            "type": "loan_repayment",
+            "amount": -1299.01
+          },
+          {
+            "date": "2026-09-01",
+            "type": "loan_draw",
+            "amount": 12.38
+          },
+          {
+            "date": "2026-09-01",
+            "type": "interest",
+            "amount": -12.38
+          },
+          {
+            "date": "2026-09-27",
+            "type": "loan_repayment",
+            "amount": -49.01
+          },
+          {
+            "date": "2026-10-01",
+            "type": "loan_draw",
+            "amount": 9.44
+          },
+          {
+            "date": "2026-10-01",
+            "type": "interest",
+            "amount": -9.44
+          },
+          {
+            "date": "2026-10-16",
+            "type": "sell",
+            "amount": 1619.01
+          },
+          {
+            "date": "2026-10-16",
+            "type": "tax",
+            "amount": -21.93
+          },
+          {
+            "date": "2026-10-16",
+            "type": "loan_repayment",
+            "amount": -1597.16
+          },
+          {
+            "date": "2026-11-01",
+            "type": "loan_draw",
+            "amount": 7.34
+          },
+          {
+            "date": "2026-11-01",
+            "type": "interest",
+            "amount": -7.34
+          },
+          {
+            "date": "2026-11-05",
+            "type": "loan_repayment",
+            "amount": -49.01
+          },
+          {
+            "date": "2026-11-25",
+            "type": "valuation",
+            "amount": 4999.99
+          },
+          {
+            "date": "2026-11-25",
+            "type": "latent_tax",
+            "amount": -92.17
+          },
+          {
+            "date": "2026-11-25",
+            "type": "loan_outstanding",
+            "amount": -1414.84
+          }
+        ]
+      }
+    ],
+    "balance": [
+      {
+        "date": "2025-09-21",
+        "loan": 0.0
+      },
+      {
+        "date": "2025-09-26",
+        "loan": 0.0
+      },
+      {
+        "date": "2025-09-28",
+        "loan": 0.0
+      },
+      {
+        "date": "2025-10-21",
+        "loan": 0.0
+      },
+      {
+        "date": "2025-10-26",
+        "loan": 0.0
+      },
+      {
+        "date": "2025-10-28",
+        "loan": 0.0
+      },
+      {
+        "date": "2025-11-25",
+        "loan": 0.0
+      },
+      {
+        "date": "2025-11-27",
+        "loan": 0.0
+      },
+      {
+        "date": "2025-12-25",
+        "loan": 0.0
+      },
+      {
+        "date": "2025-12-27",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-01-02",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-01-24",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-01-26",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-01-29",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-02-23",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-02-25",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-03-20",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-03-25",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-03-27",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-04-24",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-04-26",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-05-09",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-05-24",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-05-26",
+        "loan": 0.0
+      },
+      {
+        "date": "2026-05-29",
+        "loan": 5592.04
+      },
+      {
+        "date": "2026-06-01",
+        "loan": 5593.83
+      },
+      {
+        "date": "2026-06-16",
+        "loan": 3943.83
+      },
+      {
+        "date": "2026-06-18",
+        "loan": 5544.82
+      },
+      {
+        "date": "2026-06-23",
+        "loan": 5344.82
+      },
+      {
+        "date": "2026-06-25",
+        "loan": 5544.82
+      },
+      {
+        "date": "2026-07-01",
+        "loan": 5562.29
+      },
+      {
+        "date": "2026-07-18",
+        "loan": 4363.28
+      },
+      {
+        "date": "2026-07-23",
+        "loan": 4163.28
+      },
+      {
+        "date": "2026-07-25",
+        "loan": 4363.28
+      },
+      {
+        "date": "2026-08-01",
+        "loan": 4379.87
+      },
+      {
+        "date": "2026-08-17",
+        "loan": 3080.86
+      },
+      {
+        "date": "2026-08-22",
+        "loan": 2880.86
+      },
+      {
+        "date": "2026-08-24",
+        "loan": 3080.86
+      },
+      {
+        "date": "2026-09-01",
+        "loan": 3093.24
+      },
+      {
+        "date": "2026-09-21",
+        "loan": 2893.24
+      },
+      {
+        "date": "2026-09-22",
+        "loan": 1043.24
+      },
+      {
+        "date": "2026-09-23",
+        "loan": 1243.24
+      },
+      {
+        "date": "2026-09-24",
+        "loan": 3044.23
+      },
+      {
+        "date": "2026-10-01",
+        "loan": 3053.67
+      },
+      {
+        "date": "2026-10-16",
+        "loan": 1456.51
+      },
+      {
+        "date": "2026-10-21",
+        "loan": 1256.51
+      },
+      {
+        "date": "2026-10-23",
+        "loan": 1456.51
+      },
+      {
+        "date": "2026-11-01",
+        "loan": 1463.85
+      },
+      {
+        "date": "2026-11-03",
+        "loan": 763.85
+      },
+      {
+        "date": "2026-11-05",
+        "loan": 1414.84
+      }
+    ],
+    "interest_monthly": [
+      {
+        "month": "2026-06",
+        "interest": 1.79
+      },
+      {
+        "month": "2026-07",
+        "interest": 17.47
+      },
+      {
+        "month": "2026-08",
+        "interest": 16.59
+      },
+      {
+        "month": "2026-09",
+        "interest": 12.38
+      },
+      {
+        "month": "2026-10",
+        "interest": 9.44
+      },
+      {
+        "month": "2026-11",
+        "interest": 7.34
+      }
+    ]
+  },
+  "taxes": {
+    "effective_rate": 0.26375,
+    "rate_formula": "25 % Abgeltungsteuer + 5,5 % Soli",
+    "basiszins": {
+      "2018": 0.87,
+      "2019": 0.52,
+      "2020": 0.07,
+      "2021": -0.45,
+      "2022": -0.05,
+      "2023": 2.55,
+      "2024": 2.29,
+      "2025": 2.53
+    },
+    "years": [
+      {
+        "year": 2026,
+        "gains_stock": -3.96,
+        "gains_other": 83.13,
+        "dividends_taxable": 112.44,
+        "interest_income": 0.0,
+        "vorabpauschale": 2.02,
+        "taxable": 197.6,
+        "allowance_used": 197.6,
+        "loss_carryforward_stock": -3.96,
+        "loss_carryforward_other": 0.0,
+        "tax_model": 0.0,
+        "tax_actual": 56.38
+      }
+    ],
+    "allowance": {
+      "annual": 1000.0,
+      "remaining_this_year": 802.4,
+      "hint": "Steuerfrei realisierbarer Gewinn (nach Teilfreistellung) bis zur Höhe des verbleibenden Freibetrags",
+      "candidates": [
+        {
+          "trade_id": "L-tx-demo-037",
+          "name": "Allianz SE (Demo)",
+          "unrealized_gain": 375.52,
+          "taxable_gain": 375.52,
+          "teilfreistellung": 0.0
+        },
+        {
+          "trade_id": "L-tx-demo-003",
+          "name": "Apple Inc. (Demo)",
+          "unrealized_gain": 361.17,
+          "taxable_gain": 361.17,
+          "teilfreistellung": 0.0
+        },
+        {
+          "trade_id": "L-tx-demo-044",
+          "name": "Xtrackers MSCI World Swap (Demo)",
+          "unrealized_gain": 499.25,
+          "taxable_gain": 349.48,
+          "teilfreistellung": 0.3
+        },
+        {
+          "trade_id": "L-tx-demo-036",
+          "name": "SAP SE (Demo)",
+          "unrealized_gain": 112.72,
+          "taxable_gain": 112.72,
+          "teilfreistellung": 0.0
+        },
+        {
+          "trade_id": "L-tx-demo-039",
+          "name": "Vanguard FTSE All-World (Demo)",
+          "unrealized_gain": 146.58,
+          "taxable_gain": 102.61,
+          "teilfreistellung": 0.3
+        },
+        {
+          "trade_id": "L-tx-demo-005",
+          "name": "iShares Core MSCI World (Demo)",
+          "unrealized_gain": 59.58,
+          "taxable_gain": 41.71,
+          "teilfreistellung": 0.3
+        },
+        {
+          "trade_id": "L-tx-demo-007",
+          "name": "iShares Core MSCI World (Demo)",
+          "unrealized_gain": 54.78,
+          "taxable_gain": 38.35,
+          "teilfreistellung": 0.3
+        },
+        {
+          "trade_id": "L-tx-demo-009",
+          "name": "iShares Core MSCI World (Demo)",
+          "unrealized_gain": 50.16,
+          "taxable_gain": 35.12,
+          "teilfreistellung": 0.3
+        },
+        {
+          "trade_id": "L-tx-demo-011",
+          "name": "iShares Core MSCI World (Demo)",
+          "unrealized_gain": 45.72,
+          "taxable_gain": 32.01,
+          "teilfreistellung": 0.3
+        },
+        {
+          "trade_id": "L-tx-demo-013",
+          "name": "iShares Core MSCI World (Demo)",
+          "unrealized_gain": 41.44,
+          "taxable_gain": 29.01,
+          "teilfreistellung": 0.3
+        }
+      ]
+    },
+    "latent_total": 411.47,
+    "disclaimer": "Modellrechnung, keine Steuerberatung. Quellensteuer, Verlustverrechnungsreihenfolge und Ersatzbemessungsgrundlagen können abweichen."
+  },
+  "income": {
+    "monthly": [
+      {
+        "month": "2026-05",
+        "dividends": 82.78,
+        "interest": 0.0
+      }
+    ],
+    "by_year": [
+      {
+        "year": 2026,
+        "dividends": 82.78
+      }
+    ],
+    "by_position": [
+      {
+        "isin": "DE0008404005",
+        "name": "Allianz SE (Demo)",
+        "dividends": 82.78
+      }
+    ],
+    "trailing_12m": 82.78,
+    "yield_12m": 0.00475
+  },
+  "costs": {
+    "monthly": [
+      {
+        "month": "2025-09",
+        "fees": 0.0,
+        "interest": 0.0,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "month": "2025-10",
+        "fees": 0.99,
+        "interest": 0.0,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "month": "2025-11",
+        "fees": 0.0,
+        "interest": 0.0,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "month": "2025-12",
+        "fees": 0.0,
+        "interest": 0.0,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "month": "2026-01",
+        "fees": 1.98,
+        "interest": 0.0,
+        "interest_estimated": 0.0,
+        "taxes": 4.87
+      },
+      {
+        "month": "2026-02",
+        "fees": 0.0,
+        "interest": 0.0,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "month": "2026-03",
+        "fees": 0.99,
+        "interest": 0.0,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "month": "2026-04",
+        "fees": 0.0,
+        "interest": 0.0,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "month": "2026-05",
+        "fees": 0.99,
+        "interest": 0.0,
+        "interest_estimated": 0.0,
+        "taxes": 29.66
+      },
+      {
+        "month": "2026-06",
+        "fees": 0.99,
+        "interest": 1.79,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "month": "2026-07",
+        "fees": 0.99,
+        "interest": 17.47,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "month": "2026-08",
+        "fees": 0.99,
+        "interest": 16.59,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "month": "2026-09",
+        "fees": 0.99,
+        "interest": 12.38,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "month": "2026-10",
+        "fees": 0.99,
+        "interest": 9.44,
+        "interest_estimated": 0.0,
+        "taxes": 21.85
+      },
+      {
+        "month": "2026-11",
+        "fees": 0.99,
+        "interest": 7.34,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      }
+    ],
+    "by_year": [
+      {
+        "year": 2025,
+        "fees": 0.99,
+        "interest": 0.0,
+        "interest_estimated": 0.0,
+        "taxes": 0.0
+      },
+      {
+        "year": 2026,
+        "fees": 9.9,
+        "interest": 65.01,
+        "interest_estimated": 0.0,
+        "taxes": 56.38
+      }
+    ]
+  },
+  "allocation": {
+    "by_position": [
+      {
+        "isin": "LU0274208692",
+        "name": "Xtrackers MSCI World Swap (Demo)",
+        "value": 4999.99,
+        "weight": 0.28718
+      },
+      {
+        "isin": "IE00B4L5Y983",
+        "name": "iShares Core MSCI World (Demo)",
+        "value": 3247.24,
+        "weight": 0.18651
+      },
+      {
+        "isin": "IE00BK5BQT80",
+        "name": "Vanguard FTSE All-World (Demo)",
+        "value": 2572.57,
+        "weight": 0.14776
+      },
+      {
+        "isin": "US0378331005",
+        "name": "Apple Inc. (Demo)",
+        "value": 2162.16,
+        "weight": 0.12419
+      },
+      {
+        "isin": "DE0008404005",
+        "name": "Allianz SE (Demo)",
+        "value": 2116.51,
+        "weight": 0.12156
+      },
+      {
+        "isin": "DE0007164600",
+        "name": "SAP SE (Demo)",
+        "value": 1713.71,
+        "weight": 0.09843
+      },
+      {
+        "isin": "US67066G1040",
+        "name": "NVIDIA Corp. (Demo)",
+        "value": 598.6,
+        "weight": 0.03438
+      }
+    ],
+    "by_kind": [
+      {
+        "key": "equity_fund",
+        "value": 10819.8,
+        "weight": 0.62144
+      },
+      {
+        "key": "stock",
+        "value": 6590.98,
+        "weight": 0.37856
+      }
+    ],
+    "by_tag": [
+      {
+        "key": "ETF",
+        "value": 10819.8,
+        "weight": 0.62144
+      },
+      {
+        "key": "Welt",
+        "value": 10819.8,
+        "weight": 0.62144
+      },
+      {
+        "key": "Kredit",
+        "value": 4999.99,
+        "weight": 0.28718
+      },
+      {
+        "key": "ohne Tag",
+        "value": 3830.22,
+        "weight": 0.21999
+      },
+      {
+        "key": "Tech",
+        "value": 2760.76,
+        "weight": 0.15857
+      },
+      {
+        "key": "USA",
+        "value": 2760.76,
+        "weight": 0.15857
+      }
+    ],
+    "credit_financed": 0.08126
+  },
+  "timeseries": {
+    "resolution": "weekly",
+    "source": "scalable_chart",
+    "portfolio": [
+      {
+        "date": "2025-09-28",
+        "value": 200.0,
+        "invested": 200.0,
+        "cash": 7000.0,
+        "loan": 0.0,
+        "net_worth": 7200.0,
+        "net_deposits": 7200.0
+      },
+      {
+        "date": "2025-10-05",
+        "value": 199.98,
+        "invested": 200.0,
+        "cash": 7000.0,
+        "loan": 0.0,
+        "net_worth": 7199.98,
+        "net_deposits": 7200.0
+      },
+      {
+        "date": "2025-10-12",
+        "value": 208.1,
+        "invested": 200.0,
+        "cash": 7000.0,
+        "loan": 0.0,
+        "net_worth": 7208.1,
+        "net_deposits": 7200.0
+      },
+      {
+        "date": "2025-10-19",
+        "value": 204.99,
+        "invested": 200.0,
+        "cash": 7000.0,
+        "loan": 0.0,
+        "net_worth": 7204.99,
+        "net_deposits": 7200.0
+      },
+      {
+        "date": "2025-10-26",
+        "value": 1950.54,
+        "invested": 1940.99,
+        "cash": 5459.01,
+        "loan": 0.0,
+        "net_worth": 7409.55,
+        "net_deposits": 7400.0
+      },
+      {
+        "date": "2025-11-02",
+        "value": 2120.93,
+        "invested": 2140.99,
+        "cash": 5259.01,
+        "loan": 0.0,
+        "net_worth": 7379.94,
+        "net_deposits": 7400.0
+      },
+      {
+        "date": "2025-11-09",
+        "value": 2179.4,
+        "invested": 2140.99,
+        "cash": 5259.01,
+        "loan": 0.0,
+        "net_worth": 7438.41,
+        "net_deposits": 7400.0
+      },
+      {
+        "date": "2025-11-16",
+        "value": 2201.01,
+        "invested": 2140.99,
+        "cash": 5259.01,
+        "loan": 0.0,
+        "net_worth": 7460.02,
+        "net_deposits": 7400.0
+      },
+      {
+        "date": "2025-11-23",
+        "value": 2338.77,
+        "invested": 2140.99,
+        "cash": 5259.01,
+        "loan": 0.0,
+        "net_worth": 7597.78,
+        "net_deposits": 7400.0
+      },
+      {
+        "date": "2025-11-30",
+        "value": 2397.24,
+        "invested": 2340.99,
+        "cash": 5259.01,
+        "loan": 0.0,
+        "net_worth": 7656.25,
+        "net_deposits": 7600.0
+      },
+      {
+        "date": "2025-12-07",
+        "value": 2500.9,
+        "invested": 2340.99,
+        "cash": 5259.01,
+        "loan": 0.0,
+        "net_worth": 7759.91,
+        "net_deposits": 7600.0
+      },
+      {
+        "date": "2025-12-14",
+        "value": 2562.2,
+        "invested": 2340.99,
+        "cash": 5259.01,
+        "loan": 0.0,
+        "net_worth": 7821.21,
+        "net_deposits": 7600.0
+      },
+      {
+        "date": "2025-12-21",
+        "value": 2608.54,
+        "invested": 2340.99,
+        "cash": 5259.01,
+        "loan": 0.0,
+        "net_worth": 7867.55,
+        "net_deposits": 7600.0
+      },
+      {
+        "date": "2025-12-28",
+        "value": 2821.42,
+        "invested": 2540.99,
+        "cash": 5259.01,
+        "loan": 0.0,
+        "net_worth": 8080.43,
+        "net_deposits": 7800.0
+      },
+      {
+        "date": "2026-01-04",
+        "value": 2673.73,
+        "invested": 2540.99,
+        "cash": 5254.14,
+        "loan": 0.0,
+        "net_worth": 7927.87,
+        "net_deposits": 7800.0
+      },
+      {
+        "date": "2026-01-11",
+        "value": 2720.28,
+        "invested": 2540.99,
+        "cash": 5254.14,
+        "loan": 0.0,
+        "net_worth": 7974.42,
+        "net_deposits": 7800.0
+      },
+      {
+        "date": "2026-01-18",
+        "value": 2622.01,
+        "invested": 2540.99,
+        "cash": 5254.14,
+        "loan": 0.0,
+        "net_worth": 7876.15,
+        "net_deposits": 7800.0
+      },
+      {
+        "date": "2026-01-25",
+        "value": 2612.99,
+        "invested": 2540.99,
+        "cash": 5454.14,
+        "loan": 0.0,
+        "net_worth": 8067.13,
+        "net_deposits": 8000.0
+      },
+      {
+        "date": "2026-02-01",
+        "value": 6257.26,
+        "invested": 6167.97,
+        "cash": 1827.16,
+        "loan": 0.0,
+        "net_worth": 8084.42,
+        "net_deposits": 8000.0
+      },
+      {
+        "date": "2026-02-08",
+        "value": 6248.02,
+        "invested": 6167.97,
+        "cash": 1827.16,
+        "loan": 0.0,
+        "net_worth": 8075.18,
+        "net_deposits": 8000.0
+      },
+      {
+        "date": "2026-02-15",
+        "value": 6081.02,
+        "invested": 6167.97,
+        "cash": 1827.16,
+        "loan": 0.0,
+        "net_worth": 7908.18,
+        "net_deposits": 8000.0
+      },
+      {
+        "date": "2026-02-22",
+        "value": 6131.92,
+        "invested": 6167.97,
+        "cash": 1827.16,
+        "loan": 0.0,
+        "net_worth": 7959.08,
+        "net_deposits": 8000.0
+      },
+      {
+        "date": "2026-03-01",
+        "value": 6337.16,
+        "invested": 6367.97,
+        "cash": 1827.16,
+        "loan": 0.0,
+        "net_worth": 8164.32,
+        "net_deposits": 8200.0
+      },
+      {
+        "date": "2026-03-08",
+        "value": 6656.8,
+        "invested": 6367.97,
+        "cash": 1827.16,
+        "loan": 0.0,
+        "net_worth": 8483.96,
+        "net_deposits": 8200.0
+      },
+      {
+        "date": "2026-03-15",
+        "value": 6755.24,
+        "invested": 6367.97,
+        "cash": 1827.16,
+        "loan": 0.0,
+        "net_worth": 8582.4,
+        "net_deposits": 8200.0
+      },
+      {
+        "date": "2026-03-22",
+        "value": 8409.53,
+        "invested": 7868.96,
+        "cash": 326.17,
+        "loan": 0.0,
+        "net_worth": 8735.7,
+        "net_deposits": 8200.0
+      },
+      {
+        "date": "2026-03-29",
+        "value": 8609.21,
+        "invested": 8068.96,
+        "cash": 326.17,
+        "loan": 0.0,
+        "net_worth": 8935.38,
+        "net_deposits": 8400.0
+      },
+      {
+        "date": "2026-04-05",
+        "value": 8638.81,
+        "invested": 8068.96,
+        "cash": 326.17,
+        "loan": 0.0,
+        "net_worth": 8964.98,
+        "net_deposits": 8400.0
+      },
+      {
+        "date": "2026-04-12",
+        "value": 8671.75,
+        "invested": 8068.96,
+        "cash": 326.17,
+        "loan": 0.0,
+        "net_worth": 8997.92,
+        "net_deposits": 8400.0
+      },
+      {
+        "date": "2026-04-19",
+        "value": 8998.0,
+        "invested": 8068.96,
+        "cash": 326.17,
+        "loan": 0.0,
+        "net_worth": 9324.17,
+        "net_deposits": 8400.0
+      },
+      {
+        "date": "2026-04-26",
+        "value": 9063.3,
+        "invested": 8268.96,
+        "cash": 326.17,
+        "loan": 0.0,
+        "net_worth": 9389.47,
+        "net_deposits": 8600.0
+      },
+      {
+        "date": "2026-05-03",
+        "value": 8940.41,
+        "invested": 8268.96,
+        "cash": 326.17,
+        "loan": 0.0,
+        "net_worth": 9266.58,
+        "net_deposits": 8600.0
+      },
+      {
+        "date": "2026-05-10",
+        "value": 9072.73,
+        "invested": 8268.96,
+        "cash": 408.95,
+        "loan": 0.0,
+        "net_worth": 9481.68,
+        "net_deposits": 8600.0
+      },
+      {
+        "date": "2026-05-17",
+        "value": 9059.27,
+        "invested": 8268.96,
+        "cash": 408.95,
+        "loan": 0.0,
+        "net_worth": 9468.22,
+        "net_deposits": 8600.0
+      },
+      {
+        "date": "2026-05-24",
+        "value": 9290.15,
+        "invested": 8268.96,
+        "cash": 608.95,
+        "loan": 0.0,
+        "net_worth": 9899.1,
+        "net_deposits": 8800.0
+      },
+      {
+        "date": "2026-05-31",
+        "value": 14968.32,
+        "invested": 14469.95,
+        "cash": 0.0,
+        "loan": 5592.04,
+        "net_worth": 9376.28,
+        "net_deposits": 8800.0
+      },
+      {
+        "date": "2026-06-07",
+        "value": 14887.33,
+        "invested": 14469.95,
+        "cash": 0.0,
+        "loan": 5593.83,
+        "net_worth": 9293.5,
+        "net_deposits": 8800.0
+      },
+      {
+        "date": "2026-06-14",
+        "value": 14793.45,
+        "invested": 14469.95,
+        "cash": 0.0,
+        "loan": 5593.83,
+        "net_worth": 9199.62,
+        "net_deposits": 8800.0
+      },
+      {
+        "date": "2026-06-21",
+        "value": 16451.5,
+        "invested": 16070.94,
+        "cash": 0.0,
+        "loan": 5544.82,
+        "net_worth": 10906.68,
+        "net_deposits": 10450.0
+      },
+      {
+        "date": "2026-06-28",
+        "value": 16735.86,
+        "invested": 16270.94,
+        "cash": 0.0,
+        "loan": 5544.82,
+        "net_worth": 11191.04,
+        "net_deposits": 10650.0
+      },
+      {
+        "date": "2026-07-05",
+        "value": 16976.74,
+        "invested": 16270.94,
+        "cash": 0.0,
+        "loan": 5562.29,
+        "net_worth": 11414.45,
+        "net_deposits": 10650.0
+      },
+      {
+        "date": "2026-07-12",
+        "value": 17160.18,
+        "invested": 16270.94,
+        "cash": 0.0,
+        "loan": 5562.29,
+        "net_worth": 11597.89,
+        "net_deposits": 10650.0
+      },
+      {
+        "date": "2026-07-19",
+        "value": 16235.14,
+        "invested": 14769.95,
+        "cash": 0.0,
+        "loan": 4363.28,
+        "net_worth": 11871.86,
+        "net_deposits": 10650.0
+      },
+      {
+        "date": "2026-07-26",
+        "value": 16498.68,
+        "invested": 14969.95,
+        "cash": 0.0,
+        "loan": 4363.28,
+        "net_worth": 12135.4,
+        "net_deposits": 10850.0
+      },
+      {
+        "date": "2026-08-02",
+        "value": 16561.95,
+        "invested": 14969.95,
+        "cash": 0.0,
+        "loan": 4379.87,
+        "net_worth": 12182.08,
+        "net_deposits": 10850.0
+      },
+      {
+        "date": "2026-08-09",
+        "value": 16644.97,
+        "invested": 14969.95,
+        "cash": 0.0,
+        "loan": 4379.87,
+        "net_worth": 12265.1,
+        "net_deposits": 10850.0
+      },
+      {
+        "date": "2026-08-16",
+        "value": 16600.34,
+        "invested": 14969.95,
+        "cash": 0.0,
+        "loan": 4379.87,
+        "net_worth": 12220.47,
+        "net_deposits": 10850.0
+      },
+      {
+        "date": "2026-08-23",
+        "value": 15111.03,
+        "invested": 13968.96,
+        "cash": 0.0,
+        "loan": 2880.86,
+        "net_worth": 12230.17,
+        "net_deposits": 11050.0
+      },
+      {
+        "date": "2026-08-30",
+        "value": 15470.55,
+        "invested": 14168.96,
+        "cash": 0.0,
+        "loan": 3080.86,
+        "net_worth": 12389.69,
+        "net_deposits": 11050.0
+      },
+      {
+        "date": "2026-09-06",
+        "value": 15611.18,
+        "invested": 14168.96,
+        "cash": 0.0,
+        "loan": 3093.24,
+        "net_worth": 12517.94,
+        "net_deposits": 11050.0
+      },
+      {
+        "date": "2026-09-13",
+        "value": 15385.82,
+        "invested": 14168.96,
+        "cash": 0.0,
+        "loan": 3093.24,
+        "net_worth": 12292.58,
+        "net_deposits": 11050.0
+      },
+      {
+        "date": "2026-09-20",
+        "value": 15554.71,
+        "invested": 14168.96,
+        "cash": 0.0,
+        "loan": 3093.24,
+        "net_worth": 12461.47,
+        "net_deposits": 11050.0
+      },
+      {
+        "date": "2026-09-27",
+        "value": 17414.71,
+        "invested": 16169.95,
+        "cash": 0.0,
+        "loan": 3044.23,
+        "net_worth": 14370.48,
+        "net_deposits": 13100.0
+      },
+      {
+        "date": "2026-10-04",
+        "value": 17544.37,
+        "invested": 16169.95,
+        "cash": 0.0,
+        "loan": 3053.67,
+        "net_worth": 14490.7,
+        "net_deposits": 13100.0
+      },
+      {
+        "date": "2026-10-11",
+        "value": 17876.93,
+        "invested": 16169.95,
+        "cash": 0.0,
+        "loan": 3053.67,
+        "net_worth": 14823.26,
+        "net_deposits": 13100.0
+      },
+      {
+        "date": "2026-10-18",
+        "value": 16240.0,
+        "invested": 14669.7,
+        "cash": 0.0,
+        "loan": 1456.51,
+        "net_worth": 14783.49,
+        "net_deposits": 13100.0
+      },
+      {
+        "date": "2026-10-25",
+        "value": 16530.47,
+        "invested": 14869.7,
+        "cash": 0.0,
+        "loan": 1456.51,
+        "net_worth": 15073.96,
+        "net_deposits": 13300.0
+      },
+      {
+        "date": "2026-11-01",
+        "value": 16565.27,
+        "invested": 14869.7,
+        "cash": 0.0,
+        "loan": 1463.85,
+        "net_worth": 15101.42,
+        "net_deposits": 13300.0
+      },
+      {
+        "date": "2026-11-08",
+        "value": 17227.64,
+        "invested": 15520.69,
+        "cash": 0.0,
+        "loan": 1414.84,
+        "net_worth": 15812.8,
+        "net_deposits": 14000.0
+      },
+      {
+        "date": "2026-11-15",
+        "value": 17215.53,
+        "invested": 15520.69,
+        "cash": 0.0,
+        "loan": 1414.84,
+        "net_worth": 15800.69,
+        "net_deposits": 14000.0
+      },
+      {
+        "date": "2026-11-22",
+        "value": 17277.24,
+        "invested": 15520.69,
+        "cash": 0.0,
+        "loan": 1414.84,
+        "net_worth": 15862.4,
+        "net_deposits": 14000.0
+      },
+      {
+        "date": "2026-11-25",
+        "value": 17410.81,
+        "invested": 15520.69,
+        "cash": 0.0,
+        "loan": 1414.84,
+        "net_worth": 15995.97,
+        "net_deposits": 14000.0
+      }
+    ],
+    "positions": {
+      "IE00B4L5Y983": [
+        [
+          "2025-09-28",
+          200.0
+        ],
+        [
+          "2025-10-05",
+          199.98
+        ],
+        [
+          "2025-10-12",
+          208.1
+        ],
+        [
+          "2025-10-19",
+          204.99
+        ],
+        [
+          "2025-10-26",
+          204.73
+        ],
+        [
+          "2025-11-02",
+          404.14
+        ],
+        [
+          "2025-11-09",
+          407.87
+        ],
+        [
+          "2025-11-16",
+          413.34
+        ],
+        [
+          "2025-11-23",
+          419.17
+        ],
+        [
+          "2025-11-30",
+          606.95
+        ],
+        [
+          "2025-12-07",
+          609.58
+        ],
+        [
+          "2025-12-14",
+          611.46
+        ],
+        [
+          "2025-12-21",
+          628.38
+        ],
+        [
+          "2025-12-28",
+          829.93
+        ],
+        [
+          "2026-01-04",
+          823.4
+        ],
+        [
+          "2026-01-11",
+          853.63
+        ],
+        [
+          "2026-01-18",
+          827.23
+        ],
+        [
+          "2026-01-25",
+          830.48
+        ],
+        [
+          "2026-02-01",
+          1033.5
+        ],
+        [
+          "2026-02-08",
+          1022.7
+        ],
+        [
+          "2026-02-15",
+          1030.87
+        ],
+        [
+          "2026-02-22",
+          1047.25
+        ],
+        [
+          "2026-03-01",
+          1274.43
+        ],
+        [
+          "2026-03-08",
+          1257.14
+        ],
+        [
+          "2026-03-15",
+          1294.43
+        ],
+        [
+          "2026-03-22",
+          1272.0
+        ],
+        [
+          "2026-03-29",
+          1465.48
+        ],
+        [
+          "2026-04-05",
+          1495.05
+        ],
+        [
+          "2026-04-12",
+          1472.74
+        ],
+        [
+          "2026-04-19",
+          1515.69
+        ],
+        [
+          "2026-04-26",
+          1707.81
+        ],
+        [
+          "2026-05-03",
+          1699.43
+        ],
+        [
+          "2026-05-10",
+          1688.53
+        ],
+        [
+          "2026-05-17",
+          1676.16
+        ],
+        [
+          "2026-05-24",
+          1730.47
+        ],
+        [
+          "2026-05-31",
+          1987.5
+        ],
+        [
+          "2026-06-07",
+          1975.89
+        ],
+        [
+          "2026-06-14",
+          1989.37
+        ],
+        [
+          "2026-06-21",
+          2028.36
+        ],
+        [
+          "2026-06-28",
+          2116.94
+        ],
+        [
+          "2026-07-05",
+          2184.01
+        ],
+        [
+          "2026-07-12",
+          2220.57
+        ],
+        [
+          "2026-07-19",
+          2145.58
+        ],
+        [
+          "2026-07-26",
+          2401.27
+        ],
+        [
+          "2026-08-02",
+          2457.92
+        ],
+        [
+          "2026-08-09",
+          2513.37
+        ],
+        [
+          "2026-08-16",
+          2463.63
+        ],
+        [
+          "2026-08-23",
+          2431.71
+        ],
+        [
+          "2026-08-30",
+          2711.69
+        ],
+        [
+          "2026-09-06",
+          2739.78
+        ],
+        [
+          "2026-09-13",
+          2681.99
+        ],
+        [
+          "2026-09-20",
+          2672.78
+        ],
+        [
+          "2026-09-27",
+          2859.34
+        ],
+        [
+          "2026-10-04",
+          2839.32
+        ],
+        [
+          "2026-10-11",
+          2872.37
+        ],
+        [
+          "2026-10-18",
+          2948.36
+        ],
+        [
+          "2026-10-25",
+          3217.86
+        ],
+        [
+          "2026-11-01",
+          3156.07
+        ],
+        [
+          "2026-11-08",
+          3200.38
+        ],
+        [
+          "2026-11-15",
+          3175.75
+        ],
+        [
+          "2026-11-22",
+          3223.07
+        ],
+        [
+          "2026-11-25",
+          3247.26
+        ]
+      ],
+      "DE0008404005": [
+        [
+          "2025-10-26",
+          1745.81
+        ],
+        [
+          "2025-11-02",
+          1716.79
+        ],
+        [
+          "2025-11-09",
+          1771.53
+        ],
+        [
+          "2025-11-16",
+          1787.67
+        ],
+        [
+          "2025-11-23",
+          1919.6
+        ],
+        [
+          "2025-11-30",
+          1790.28
+        ],
+        [
+          "2025-12-07",
+          1891.33
+        ],
+        [
+          "2025-12-14",
+          1950.74
+        ],
+        [
+          "2025-12-21",
+          1980.16
+        ],
+        [
+          "2025-12-28",
+          1991.49
+        ],
+        [
+          "2026-01-04",
+          1850.32
+        ],
+        [
+          "2026-01-11",
+          1866.65
+        ],
+        [
+          "2026-01-18",
+          1794.78
+        ],
+        [
+          "2026-01-25",
+          1782.51
+        ],
+        [
+          "2026-02-01",
+          1777.24
+        ],
+        [
+          "2026-02-08",
+          1743.03
+        ],
+        [
+          "2026-02-15",
+          1742.6
+        ],
+        [
+          "2026-02-22",
+          1691.21
+        ],
+        [
+          "2026-03-01",
+          1575.62
+        ],
+        [
+          "2026-03-08",
+          1668.74
+        ],
+        [
+          "2026-03-15",
+          1675.05
+        ],
+        [
+          "2026-03-22",
+          1692.89
+        ],
+        [
+          "2026-03-29",
+          1649.12
+        ],
+        [
+          "2026-04-05",
+          1644.33
+        ],
+        [
+          "2026-04-12",
+          1765.44
+        ],
+        [
+          "2026-04-19",
+          1805.61
+        ],
+        [
+          "2026-04-26",
+          1831.45
+        ],
+        [
+          "2026-05-03",
+          1920.2
+        ],
+        [
+          "2026-05-10",
+          1920.89
+        ],
+        [
+          "2026-05-17",
+          1842.94
+        ],
+        [
+          "2026-05-24",
+          1909.22
+        ],
+        [
+          "2026-05-31",
+          1838.15
+        ],
+        [
+          "2026-06-07",
+          1867.18
+        ],
+        [
+          "2026-06-14",
+          1932.07
+        ],
+        [
+          "2026-06-21",
+          1988.46
+        ],
+        [
+          "2026-06-28",
+          1990.45
+        ],
+        [
+          "2026-07-05",
+          1916.39
+        ],
+        [
+          "2026-07-12",
+          2106.69
+        ],
+        [
+          "2026-07-19",
+          2197.37
+        ],
+        [
+          "2026-07-26",
+          2156.72
+        ],
+        [
+          "2026-08-02",
+          2101.78
+        ],
+        [
+          "2026-08-09",
+          2119.06
+        ],
+        [
+          "2026-08-16",
+          2149.94
+        ],
+        [
+          "2026-08-23",
+          2206.75
+        ],
+        [
+          "2026-08-30",
+          2193.45
+        ],
+        [
+          "2026-09-06",
+          2128.27
+        ],
+        [
+          "2026-09-13",
+          2170.75
+        ],
+        [
+          "2026-09-20",
+          2197.83
+        ],
+        [
+          "2026-09-27",
+          2216.2
+        ],
+        [
+          "2026-10-04",
+          2203.45
+        ],
+        [
+          "2026-10-11",
+          2317.13
+        ],
+        [
+          "2026-10-18",
+          2269.19
+        ],
+        [
+          "2026-10-25",
+          2309.68
+        ],
+        [
+          "2026-11-01",
+          2304.11
+        ],
+        [
+          "2026-11-08",
+          2262.29
+        ],
+        [
+          "2026-11-15",
+          2166.74
+        ],
+        [
+          "2026-11-22",
+          2160.46
+        ],
+        [
+          "2026-11-25",
+          2116.51
+        ]
+      ],
+      "IE00BK5BQT80": [
+        [
+          "2026-02-01",
+          2415.68
+        ],
+        [
+          "2026-02-08",
+          2371.42
+        ],
+        [
+          "2026-02-15",
+          2361.42
+        ],
+        [
+          "2026-02-22",
+          2351.66
+        ],
+        [
+          "2026-03-01",
+          2431.37
+        ],
+        [
+          "2026-03-08",
+          2466.09
+        ],
+        [
+          "2026-03-15",
+          2445.82
+        ],
+        [
+          "2026-03-22",
+          2440.42
+        ],
+        [
+          "2026-03-29",
+          2523.83
+        ],
+        [
+          "2026-04-05",
+          2555.44
+        ],
+        [
+          "2026-04-12",
+          2513.65
+        ],
+        [
+          "2026-04-19",
+          2569.07
+        ],
+        [
+          "2026-04-26",
+          2580.96
+        ],
+        [
+          "2026-05-03",
+          2645.9
+        ],
+        [
+          "2026-05-10",
+          2702.94
+        ],
+        [
+          "2026-05-17",
+          2751.85
+        ],
+        [
+          "2026-05-24",
+          2699.04
+        ],
+        [
+          "2026-05-31",
+          2631.67
+        ],
+        [
+          "2026-06-07",
+          2617.84
+        ],
+        [
+          "2026-06-14",
+          2609.9
+        ],
+        [
+          "2026-06-21",
+          2524.34
+        ],
+        [
+          "2026-06-28",
+          2480.7
+        ],
+        [
+          "2026-07-05",
+          2524.79
+        ],
+        [
+          "2026-07-12",
+          2497.45
+        ],
+        [
+          "2026-07-19",
+          2509.0
+        ],
+        [
+          "2026-07-26",
+          2513.1
+        ],
+        [
+          "2026-08-02",
+          2578.45
+        ],
+        [
+          "2026-08-09",
+          2604.35
+        ],
+        [
+          "2026-08-16",
+          2584.77
+        ],
+        [
+          "2026-08-23",
+          2540.75
+        ],
+        [
+          "2026-08-30",
+          2601.54
+        ],
+        [
+          "2026-09-06",
+          2715.84
+        ],
+        [
+          "2026-09-13",
+          2670.44
+        ],
+        [
+          "2026-09-20",
+          2653.57
+        ],
+        [
+          "2026-09-27",
+          2633.97
+        ],
+        [
+          "2026-10-04",
+          2589.49
+        ],
+        [
+          "2026-10-11",
+          2615.81
+        ],
+        [
+          "2026-10-18",
+          2555.82
+        ],
+        [
+          "2026-10-25",
+          2507.28
+        ],
+        [
+          "2026-11-01",
+          2511.7
+        ],
+        [
+          "2026-11-08",
+          2467.09
+        ],
+        [
+          "2026-11-15",
+          2488.67
+        ],
+        [
+          "2026-11-22",
+          2512.84
+        ],
+        [
+          "2026-11-25",
+          2572.57
+        ]
+      ],
+      "US88160R1014": [
+        [
+          "2026-02-01",
+          1030.84
+        ],
+        [
+          "2026-02-08",
+          1110.87
+        ],
+        [
+          "2026-02-15",
+          946.12
+        ],
+        [
+          "2026-02-22",
+          1041.81
+        ],
+        [
+          "2026-03-01",
+          1055.73
+        ],
+        [
+          "2026-03-08",
+          1264.83
+        ],
+        [
+          "2026-03-15",
+          1339.94
+        ],
+        [
+          "2026-03-22",
+          1549.87
+        ],
+        [
+          "2026-03-29",
+          1630.84
+        ],
+        [
+          "2026-04-05",
+          1654.31
+        ],
+        [
+          "2026-04-12",
+          1540.24
+        ],
+        [
+          "2026-04-19",
+          1724.76
+        ],
+        [
+          "2026-04-26",
+          1688.17
+        ],
+        [
+          "2026-05-03",
+          1540.71
+        ],
+        [
+          "2026-05-10",
+          1611.16
+        ],
+        [
+          "2026-05-17",
+          1694.43
+        ],
+        [
+          "2026-05-24",
+          1821.97
+        ],
+        [
+          "2026-05-31",
+          1565.28
+        ],
+        [
+          "2026-06-07",
+          1367.24
+        ],
+        [
+          "2026-06-14",
+          1300.94
+        ],
+        [
+          "2026-06-21",
+          1221.63
+        ],
+        [
+          "2026-06-28",
+          1208.91
+        ],
+        [
+          "2026-07-05",
+          1280.06
+        ],
+        [
+          "2026-07-12",
+          1216.34
+        ],
+        [
+          "2026-07-19",
+          1271.48
+        ],
+        [
+          "2026-07-26",
+          1278.87
+        ],
+        [
+          "2026-08-02",
+          1274.24
+        ],
+        [
+          "2026-08-09",
+          1346.65
+        ],
+        [
+          "2026-08-16",
+          1345.82
+        ]
+      ],
+      "DE000ZAL1111": [
+        [
+          "2026-03-22",
+          1454.36
+        ],
+        [
+          "2026-03-29",
+          1339.93
+        ],
+        [
+          "2026-04-05",
+          1289.68
+        ],
+        [
+          "2026-04-12",
+          1379.67
+        ],
+        [
+          "2026-04-19",
+          1382.87
+        ],
+        [
+          "2026-04-26",
+          1254.9
+        ],
+        [
+          "2026-05-03",
+          1134.17
+        ],
+        [
+          "2026-05-10",
+          1149.22
+        ],
+        [
+          "2026-05-17",
+          1093.88
+        ],
+        [
+          "2026-05-24",
+          1129.45
+        ],
+        [
+          "2026-05-31",
+          996.9
+        ],
+        [
+          "2026-06-07",
+          981.06
+        ],
+        [
+          "2026-06-14",
+          872.12
+        ],
+        [
+          "2026-06-21",
+          877.57
+        ],
+        [
+          "2026-06-28",
+          1014.3
+        ],
+        [
+          "2026-07-05",
+          1010.81
+        ],
+        [
+          "2026-07-12",
+          1095.3
+        ]
+      ],
+      "LU0274208692": [
+        [
+          "2026-05-31",
+          5948.83
+        ],
+        [
+          "2026-06-07",
+          6078.12
+        ],
+        [
+          "2026-06-14",
+          6089.03
+        ],
+        [
+          "2026-06-21",
+          6216.74
+        ],
+        [
+          "2026-06-28",
+          6316.11
+        ],
+        [
+          "2026-07-05",
+          6403.06
+        ],
+        [
+          "2026-07-12",
+          6352.95
+        ],
+        [
+          "2026-07-19",
+          6456.88
+        ],
+        [
+          "2026-07-26",
+          6530.72
+        ],
+        [
+          "2026-08-02",
+          6582.43
+        ],
+        [
+          "2026-08-09",
+          6450.52
+        ],
+        [
+          "2026-08-16",
+          6447.23
+        ],
+        [
+          "2026-08-23",
+          6325.0
+        ],
+        [
+          "2026-08-30",
+          6341.24
+        ],
+        [
+          "2026-09-06",
+          6442.48
+        ],
+        [
+          "2026-09-13",
+          6304.63
+        ],
+        [
+          "2026-09-20",
+          6432.44
+        ],
+        [
+          "2026-09-27",
+          6267.91
+        ],
+        [
+          "2026-10-04",
+          6451.43
+        ],
+        [
+          "2026-10-11",
+          6460.56
+        ],
+        [
+          "2026-10-18",
+          4843.45
+        ],
+        [
+          "2026-10-25",
+          4825.26
+        ],
+        [
+          "2026-11-01",
+          4842.45
+        ],
+        [
+          "2026-11-08",
+          4884.76
+        ],
+        [
+          "2026-11-15",
+          4793.45
+        ],
+        [
+          "2026-11-22",
+          5001.45
+        ],
+        [
+          "2026-11-25",
+          4999.99
+        ]
+      ],
+      "DE0007164600": [
+        [
+          "2026-06-21",
+          1594.41
+        ],
+        [
+          "2026-06-28",
+          1608.45
+        ],
+        [
+          "2026-07-05",
+          1657.63
+        ],
+        [
+          "2026-07-12",
+          1670.88
+        ],
+        [
+          "2026-07-19",
+          1654.82
+        ],
+        [
+          "2026-07-26",
+          1618.0
+        ],
+        [
+          "2026-08-02",
+          1567.13
+        ],
+        [
+          "2026-08-09",
+          1611.02
+        ],
+        [
+          "2026-08-16",
+          1608.95
+        ],
+        [
+          "2026-08-23",
+          1606.82
+        ],
+        [
+          "2026-08-30",
+          1622.64
+        ],
+        [
+          "2026-09-06",
+          1584.8
+        ],
+        [
+          "2026-09-13",
+          1558.0
+        ],
+        [
+          "2026-09-20",
+          1598.09
+        ],
+        [
+          "2026-09-27",
+          1616.26
+        ],
+        [
+          "2026-10-04",
+          1633.36
+        ],
+        [
+          "2026-10-11",
+          1559.52
+        ],
+        [
+          "2026-10-18",
+          1572.26
+        ],
+        [
+          "2026-10-25",
+          1508.36
+        ],
+        [
+          "2026-11-01",
+          1612.08
+        ],
+        [
+          "2026-11-08",
+          1570.12
+        ],
+        [
+          "2026-11-15",
+          1703.89
+        ],
+        [
+          "2026-11-22",
+          1651.26
+        ],
+        [
+          "2026-11-25",
+          1713.71
+        ]
+      ],
+      "US0378331005": [
+        [
+          "2026-09-27",
+          1821.03
+        ],
+        [
+          "2026-10-04",
+          1827.33
+        ],
+        [
+          "2026-10-11",
+          2051.54
+        ],
+        [
+          "2026-10-18",
+          2050.92
+        ],
+        [
+          "2026-10-25",
+          2162.04
+        ],
+        [
+          "2026-11-01",
+          2138.86
+        ],
+        [
+          "2026-11-08",
+          2227.71
+        ],
+        [
+          "2026-11-15",
+          2349.14
+        ],
+        [
+          "2026-11-22",
+          2203.98
+        ],
+        [
+          "2026-11-25",
+          2162.16
+        ]
+      ],
+      "US67066G1040": [
+        [
+          "2026-11-08",
+          615.3
+        ],
+        [
+          "2026-11-15",
+          537.88
+        ],
+        [
+          "2026-11-22",
+          524.18
+        ],
+        [
+          "2026-11-25",
+          598.6
+        ]
+      ]
+    },
+    "twr": [
+      {
+        "date": "2025-09-28",
+        "portfolio": 100.0,
+        "benchmark": 100.0
+      },
+      {
+        "date": "2025-10-05",
+        "portfolio": 97.65,
+        "benchmark": 99.9879
+      },
+      {
+        "date": "2025-10-12",
+        "portfolio": 94.09,
+        "benchmark": 104.0515
+      },
+      {
+        "date": "2025-10-19",
+        "portfolio": 96.475,
+        "benchmark": 102.496
+      },
+      {
+        "date": "2025-10-26",
+        "portfolio": 93.8224,
+        "benchmark": 102.3644
+      },
+      {
+        "date": "2025-11-02",
+        "portfolio": 93.93,
+        "benchmark": 102.0351
+      },
+      {
+        "date": "2025-11-09",
+        "portfolio": 94.65,
+        "benchmark": 102.978
+      },
+      {
+        "date": "2025-11-16",
+        "portfolio": 96.0525,
+        "benchmark": 104.359
+      },
+      {
+        "date": "2025-11-23",
+        "portfolio": 94.6616,
+        "benchmark": 105.8305
+      },
+      {
+        "date": "2025-11-30",
+        "portfolio": 97.8049,
+        "benchmark": 103.1556
+      },
+      {
+        "date": "2025-12-07",
+        "portfolio": 102.0341,
+        "benchmark": 103.6015
+      },
+      {
+        "date": "2025-12-14",
+        "portfolio": 104.5351,
+        "benchmark": 103.9223
+      },
+      {
+        "date": "2025-12-21",
+        "portfolio": 106.4257,
+        "benchmark": 106.7975
+      },
+      {
+        "date": "2025-12-28",
+        "portfolio": 106.9318,
+        "benchmark": 106.8026
+      },
+      {
+        "date": "2026-01-04",
+        "portfolio": 101.3343,
+        "benchmark": 105.9632
+      },
+      {
+        "date": "2026-01-11",
+        "portfolio": 103.0986,
+        "benchmark": 109.8534
+      },
+      {
+        "date": "2026-01-18",
+        "portfolio": 99.3741,
+        "benchmark": 106.456
+      },
+      {
+        "date": "2026-01-25",
+        "portfolio": 99.0323,
+        "benchmark": 106.8739
+      },
+      {
+        "date": "2026-02-01",
+        "portfolio": 100.6644,
+        "benchmark": 107.4047
+      },
+      {
+        "date": "2026-02-08",
+        "portfolio": 100.0777,
+        "benchmark": 106.2819
+      },
+      {
+        "date": "2026-02-15",
+        "portfolio": 100.5277,
+        "benchmark": 107.1314
+      },
+      {
+        "date": "2026-02-22",
+        "portfolio": 101.1874,
+        "benchmark": 108.8336
+      },
+      {
+        "date": "2026-03-01",
+        "portfolio": 99.4036,
+        "benchmark": 111.3944
+      },
+      {
+        "date": "2026-03-08",
+        "portfolio": 100.9314,
+        "benchmark": 109.8834
+      },
+      {
+        "date": "2026-03-15",
+        "portfolio": 103.7204,
+        "benchmark": 113.1429
+      },
+      {
+        "date": "2026-03-22",
+        "portfolio": 104.77,
+        "benchmark": 111.1818
+      },
+      {
+        "date": "2026-03-29",
+        "portfolio": 101.9136,
+        "benchmark": 110.7999
+      },
+      {
+        "date": "2026-04-05",
+        "portfolio": 97.6598,
+        "benchmark": 113.0354
+      },
+      {
+        "date": "2026-04-12",
+        "portfolio": 96.4488,
+        "benchmark": 111.3489
+      },
+      {
+        "date": "2026-04-19",
+        "portfolio": 95.3974,
+        "benchmark": 114.596
+      },
+      {
+        "date": "2026-04-26",
+        "portfolio": 96.6237,
+        "benchmark": 114.0
+      },
+      {
+        "date": "2026-05-03",
+        "portfolio": 99.2659,
+        "benchmark": 113.4405
+      },
+      {
+        "date": "2026-05-10",
+        "portfolio": 98.6288,
+        "benchmark": 112.7129
+      },
+      {
+        "date": "2026-05-17",
+        "portfolio": 100.3509,
+        "benchmark": 111.8876
+      },
+      {
+        "date": "2026-05-24",
+        "portfolio": 103.6849,
+        "benchmark": 115.5124
+      },
+      {
+        "date": "2026-05-31",
+        "portfolio": 105.5534,
+        "benchmark": 118.977
+      },
+      {
+        "date": "2026-06-07",
+        "portfolio": 106.7914,
+        "benchmark": 118.2819
+      },
+      {
+        "date": "2026-06-14",
+        "portfolio": 104.8288,
+        "benchmark": 119.089
+      },
+      {
+        "date": "2026-06-21",
+        "portfolio": 105.2467,
+        "benchmark": 121.4229
+      },
+      {
+        "date": "2026-06-28",
+        "portfolio": 104.0142,
+        "benchmark": 115.0521
+      },
+      {
+        "date": "2026-07-05",
+        "portfolio": 106.1525,
+        "benchmark": 118.697
+      },
+      {
+        "date": "2026-07-12",
+        "portfolio": 107.4468,
+        "benchmark": 120.684
+      },
+      {
+        "date": "2026-07-19",
+        "portfolio": 108.2395,
+        "benchmark": 116.6088
+      },
+      {
+        "date": "2026-07-26",
+        "portfolio": 106.1484,
+        "benchmark": 119.6654
+      },
+      {
+        "date": "2026-08-02",
+        "portfolio": 106.9004,
+        "benchmark": 122.4885
+      },
+      {
+        "date": "2026-08-09",
+        "portfolio": 109.9477,
+        "benchmark": 125.2518
+      },
+      {
+        "date": "2026-08-16",
+        "portfolio": 109.2351,
+        "benchmark": 122.7734
+      },
+      {
+        "date": "2026-08-23",
+        "portfolio": 107.7947,
+        "benchmark": 121.1826
+      },
+      {
+        "date": "2026-08-30",
+        "portfolio": 108.9114,
+        "benchmark": 124.929
+      },
+      {
+        "date": "2026-09-06",
+        "portfolio": 108.5873,
+        "benchmark": 126.2233
+      },
+      {
+        "date": "2026-09-13",
+        "portfolio": 109.3505,
+        "benchmark": 123.5609
+      },
+      {
+        "date": "2026-09-20",
+        "portfolio": 109.4707,
+        "benchmark": 123.1365
+      },
+      {
+        "date": "2026-09-27",
+        "portfolio": 110.4164,
+        "benchmark": 122.6197
+      },
+      {
+        "date": "2026-10-04",
+        "portfolio": 108.1959,
+        "benchmark": 121.7611
+      },
+      {
+        "date": "2026-10-11",
+        "portfolio": 110.5893,
+        "benchmark": 123.1784
+      },
+      {
+        "date": "2026-10-18",
+        "portfolio": 111.6115,
+        "benchmark": 126.4372
+      },
+      {
+        "date": "2026-10-25",
+        "portfolio": 114.3218,
+        "benchmark": 129.1998
+      },
+      {
+        "date": "2026-11-01",
+        "portfolio": 113.154,
+        "benchmark": 126.7189
+      },
+      {
+        "date": "2026-11-08",
+        "portfolio": 113.2124,
+        "benchmark": 128.4979
+      },
+      {
+        "date": "2026-11-15",
+        "portfolio": 113.714,
+        "benchmark": 127.5091
+      },
+      {
+        "date": "2026-11-22",
+        "portfolio": 115.1481,
+        "benchmark": 129.4092
+      },
+      {
+        "date": "2026-11-25",
+        "portfolio": 114.7898,
+        "benchmark": 130.25
+      }
+    ],
+    "drawdown": [
+      {
+        "date": "2025-09-28",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2025-10-05",
+        "drawdown": -0.0235
+      },
+      {
+        "date": "2025-10-12",
+        "drawdown": -0.0591
+      },
+      {
+        "date": "2025-10-19",
+        "drawdown": -0.03525
+      },
+      {
+        "date": "2025-10-26",
+        "drawdown": -0.06178
+      },
+      {
+        "date": "2025-11-02",
+        "drawdown": -0.0607
+      },
+      {
+        "date": "2025-11-09",
+        "drawdown": -0.0535
+      },
+      {
+        "date": "2025-11-16",
+        "drawdown": -0.03948
+      },
+      {
+        "date": "2025-11-23",
+        "drawdown": -0.05338
+      },
+      {
+        "date": "2025-11-30",
+        "drawdown": -0.02195
+      },
+      {
+        "date": "2025-12-07",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2025-12-14",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2025-12-21",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2025-12-28",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2026-01-04",
+        "drawdown": -0.05235
+      },
+      {
+        "date": "2026-01-11",
+        "drawdown": -0.03585
+      },
+      {
+        "date": "2026-01-18",
+        "drawdown": -0.07068
+      },
+      {
+        "date": "2026-01-25",
+        "drawdown": -0.07387
+      },
+      {
+        "date": "2026-02-01",
+        "drawdown": -0.05861
+      },
+      {
+        "date": "2026-02-08",
+        "drawdown": -0.0641
+      },
+      {
+        "date": "2026-02-15",
+        "drawdown": -0.05989
+      },
+      {
+        "date": "2026-02-22",
+        "drawdown": -0.05372
+      },
+      {
+        "date": "2026-03-01",
+        "drawdown": -0.0704
+      },
+      {
+        "date": "2026-03-08",
+        "drawdown": -0.05611
+      },
+      {
+        "date": "2026-03-15",
+        "drawdown": -0.03003
+      },
+      {
+        "date": "2026-03-22",
+        "drawdown": -0.02022
+      },
+      {
+        "date": "2026-03-29",
+        "drawdown": -0.04693
+      },
+      {
+        "date": "2026-04-05",
+        "drawdown": -0.08671
+      },
+      {
+        "date": "2026-04-12",
+        "drawdown": -0.09803
+      },
+      {
+        "date": "2026-04-19",
+        "drawdown": -0.10787
+      },
+      {
+        "date": "2026-04-26",
+        "drawdown": -0.0964
+      },
+      {
+        "date": "2026-05-03",
+        "drawdown": -0.07169
+      },
+      {
+        "date": "2026-05-10",
+        "drawdown": -0.07765
+      },
+      {
+        "date": "2026-05-17",
+        "drawdown": -0.06154
+      },
+      {
+        "date": "2026-05-24",
+        "drawdown": -0.03036
+      },
+      {
+        "date": "2026-05-31",
+        "drawdown": -0.01289
+      },
+      {
+        "date": "2026-06-07",
+        "drawdown": -0.00131
+      },
+      {
+        "date": "2026-06-14",
+        "drawdown": -0.01967
+      },
+      {
+        "date": "2026-06-21",
+        "drawdown": -0.01576
+      },
+      {
+        "date": "2026-06-28",
+        "drawdown": -0.02728
+      },
+      {
+        "date": "2026-07-05",
+        "drawdown": -0.00729
+      },
+      {
+        "date": "2026-07-12",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2026-07-19",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2026-07-26",
+        "drawdown": -0.01932
+      },
+      {
+        "date": "2026-08-02",
+        "drawdown": -0.01237
+      },
+      {
+        "date": "2026-08-09",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2026-08-16",
+        "drawdown": -0.00648
+      },
+      {
+        "date": "2026-08-23",
+        "drawdown": -0.01958
+      },
+      {
+        "date": "2026-08-30",
+        "drawdown": -0.00943
+      },
+      {
+        "date": "2026-09-06",
+        "drawdown": -0.01237
+      },
+      {
+        "date": "2026-09-13",
+        "drawdown": -0.00543
+      },
+      {
+        "date": "2026-09-20",
+        "drawdown": -0.00434
+      },
+      {
+        "date": "2026-09-27",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2026-10-04",
+        "drawdown": -0.02011
+      },
+      {
+        "date": "2026-10-11",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2026-10-18",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2026-10-25",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2026-11-01",
+        "drawdown": -0.01022
+      },
+      {
+        "date": "2026-11-08",
+        "drawdown": -0.0097
+      },
+      {
+        "date": "2026-11-15",
+        "drawdown": -0.00532
+      },
+      {
+        "date": "2026-11-22",
+        "drawdown": 0.0
+      },
+      {
+        "date": "2026-11-25",
+        "drawdown": -0.00311
+      }
+    ],
+    "irr": [
+      {
+        "date": "2025-09-30",
+        "irr": 1.36668,
+        "irr_after_tax_excl_latent": 1.36668
+      },
+      {
+        "date": "2025-10-31",
+        "irr": 0.13286,
+        "irr_after_tax_excl_latent": 0.13286
+      },
+      {
+        "date": "2025-11-30",
+        "irr": 0.24984,
+        "irr_after_tax_excl_latent": 0.24984
+      },
+      {
+        "date": "2025-12-31",
+        "irr": 0.55498,
+        "irr_after_tax_excl_latent": 0.55498
+      },
+      {
+        "date": "2026-01-31",
+        "irr": 0.13051,
+        "irr_after_tax_excl_latent": 0.12966
+      },
+      {
+        "date": "2026-02-28",
+        "irr": 8e-05,
+        "irr_after_tax_excl_latent": -0.00038
+      },
+      {
+        "date": "2026-03-31",
+        "irr": 0.34077,
+        "irr_after_tax_excl_latent": 0.34037
+      },
+      {
+        "date": "2026-04-30",
+        "irr": 0.37281,
+        "irr_after_tax_excl_latent": 0.37252
+      },
+      {
+        "date": "2026-05-31",
+        "irr": 0.20338,
+        "irr_after_tax_excl_latent": 0.19271
+      },
+      {
+        "date": "2026-06-30",
+        "irr": 0.17194,
+        "irr_after_tax_excl_latent": 0.16431
+      },
+      {
+        "date": "2026-07-31",
+        "irr": 0.22422,
+        "irr_after_tax_excl_latent": 0.23359
+      },
+      {
+        "date": "2026-08-31",
+        "irr": 0.20677,
+        "irr_after_tax_excl_latent": 0.20215
+      },
+      {
+        "date": "2026-09-30",
+        "irr": 0.17322,
+        "irr_after_tax_excl_latent": 0.16932
+      },
+      {
+        "date": "2026-10-31",
+        "irr": 0.21444,
+        "irr_after_tax_excl_latent": 0.20854
+      },
+      {
+        "date": "2026-11-25",
+        "irr": 0.20622,
+        "irr_after_tax_excl_latent": 0.20091
+      }
+    ]
+  },
+  "periods": {
+    "years": [
+      {
+        "year": 2025,
+        "twr": 0.06932,
+        "benchmark": 0.06803,
+        "partial": true,
+        "net_deposits": 7800.0
+      },
+      {
+        "year": 2026,
+        "twr": 0.07349,
+        "benchmark": 0.21954,
+        "partial": true,
+        "net_deposits": 6200.0
+      }
+    ],
+    "twr_summary": {
+      "since_start": 0.1479,
+      "annualized": 0.12639,
+      "ytd": 0.07349,
+      "one_year": 0.21263,
+      "benchmark_since_start": 0.3025,
+      "max_drawdown": -0.10787
+    }
+  },
+  "data_quality": {
+    "warnings": [],
+    "notes": [],
+    "sources": {
+      "scalable_transactions": 52,
+      "ledger_events": 51,
+      "imported_trades": 0,
+      "price_series": 9,
+      "chart_points": 62,
+      "last_sync_at": "2026-11-25T18:06:46.063497+00:00"
+    },
+    "reconciliation": {
+      "cash_reconstructed": -1414.84,
+      "cash_reported": 0.0,
+      "loan_reconstructed": 1414.84,
+      "loan_reported": 1414.84
+    }
+  },
+  "chart_hints": [
+    {
+      "dataset": "timeseries.portfolio",
+      "chart": "area",
+      "x": "date",
+      "y": [
+        "value",
+        "invested"
+      ],
+      "title": "Depotwert vs. investiertes Kapital"
+    },
+    {
+      "dataset": "timeseries.portfolio",
+      "chart": "line",
+      "x": "date",
+      "y": [
+        "net_worth",
+        "loan"
+      ],
+      "title": "Vermögen und Kredit"
+    },
+    {
+      "dataset": "timeseries.twr",
+      "chart": "line",
+      "x": "date",
+      "y": [
+        "portfolio",
+        "benchmark"
+      ],
+      "title": "Performance (TWR, indexiert) vs. Benchmark"
+    },
+    {
+      "dataset": "timeseries.drawdown",
+      "chart": "area",
+      "x": "date",
+      "y": [
+        "drawdown"
+      ],
+      "title": "Drawdown"
+    },
+    {
+      "dataset": "timeseries.irr",
+      "chart": "line",
+      "x": "date",
+      "y": [
+        "irr",
+        "irr_after_tax"
+      ],
+      "title": "IRR-Verlauf"
+    },
+    {
+      "dataset": "timeseries.positions",
+      "chart": "stacked_area",
+      "x": "date",
+      "series": "isin",
+      "title": "Positionswerte im Zeitverlauf"
+    },
+    {
+      "dataset": "allocation.by_position",
+      "chart": "donut",
+      "value": "value",
+      "label": "name",
+      "title": "Aufteilung nach Position"
+    },
+    {
+      "dataset": "allocation.by_kind",
+      "chart": "donut",
+      "value": "value",
+      "label": "kind",
+      "title": "Aufteilung nach Anlageart"
+    },
+    {
+      "dataset": "trades",
+      "chart": "scatter",
+      "x": "holding_days",
+      "y": "irr",
+      "size": "invested",
+      "color": "status",
+      "title": "Trades: Haltedauer vs. IRR"
+    },
+    {
+      "dataset": "trades",
+      "chart": "bar",
+      "x": "name",
+      "y": [
+        "profit",
+        "profit_after_tax"
+      ],
+      "title": "Gewinn je Trade vor/nach Steuern"
+    },
+    {
+      "dataset": "trades",
+      "chart": "bar",
+      "x": "name",
+      "y": [
+        "irr",
+        "benchmark.irr"
+      ],
+      "title": "Trade-IRR vs. Benchmark im selben Zeitraum"
+    },
+    {
+      "dataset": "credit.trades",
+      "chart": "bar",
+      "x": "name",
+      "y": [
+        "irr",
+        "irr_after_tax",
+        "credit.equity_irr"
+      ],
+      "title": "Kredit-Trades: Asset- vs. Eigenkapital-IRR"
+    },
+    {
+      "dataset": "credit.balance",
+      "chart": "step_line",
+      "x": "date",
+      "y": [
+        "loan"
+      ],
+      "title": "Kreditsaldo"
+    },
+    {
+      "dataset": "costs.monthly",
+      "chart": "stacked_bar",
+      "x": "month",
+      "y": [
+        "interest",
+        "fees",
+        "taxes"
+      ],
+      "title": "Kosten je Monat"
+    },
+    {
+      "dataset": "income.monthly",
+      "chart": "stacked_bar",
+      "x": "month",
+      "y": [
+        "dividends",
+        "interest"
+      ],
+      "title": "Erträge je Monat"
+    },
+    {
+      "dataset": "periods.years",
+      "chart": "bar",
+      "x": "year",
+      "y": [
+        "twr",
+        "benchmark"
+      ],
+      "title": "Rendite je Kalenderjahr (TWR) vs. Benchmark"
+    },
+    {
+      "dataset": "taxes.years",
+      "chart": "stacked_bar",
+      "x": "year",
+      "y": [
+        "tax_model",
+        "tax_actual"
+      ],
+      "title": "Steuern je Jahr (Modell vs. tatsächlich)"
+    }
+  ]
+}

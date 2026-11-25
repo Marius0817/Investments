@@ -436,6 +436,7 @@ def run_once(ctx: Context, *, force: bool = False) -> int:
         sent = _notify_events(ctx, state, events)
         state.last_run_ok = True
         ctx.store.save(state)
+        _auto_portfolio_sync(ctx)
     log.info(
         "Lauf ok: %d Positionen, %d Order-Maßnahmen, %d Benachrichtigungen",
         len(report.analyses),
@@ -445,6 +446,33 @@ def run_once(ctx: Context, *, force: bool = False) -> int:
     if not ctx.args.quiet:
         print_status(report)
     return EXIT_OK
+
+
+def _auto_portfolio_sync(ctx: Context) -> None:
+    """Portfolio-Datenbank im Hintergrund aktuell halten (Fehler brechen den Lauf nicht ab)."""
+    hours = ctx.cfg.portfolio.auto_sync_hours
+    if not hours:
+        return
+    from stopguard.portfolio.store import PortfolioStore
+    from stopguard.portfolio.sync import sync_portfolio
+
+    try:
+        store = PortfolioStore(ctx.cfg.state_dir / "portfolio.db")
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Portfolio-Datenbank nicht verfügbar: %s", exc)
+        return
+    try:
+        last = parse_time(store.get_meta("last_sync_at"))
+        if last is not None and utcnow() - last < timedelta(hours=hours):
+            return
+        rep = sync_portfolio(ctx.client, store, ctx.cfg, max_details=100)
+        log.info("Portfolio-Sync: %d Transaktionen, %d Details (offen %d)", rep.transactions, rep.details, rep.details_pending)
+    except ScError as exc:
+        log.warning("Portfolio-Sync fehlgeschlagen: %s", exc.friendly())
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Portfolio-Sync fehlgeschlagen: %s", exc)
+    finally:
+        store.close()
 
 
 def cmd_run(ctx: Context) -> int:
@@ -749,6 +777,10 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--from-depot", action="store_true", help="Positionen aus dem Depot übernehmen")
     s.add_argument("--force", action="store_true")
     s.set_defaults(func=cmd_init, raw=True)
+
+    from stopguard.portfolio.cli import add_parser as add_portfolio_parser
+
+    add_portfolio_parser(sub)
 
     s = sub.add_parser("demo", help="Demo mit simuliertem Depot")
     dsub = s.add_subparsers(dest="demo_cmd", required=True)
