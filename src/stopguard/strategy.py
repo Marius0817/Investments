@@ -14,6 +14,11 @@ from stopguard.finance import CashFlow, floor_price_for_irr
 from stopguard.models import fmt_decimal, round_down
 
 
+def _de(value: float, digits: int = 1) -> str:
+    """Zahl mit deutschem Dezimalkomma (für Begründungstexte)."""
+    return f"{value:.{digits}f}".replace(".", ",")
+
+
 @dataclass
 class Metrics:
     price: float | None
@@ -35,15 +40,15 @@ def condition_met(cond: Condition, m: Metrics) -> tuple[bool, str]:
     if cond.irr_pct is not None:
         if m.irr is None or m.irr * 100 < cond.irr_pct:
             return False, ""
-        reasons.append(f"IRR {m.irr * 100:.1f}% p.a.")
+        reasons.append(f"IRR {_de(m.irr * 100)} % p. a.")
     if cond.gain_pct is not None:
         if m.gain is None or m.gain * 100 < cond.gain_pct:
             return False, ""
-        reasons.append(f"Kursgewinn {m.gain * 100:.1f}%")
+        reasons.append(f"Kursgewinn {_de(m.gain * 100)} %")
     if cond.total_return_pct is not None:
         if m.total_return is None or m.total_return * 100 < cond.total_return_pct:
             return False, ""
-        reasons.append(f"Gesamtrendite {m.total_return * 100:.1f}%")
+        reasons.append(f"Gesamtrendite {_de(m.total_return * 100)} %")
     if cond.min_holding_days is not None:
         if m.holding_days < cond.min_holding_days:
             return False, ""
@@ -51,7 +56,7 @@ def condition_met(cond: Condition, m: Metrics) -> tuple[bool, str]:
     if cond.price_above is not None:
         if m.price is None or m.price < cond.price_above:
             return False, ""
-        reasons.append(f"Kurs {m.price:.2f}")
+        reasons.append(f"Kurs {_de(m.price, 2)}")
     return True, ", ".join(reasons)
 
 
@@ -123,7 +128,7 @@ def compute_components(
     if phase.trailing_pct is not None and high_water_mark:
         comps.append(
             StopComponent(
-                "trailing", high_water_mark * (1 - phase.trailing_pct / 100), f"Hoch {high_water_mark:.2f} −{phase.trailing_pct:g}%"
+                "trailing", high_water_mark * (1 - phase.trailing_pct / 100), f"Hoch {_de(high_water_mark, 2)} −{phase.trailing_pct:g} %"
             )
         )
     if phase.irr_floor_pct is not None and flows:

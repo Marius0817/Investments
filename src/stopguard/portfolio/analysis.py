@@ -440,6 +440,7 @@ def build_taxes(results: list[TradeResult], events: list[LedgerEvent], tax: TaxM
             harvest.append(
                 {
                     "trade_id": r.lot.id,
+                    "isin": r.lot.isin,
                     "name": r.data["name"],
                     "unrealized_gain": _r(gain),
                     "taxable_gain": _r(gain * (1 - tf)),
@@ -456,7 +457,7 @@ def build_taxes(results: list[TradeResult], events: list[LedgerEvent], tax: TaxM
             "annual": allowance,
             "remaining_this_year": _r(max(0.0, remaining)),
             "hint": "Steuerfrei realisierbarer Gewinn (nach Teilfreistellung) bis zur Höhe des verbleibenden Freibetrags",
-            "candidates": harvest[:10],
+            "candidates": harvest[:50],
         },
         "latent_total": _r(sum(r.data["taxes"]["latent"] or 0 for r in results)),
         "disclaimer": "Modellrechnung, keine Steuerberatung. Quellensteuer, Verlustverrechnungsreihenfolge und Ersatzbemessungsgrundlagen können abweichen.",
