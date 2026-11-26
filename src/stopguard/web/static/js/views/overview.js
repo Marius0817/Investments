@@ -2,6 +2,7 @@ import { rankedBars, segmentBar, meter } from "../charts.js";
 import { data } from "../data.js";
 import { $, html, on, render } from "../dom.js";
 import * as fmt from "../fmt.js";
+import { insightList } from "./insights.js";
 import { alertBox, badge, errorBox, pageHead, percent, progress, segmented, tiles } from "../ui.js";
 import { RANGES, figure, hasData, mountCharts, noData, protection, twrChartSpec, valueChartSpec } from "./common.js";
 
@@ -56,13 +57,18 @@ export async function render_(main) {
         note: html`unrealisiert ${fmt.signedEur(s.unrealized_pl, 0)} · realisiert ${fmt.signedEur(s.realized_pl, 0)}`,
       },
       {
-        label: "Erträge", side: "12 Monate", value: fmt.eur(doc.income.trailing_12m, 0),
-        note: html`Ausschüttungen · Rendite ${fmt.pct(doc.income.yield_12m, 2)}`, href: "#/auswertung/ertraege",
+        label: "Dividenden", side: "nächste 12 Monate", value: fmt.eur(((doc.income.forecast || {}).next_12m) ?? doc.income.trailing_12m, 0),
+        note: html`erwartet (Schätzung) · erhalten in 12 Monaten ${fmt.eur(doc.income.trailing_12m, 0)}`, href: "#/auswertung/dividenden",
       },
       loanLine
         ? { label: "Kredit", value: fmt.eur(credit.loan, 0), meter: meter(loanLine.ratio), note: loanLine.note, href: "#/auswertung/kredit" }
         : { label: "Kredit", value: fmt.eur(credit.loan || 0, 0), note: credit.loan ? "Kreditrahmen unbekannt" : "Kein Wertpapierkredit in Anspruch genommen.", href: "#/auswertung/kredit" },
     ])}
+
+    ${(doc.insights || []).length ? html`<section class="card section-gap" aria-labelledby="h-ins">
+      <div class="card-head"><h2 id="h-ins">Hinweise</h2><a class="small" href="#/auswertung/hinweise">Alle ${doc.insights.length} ansehen</a></div>
+      ${insightList(doc.insights, { limit: 3 })}
+    </section>` : ""}
 
     <div class="filter-row" id="range-filter">${segmented("range", "Zeitraum der Diagramme", RANGES.map(([k, l]) => [k, l]), range)}</div>
     <div class="two-col">

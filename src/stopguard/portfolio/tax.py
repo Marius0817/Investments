@@ -25,7 +25,8 @@ from stopguard.portfolio.model import Dividend, Instrument, Lot, LotExit
 from stopguard.portfolio.prices import PriceBook
 
 # Basiszins für die Vorabpauschale in Prozent (BMF-Schreiben). Negative Werte → keine Vorabpauschale.
-BASISZINS = {2018: 0.87, 2019: 0.52, 2020: 0.07, 2021: -0.45, 2022: -0.05, 2023: 2.55, 2024: 2.29, 2025: 2.53}
+# 2026: 3,20 % (BMF-Schreiben vom 13.01.2026, BStBl 2026 I S. 155) – Vorabpauschale fällig Anfang 2027.
+BASISZINS = {2018: 0.87, 2019: 0.52, 2020: 0.07, 2021: -0.45, 2022: -0.05, 2023: 2.55, 2024: 2.29, 2025: 2.53, 2026: 3.20}
 
 
 def effective_rate(church_tax_pct: float = 0.0) -> float:
@@ -82,6 +83,29 @@ class TaxModel:
             due = datetime(year + 1, 1, 2, 12, tzinfo=timezone.utc)
             lot.vap_per_unit.append((due, vap_unit))
             lot.vap_tax.append((due, vap_unit * units * (1 - inst.teilfreistellung) * self.rate))
+
+    def vap_preview(self, lot: Lot, inst: Instrument) -> tuple[float, float] | None:
+        """Geschätzte Vorabpauschale des laufenden Jahres für die heute gehaltenen Stücke.
+
+        Fällig Anfang des Folgejahres; der heutige Kurs dient als Schätzung für den Jahresendkurs.
+        Liefert (Vorabpauschale, steuerpflichtiger Betrag nach Teilfreistellung) oder None.
+        """
+        if not (self.s.enabled and self.s.vorabpauschale and inst.accumulating):
+            return None
+        year = self.now.year
+        units = lot.remaining_units
+        bz = self.basiszins.get(year)
+        if units <= 0 or bz is None or bz <= 0:
+            return None
+        p_start = self.prices.at(lot.isin, datetime(year, 1, 1, tzinfo=timezone.utc), tolerance_days=7)
+        if p_start is None and lot.open_date.year == year:
+            p_start = lot.price
+        p_now = self.prices.current(lot.isin)
+        if p_start is None or p_now is None:
+            return None
+        factor = 1.0 if lot.open_date.year < year else (13 - lot.open_date.month) / 12
+        vap_unit = max(0.0, min(p_start * bz / 100 * 0.7 * factor, p_now - p_start))
+        return vap_unit * units, vap_unit * units * (1 - inst.teilfreistellung)
 
     def vap_cum_per_unit(self, lot: Lot, until: datetime) -> float:
         return sum(v for d, v in lot.vap_per_unit if d <= until)

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDevelopmentRegion</key><string>de</string>
+  <key>CFBundleExecutable</key><string>stopguard</string>
+  <key>CFBundleIconFile</key><string>AppIcon</string>
+  <key>CFBundleIdentifier</key><string>app.stopguard.mac</string>
+  <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+  <key>CFBundleName</key><string>stopguard</string>
+  <key>CFBundleDisplayName</key><string>stopguard</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleShortVersionString</key><string>__VERSION__</string>
+  <key>CFBundleVersion</key><string>__BUILD__</string>
+  <key>LSMinimumSystemVersion</key><string>12.0</string>
+  <key>LSApplicationCategoryType</key><string>public.app-category.finance</string>
+  <key>NSHighResolutionCapable</key><true/>
+  <key>NSPrincipalClass</key><string>NSApplication</string>
+  <key>NSSupportsAutomaticTermination</key><false/>
+  <key>NSSupportsSuddenTermination</key><false/>
+  <key>NSHumanReadableCopyright</key><string>stopguard – Stop-Loss-Verwaltung und Portfolio-Tracking über die offizielle Scalable CLI. Kein Anlageberater.</string>
+  <!-- Die Oberfläche läuft lokal auf 127.0.0.1 (http) – nur lokale Verbindungen erlauben, sonst nichts. -->
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsLocalNetworking</key><true/>
+  </dict>
+</dict>
+</plist>

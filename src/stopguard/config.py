@@ -230,6 +230,9 @@ class PortfolioSettings:
     notion_dividends: str = "net"  # Dividenden im Notion-Export: net (nach Steuern) | gross
     dedupe_days: int = 3  # Import-Trades gelten als identisch mit Scalable-Trades bei ±N Tagen und gleicher Stückzahl
     auto_sync_hours: float = 12.0  # 'stopguard run'/'daemon' aktualisiert die Portfolio-Daten in diesem Abstand (0 = aus)
+    concentration_limit_pct: float = 20.0  # Hinweis, wenn eine Einzelaktie mehr als diesen Anteil ausmacht
+    cash_hint_pct: float = 10.0  # Hinweis auf nicht investiertes Guthaben ab diesem Anteil am Vermögen
+    risk_free_pct: float = 2.0  # risikofreier Zins p. a. für Sharpe- und Sortino-Ratio
 
 
 @dataclass
@@ -263,6 +266,15 @@ class InstrumentConfig:
     distributing: bool | None = None
     tags: list[str] = field(default_factory=list)
     benchmark: str | None = None
+    # Klassifizierung für die Diversifikation (alles optional)
+    asset_class: str | None = None
+    sector: str | None = None
+    country: str | None = None  # ISO-Code (US) oder Name
+    region: str | None = None
+    currency: str | None = None
+    # Durchschau für Fonds/ETFs: Dimension → {Schlüssel: Prozent}; holdings: {ISIN oder Name: Prozent}
+    exposure: dict[str, dict[str, float]] = field(default_factory=dict)
+    ter: float | None = None  # laufende Kosten (TER) in Prozent p. a., z. B. 0.20
 
 
 @dataclass
@@ -453,6 +465,51 @@ def load_config(path: Path | None = None) -> Config:
     return parse_config(raw, source=path)
 
 
+EXPOSURE_DIMENSIONS = ("regions", "countries", "sectors", "currencies", "holdings")
+
+
+def _opt_str(v: Any) -> str | None:
+    return str(v).strip() or None if v is not None else None
+
+
+def _parse_ter(raw: Any, where: str) -> float | None:
+    if raw is None:
+        return None
+    try:
+        v = float(raw)
+    except (TypeError, ValueError) as exc:
+        raise ConfigError(f"{where}: Prozentwert erwartet, z. B. 0.20") from exc
+    if not 0 <= v <= 5:
+        raise ConfigError(f"{where}: TER in Prozent p. a. zwischen 0 und 5 erwartet (z. B. 0.20 für 0,20 %)")
+    return v
+
+
+def _parse_exposure(raw: Any, where: str) -> dict[str, dict[str, float]]:
+    """``[instruments.X.exposure]`` – Gewichte in Prozent je Dimension (z. B. regions = { Nordamerika = 72 })."""
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict):
+        raise ConfigError(f"{where} muss eine Tabelle sein")
+    _check_keys(raw, set(EXPOSURE_DIMENSIONS), where)
+    out: dict[str, dict[str, float]] = {}
+    for dim, weights in raw.items():
+        if not isinstance(weights, dict):
+            raise ConfigError(f"{where}.{dim} muss eine Tabelle {{Name = Prozent}} sein")
+        vals: dict[str, float] = {}
+        for k, v in weights.items():
+            try:
+                f = float(v)
+            except (TypeError, ValueError) as exc:
+                raise ConfigError(f"{where}.{dim}.{k}: Prozentwert erwartet") from exc
+            if not 0 <= f <= 100:
+                raise ConfigError(f"{where}.{dim}.{k}: Prozentwert zwischen 0 und 100 erwartet")
+            vals[str(k)] = f
+        if sum(vals.values()) > 100.5:
+            raise ConfigError(f"{where}.{dim}: Summe {sum(vals.values()):.1f} % liegt über 100 %")
+        out[dim] = vals
+    return out
+
+
 def parse_config(raw: dict[str, Any], source: Path | None = None) -> Config:
     _check_keys(
         raw,
@@ -595,7 +652,12 @@ def parse_config(raw: dict[str, Any], source: Path | None = None) -> Config:
         where = f"instruments.{isin}"
         if len(isin) != 12:
             raise ConfigError(f"[{where}]: Schlüssel muss eine ISIN sein")
-        _check_keys(spec, {"ticker", "name", "kind", "distributing", "tags", "benchmark"}, where)
+        _check_keys(
+            spec,
+            {"ticker", "name", "kind", "distributing", "tags", "benchmark", "asset_class", "sector", "country", "region",
+             "currency", "exposure", "ter"},
+            where,
+        )
         kind = spec.get("kind")
         if kind is not None and kind not in TEILFREISTELLUNG:
             raise ConfigError(f"{where}.kind muss einer von {', '.join(TEILFREISTELLUNG)} sein")
@@ -607,6 +669,13 @@ def parse_config(raw: dict[str, Any], source: Path | None = None) -> Config:
             distributing=spec.get("distributing"),
             tags=[str(t) for t in spec.get("tags", [])],
             benchmark=spec.get("benchmark"),
+            asset_class=_opt_str(spec.get("asset_class")),
+            sector=_opt_str(spec.get("sector")),
+            country=_opt_str(spec.get("country")),
+            region=_opt_str(spec.get("region")),
+            currency=_opt_str(spec.get("currency")),
+            exposure=_parse_exposure(spec.get("exposure"), where + ".exposure"),
+            ter=_parse_ter(spec.get("ter"), where + ".ter"),
         )
 
     credit_flags: list[CreditFlag] = []

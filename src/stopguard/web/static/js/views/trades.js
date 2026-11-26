@@ -2,7 +2,7 @@ import { data } from "../data.js";
 import { $, html, on, render } from "../dom.js";
 import * as fmt from "../fmt.js";
 import { badge, money, pageHead, percent, segmented, sortableTable } from "../ui.js";
-import { hasData, mountCharts, noData } from "./common.js";
+import { hasData, mountCharts, noData, tradesSubnav } from "./common.js";
 
 const filters = { status: "all", origin: "noplan", credit: false, q: "" };
 
@@ -24,6 +24,7 @@ export async function render_(main) {
     ${pageHead("Trades", {
       meta: html`<span><b>${s.counts.trades}</b> Trades</span><span>Trefferquote geschlossen <b>${fmt.pct(s.counts.win_rate_closed, 0)}</b></span><span>IRR aller Trades <b>${fmt.pct(s.irr.trades, 1, true)}</b></span>`,
     })}
+    ${tradesSubnav("trades")}
     <form class="filter-row" id="trade-filter" role="search" aria-label="Trades filtern">
       ${segmented("status", "Status", [["all", "Alle"], ["open", "Offen"], ["closed", "Geschlossen"]], filters.status)}
       <label class="inline-field">Herkunft

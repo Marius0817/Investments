@@ -58,6 +58,9 @@ details_delay_seconds = 0.25      # Pause zwischen Detailabfragen (Rate-Limits s
 notion_dividends = "net"          # Dividenden im Notion-Export sind netto (nach Steuern) | "gross"
 dedupe_days = 3                   # Import-Trade = Scalable-Trade bei gleicher ISIN/Stückzahl und ±3 Tagen
 auto_sync_hours = 12              # 'stopguard run'/'daemon' aktualisiert die Portfolio-Daten alle 12 h (0 = aus)
+concentration_limit_pct = 20      # Hinweis, wenn eine Einzelaktie mehr als diesen Anteil am Depot hat
+cash_hint_pct = 10                # Hinweis auf nicht investiertes Guthaben ab diesem Anteil
+risk_free_pct = 2.0               # risikofreier Zins p. a. für Sharpe- und Sortino-Ratio
 
 [tax]
 enabled = true
@@ -88,6 +91,21 @@ deposit_earmark_days = 5          # Einzahlungen bezahlen zuerst Käufe der näc
 # kind = "equity_fund"
 # distributing = false
 # tags = ["ETF", "Welt"]
+#
+# ter = 0.20                       # laufende Kosten (TER) in % p. a. laut Factsheet → Kostenanalyse
+#
+# Diversifikation (Region, Land, Branche, Anlageklasse, Währung) – alles optional:
+#   Einzelaktien: sector = "Informationstechnologie" (Land/Region/Währung leitet stopguard aus der ISIN ab,
+#                 überschreibbar mit country = "US", region = "Nordamerika", currency = "USD")
+#   Fonds/ETFs:   Gewichte in Prozent aus dem Factsheet; Rest wird „Sonstige“
+# [instruments.IE00B4L5Y983.exposure]
+# countries  = { US = 72, JP = 5.5, GB = 3.5, CA = 3, FR = 2.7, CH = 2.4, DE = 2.2 }
+# sectors    = { "Informationstechnologie" = 26, "Finanzen" = 16, "Industrie" = 11, "Gesundheit" = 10 }
+# currencies = { USD = 72, EUR = 9, JPY = 5.5 }
+# holdings   = { US0378331005 = 4.8, US67066G1040 = 4.6, "Amazon" = 2.7 }   # größte Positionen (ISIN oder Name)
+#
+# [instruments.DE0007164600]
+# sector = "Informationstechnologie"
 
 # ----------------------------------------------------------------------------
 #  Strategien

@@ -129,11 +129,22 @@ def build_world(now: datetime | None = None) -> dict:
 
     tx.append(_cash(tx_id(), ago(430), "DEPOSIT", Decimal(7000), desc="Einzahlung"))
 
+    def dividend(isin: str, days: float, gross: str, tax: str, desc: str) -> None:
+        net = Decimal(gross) - Decimal(tax)
+        tx.append(
+            _cash(
+                tx_id(), ago(days), "DISTRIBUTION", net, isin=isin, desc=desc,
+                details={"cash": {"cash_transaction_type": "DISTRIBUTION", "amount": s(net),
+                                  "tax_details": {"gross_amount": gross, "tax_amount": tax}}},
+            )
+        )
+
     # 1) Problem 2: Order veraltet – gekauft bei 180, Stop bei 171 (−5 %), Kurs inzwischen +20 %
     add("US0378331005", "Apple Inc. (Demo)", "216.00", 0.25, 0.25)
     world["holdings"]["US0378331005"] = {"quantity": "10", "fifo_price": "180.099"}
     deposit(64, 1850)
     buy("US0378331005", 62, 10, 180)
+    dividend("US0378331005", 40, "2.32", "0.61", "Dividende Apple")
     world["orders"]["order-legacy-1"] = {
         "isin": "US0378331005",
         "side": "SELL",
@@ -174,6 +185,7 @@ def build_world(now: datetime | None = None) -> dict:
     world["holdings"]["DE0007164600"] = {"quantity": "8", "fifo_price": "200.124"}
     deposit(162, 1650)
     buy("DE0007164600", 160, 8, 200)
+    dividend("DE0007164600", 150, "18.80", "4.96", "Dividende SAP")
 
     # 5) Kursalarm-Modus + Dividende mit Steuerabzug
     add("DE0008404005", "Allianz SE (Demo)", "352.40", 0.08, 0.18)
@@ -191,6 +203,19 @@ def build_world(now: datetime | None = None) -> dict:
     add("IE00BK5BQT80", "Vanguard FTSE All-World (Demo)", "128.50", 0.08, 0.13)
     world["holdings"]["IE00BK5BQT80"] = {"quantity": "20", "fifo_price": "121.30"}
     buy("IE00BK5BQT80", 300, 20, "121.25")
+
+    # 6b) ausschüttender Dividenden-ETF: quartalsweise Zahlungen (Dividendenprognose)
+    add("IE00B8GKDB10", "Vanguard FTSE All-World High Dividend Yield (Demo)", "66.40", 0.07, 0.12)
+    world["holdings"]["IE00B8GKDB10"] = {"quantity": "50", "fifo_price": "60.0198"}
+    deposit(422, 3000)
+    buy("IE00B8GKDB10", 420, 50, 60)
+    for days, gross, tax in ((355, "21.40", "3.95"), (264, "27.10", "5.00"), (173, "22.30", "4.12"), (82, "24.60", "4.54")):
+        dividend("IE00B8GKDB10", days, gross, tax, "Ausschüttung Vanguard High Dividend")
+
+    # Watchlist (nicht im Depot) – Kurse und Verlauf über 'broker quote' / 'broker candlesticks'
+    add("NL0010273215", "ASML Holding (Demo)", "688.00", 0.15, 0.35)
+    add("US5949181045", "Microsoft Corp. (Demo)", "394.50", 0.12, 0.22)
+    add("DK0062498333", "Novo Nordisk (Demo)", "64.20", -0.1, 0.35)
 
     # 7) abgeschlossene Trades: Gewinn (Steuer durch Verlusttopf verrechnet) und Verlust
     add("US88160R1014", "Tesla Inc. (Demo)", "250.00", 0.2, 0.55)
@@ -274,31 +299,75 @@ details_delay_seconds = 0
 [credit]
 mode = "auto"
 
+# Klassifizierung für Diversifikation und ETF-Durchschau.
+# Die Gewichte der ETFs sind vereinfachte DEMO-Werte – für das echte Depot aus dem Factsheet übernehmen.
 [instruments.IE00B4L5Y983]
+ter = 0.20                       # laufende Kosten in % p. a. (DEMO-Wert)
 ticker = "EUNL.DE"
 kind = "equity_fund"
 distributing = false
 tags = ["ETF", "Welt"]
 
+[instruments.IE00B4L5Y983.exposure]
+countries = {{ US = 72, JP = 5.5, GB = 3.5, CA = 3, FR = 2.7, CH = 2.4, DE = 2.2 }}
+sectors = {{ "Informationstechnologie" = 26, "Finanzen" = 16, "Industrie" = 11, "Gesundheit" = 10, "Nicht-Basiskonsum" = 10, "Kommunikation" = 8, "Basiskonsum" = 6, "Energie" = 4, "Material" = 3, "Versorger" = 2.5, "Immobilien" = 2 }}
+currencies = {{ USD = 72, EUR = 9, JPY = 5.5, GBP = 3.5, CAD = 3, CHF = 2.4 }}
+holdings = {{ US0378331005 = 4.8, US67066G1040 = 4.6, US5949181045 = 4.3, "Amazon" = 2.7, "Alphabet" = 2.5, "Meta Platforms" = 1.8 }}
+
 [instruments.LU0274208692]
+ter = 0.45                       # laufende Kosten in % p. a. (DEMO-Wert)
 ticker = "XDWD.DE"
 kind = "equity_fund"
 distributing = false
 tags = ["ETF", "Welt", "Kredit"]
 
+[instruments.LU0274208692.exposure]
+countries = {{ US = 72, JP = 5.5, GB = 3.5, CA = 3, FR = 2.7, CH = 2.4, DE = 2.2 }}
+sectors = {{ "Informationstechnologie" = 26, "Finanzen" = 16, "Industrie" = 11, "Gesundheit" = 10, "Nicht-Basiskonsum" = 10, "Kommunikation" = 8, "Basiskonsum" = 6, "Energie" = 4, "Material" = 3, "Versorger" = 2.5, "Immobilien" = 2 }}
+currencies = {{ USD = 72, EUR = 9, JPY = 5.5, GBP = 3.5, CAD = 3, CHF = 2.4 }}
+holdings = {{ US0378331005 = 4.8, US67066G1040 = 4.6, US5949181045 = 4.3, "Amazon" = 2.7, "Alphabet" = 2.5, "Meta Platforms" = 1.8 }}
+
 [instruments.IE00BK5BQT80]
+ter = 0.19                       # laufende Kosten in % p. a. (DEMO-Wert)
 ticker = "VWCE.DE"
 kind = "equity_fund"
 distributing = false
 tags = ["ETF", "Welt"]
 
+[instruments.IE00BK5BQT80.exposure]
+countries = {{ US = 62, JP = 5.5, GB = 3.3, CN = 2.8, CA = 2.8, FR = 2.4, CH = 2.2, DE = 2, TW = 2, IN = 2 }}
+sectors = {{ "Informationstechnologie" = 25, "Finanzen" = 17, "Industrie" = 11, "Gesundheit" = 10, "Nicht-Basiskonsum" = 10, "Kommunikation" = 8, "Basiskonsum" = 6, "Energie" = 4, "Material" = 4, "Versorger" = 3, "Immobilien" = 2 }}
+holdings = {{ US0378331005 = 4.0, US67066G1040 = 4.0, US5949181045 = 3.7, "Amazon" = 2.3, "Alphabet" = 2.2 }}
+
+[instruments.IE00B8GKDB10]
+ter = 0.29                       # laufende Kosten in % p. a. (DEMO-Wert)
+ticker = "VHYL.DE"
+kind = "equity_fund"
+distributing = true
+tags = ["ETF", "Dividende"]
+
+[instruments.IE00B8GKDB10.exposure]
+countries = {{ US = 42, JP = 6, GB = 6, CH = 6, CA = 4, AU = 4, DE = 3, FR = 3, CN = 3, TW = 3 }}
+sectors = {{ "Finanzen" = 24, "Gesundheit" = 11, "Industrie" = 11, "Basiskonsum" = 10, "Informationstechnologie" = 9, "Energie" = 8, "Versorger" = 7, "Nicht-Basiskonsum" = 6, "Material" = 5, "Kommunikation" = 5, "Immobilien" = 1 }}
+
 [instruments.US0378331005]
 ticker = "APC.DE"
 tags = ["Tech", "USA"]
+sector = "Informationstechnologie"
 
 [instruments.US67066G1040]
 ticker = "NVD.DE"
 tags = ["Tech", "USA"]
+sector = "Informationstechnologie"
+
+[instruments.DE0007164600]
+sector = "Informationstechnologie"
+
+[instruments.DE0008404005]
+sector = "Finanzen"
+
+[instruments.US5949181045]
+name = "Microsoft"
 
 [[positions]]
 isin = "US0378331005"      # Apple: veraltete Stop-Order → Trailing (Problem 2)
@@ -323,6 +392,18 @@ execution = "alert"
 """
 
 
+DEMO_WATCHLIST = [
+    {"isin": "NL0010273215", "name": "ASML Holding (Demo)", "note": "Nachkaufen, falls der Kurs zurückkommt", "target_price": 640.0},
+    {"isin": "US5949181045", "name": "Microsoft Corp. (Demo)", "note": "steckt schon in den Welt-ETFs", "target_price": None},
+    {"isin": "DK0062498333", "name": "Novo Nordisk (Demo)", "note": "", "target_price": 55.0},
+]
+
+DEMO_TARGETS = {
+    "IE00B4L5Y983": 30, "IE00BK5BQT80": 20, "LU0274208692": 15, "IE00B8GKDB10": 15,
+    "US0378331005": 5, "DE0007164600": 5, "DE0008404005": 5, "US67066G1040": 5,
+}
+
+
 def init_demo(directory: Path) -> Path:
     directory = directory.resolve()
     directory.mkdir(parents=True, exist_ok=True)
@@ -333,4 +414,12 @@ def init_demo(directory: Path) -> Path:
     config_path.write_text(
         DEMO_CONFIG.format(sc_command=sc_command, state_dir=json.dumps(str(directory / "state"))), encoding="utf-8"
     )
+    state = directory / "state"
+    state.mkdir(exist_ok=True)
+    now = datetime.now(timezone.utc).isoformat()
+    if not (state / "watchlist.json").exists():
+        items = [{**i, "added_at": now} for i in DEMO_WATCHLIST]
+        (state / "watchlist.json").write_text(json.dumps({"items": items}, indent=2, ensure_ascii=False), encoding="utf-8")
+    if not (state / "targets.json").exists():
+        (state / "targets.json").write_text(json.dumps({"targets": DEMO_TARGETS, "updated_at": now}, indent=2), encoding="utf-8")
     return config_path

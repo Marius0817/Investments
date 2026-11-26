@@ -10,8 +10,20 @@ function nf(opts) {
 
 export const DASH = "–";
 
+// Privatsphäre-Modus: Beträge und Stückzahlen werden ausgeblendet, Prozente bleiben sichtbar.
+const MASK = "••••";
+function readPrivacy() { try { return localStorage.getItem("sg-privacy") === "1"; } catch { return false; } }
+export const privacy = { on: readPrivacy() };
+export function setPrivacy(on) {
+  privacy.on = !!on;
+  try { localStorage.setItem("sg-privacy", on ? "1" : "0"); } catch { /* egal */ }
+  document.documentElement.toggleAttribute("data-privacy", privacy.on);
+}
+document.documentElement.toggleAttribute("data-privacy", privacy.on);
+
 export function eur(v, digits = 2) {
   if (v === null || v === undefined || Number.isNaN(v)) return DASH;
+  if (privacy.on) return `${MASK} €`;
   if (Math.abs(v) < 0.5 * 10 ** -digits) v = 0; // keine „−0 €“
   return nf({ style: "currency", currency: "EUR", minimumFractionDigits: digits, maximumFractionDigits: digits }).format(v).replace("-", "−");
 }
@@ -19,6 +31,7 @@ export function eur(v, digits = 2) {
 /** Kompakte Beträge für Achsen und Kacheln: 12.900 € → „12,9 Tsd. €“ nur ab 100.000. */
 export function eurShort(v) {
   if (v === null || v === undefined) return DASH;
+  if (privacy.on) return "•• €";
   const a = Math.abs(v);
   if (a >= 1e6) return nf({ maximumFractionDigits: 1 }).format(v / 1e6) + " Mio. €";
   if (a >= 1e5) return nf({ maximumFractionDigits: 0 }).format(v / 1e3) + " Tsd. €";
@@ -32,6 +45,7 @@ export function num(v, digits = 0) {
 
 export function units(v) {
   if (v === null || v === undefined) return DASH;
+  if (privacy.on) return MASK;
   return nf({ maximumFractionDigits: 6 }).format(v);
 }
 
@@ -44,6 +58,7 @@ export function pct(v, digits = 1, sign = false) {
 
 export function signedEur(v, digits = 2) {
   if (v === null || v === undefined) return DASH;
+  if (privacy.on) return `${v > 0.004 ? "+" : v < -0.004 ? "−" : ""}${MASK} €`;
   const text = eur(Math.abs(v), digits);
   if (v > 0.004) return "+" + text;
   if (v < -0.004) return "−" + text;
@@ -118,6 +133,27 @@ export const KIND_LABELS = {
   other: "Sonstige",
 };
 
+export const ACTIVITY_LABELS = {
+  deposit: "Einzahlung",
+  withdrawal: "Auszahlung",
+  buy: "Kauf",
+  sell: "Verkauf",
+  dividend: "Ausschüttung",
+  interest_income: "Zinsertrag",
+  loan_interest: "Sollzinsen",
+  fee: "Gebühr",
+  tax: "Steuer",
+  tax_refund: "Steuererstattung",
+  transfer_in: "Depotübertrag (ein)",
+  transfer_out: "Depotübertrag (aus)",
+  other: "Sonstige",
+};
+
+export function monthLong(ym) {
+  const d = toDate(ym.length === 7 ? ym + "-15" : ym);
+  return d ? d.toLocaleDateString(LOCALE, { month: "long", year: "numeric" }) : ym;
+}
+
 export const ORIGIN_LABELS = { single: "Einzelkauf", savings_plan: "Sparplan", transfer: "Depotübertrag", import: "Import" };
 export const STATUS_LABELS = { open: "offen", partial: "teilverkauft", closed: "geschlossen" };
 
@@ -136,3 +172,19 @@ export const CASHFLOW_LABELS = {
   interest_tax_saving: "Steuerersparnis Zinsen",
   loan_outstanding: "Kredit offen",
 };
+
+/** Zahl aus Eingabefeldern: „1.250,50“, „1250.5“, „100.000“, „5,5“ (null bei leer/ungültig). */
+export function parseNumber(v) {
+  let t = String(v ?? "").trim().replace(/[\s€%]/g, "");
+  if (t === "") return null;
+  if (t.includes(",")) t = t.replace(/\./g, "").replace(",", ".");
+  else if (/^-?\d{1,3}(\.\d{3})+$/.test(t)) t = t.replace(/\./g, "");
+  const n = Number(t);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** Beträge in Fließtext vom Server (z. B. Hinweise) im Privatsphäre-Modus ausblenden. */
+export function maskText(text) {
+  if (!privacy.on || !text) return text;
+  return String(text).replace(/[+−-]?\d[\d.]*(?:,\d+)?\s?€/g, `${MASK} €`);
+}

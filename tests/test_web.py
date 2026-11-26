@@ -235,3 +235,37 @@ def test_unknown_action_key_is_rejected(web):
     status, err, _ = c.post("/api/v1/orders/preview", {"key": "place:DE0000000000"})
     assert status == 409 and err["error"] == "action_gone"
     assert c.post("/api/v1/orders/preview", {"key": ""})[0] == 400
+
+
+# ------------------------------------------------------------------ Planung & Watchlist
+
+def test_targets_rebalance_and_projection_endpoints(web):
+    _, c = web
+    status, t, _ = c.get("/api/v1/targets")
+    assert status == 200 and t["targets"]  # Demo bringt Zielgewichte mit
+    assert c.post("/api/v1/targets", {"targets": {"IE00B4L5Y983": 50}})[0] == 400  # Summe ≠ 100 %
+    status, t, _ = c.post("/api/v1/targets", {"targets": {"IE00B4L5Y983": 60, "US0378331005": 40}})
+    assert status == 200 and t["targets"] == {"IE00B4L5Y983": 60.0, "US0378331005": 40.0}
+    status, r, _ = c.get("/api/v1/rebalance?amount=500&mode=buy")
+    assert status == 200 and r["total_buy"] == pytest.approx(500) and r["total_sell"] == 0
+    assert c.get("/api/v1/rebalance?amount=abc")[0] == 400
+    status, pr, _ = c.get("/api/v1/projection?years=5&monthly=100&return=6&volatility=12&goal=50000")
+    assert status == 200 and pr["params"]["expected_return"] == pytest.approx(0.06) and pr["params"]["years"] == 5
+    assert pr["final"]["p10"] < pr["final"]["p90"] and "goal" in pr and pr["defaults"]["start"] > 0
+    assert c.get("/api/v1/projection?years=99")[0] == 400
+
+
+def test_watchlist_endpoints(web, demo):
+    app, c = web
+    app.watch_workers = 1  # In-Process-Runner der Tests ist nicht threadsicher
+    status, w, _ = c.get("/api/v1/watchlist")
+    assert status == 200 and {i["isin"] for i in w["items"]} >= {"NL0010273215", "US5949181045"}
+    assert c.post("/api/v1/watchlist", {"isin": "US0378331006"})[0] == 400  # Prüfziffer falsch
+    assert c.post("/api/v1/watchlist", {"isin": "DE000BASF111"})[0] == 422  # Scalable kennt die ISIN nicht
+    status, item, _ = c.post("/api/v1/watchlist", {"isin": "us88160r1014", "target_price": "200,5", "note": "Tesla"})
+    assert status == 200 and item["isin"] == "US88160R1014" and item["target_price"] == 200.5
+    status, res, _ = c.post("/api/v1/watchlist/NL0010273215/alert", {"price": 600})
+    assert status == 200 and any(a["price"] == 600 for a in res["alerts"])
+    assert any(a["isin"] == "NL0010273215" for a in demo.world()["alerts"])  # Kursalarm, keine Order
+    assert c.post("/api/v1/watchlist/US88160R1014/remove")[1]["removed"] is True
+    assert c.post("/api/v1/watchlist/US88160R1014/remove")[0] == 404

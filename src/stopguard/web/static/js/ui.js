@@ -53,7 +53,8 @@ export function tag(text) {
 // ---------------------------------------------------------------- Kacheln
 
 export function tiles(items) {
-  return html`<div class="tiles">${items.map(tile)}</div>`;
+  const list = items.filter(Boolean);
+  return html`<div class="tiles ${list.length === 4 ? "n4" : ""}">${list.map(tile)}</div>`;
 }
 
 export function tile({ label, value, note = "", side = "", meter = "", toneValue = null, href = "" }) {
@@ -98,7 +99,7 @@ export function segmented(name, label, options, value) {
  * Sortierbare Tabelle. `state` ({ key, dir }) kann von außen übergeben werden, damit die
  * gewählte Sortierung ein Neuzeichnen (z. B. nach Filterwechsel) übersteht.
  */
-export function sortableTable(id, columns, rows, { sortKey = null, dir = "desc", rowHref = null, empty = "Keine Einträge.", state = null } = {}) {
+export function sortableTable(id, columns, rows, { sortKey = null, dir = "desc", rowHref = null, empty = "Keine Einträge.", state = null, limit = null } = {}) {
   if (state && !state.key) { state.key = sortKey; state.dir = dir; }
   state = state || { key: sortKey, dir };
   const sorted = () => {
@@ -124,7 +125,7 @@ export function sortableTable(id, columns, rows, { sortKey = null, dir = "desc",
       : html`<th scope="col" class="${c.num ? "num" : ""}" aria-sort="${aria}"><button type="button" class="th-sort" data-sort="${c.key}">${c.label}<span class="sort-arrow" aria-hidden="true">${arrow}</span></button></th>`;
   })}</tr>`;
   const body = () => {
-    const list = sorted();
+    const list = limit ? sorted().slice(0, limit) : sorted();
     if (!list.length) return html`<tr><td colspan="${columns.length}" class="muted">${empty}</td></tr>`;
     return list.map(
       (r) => html`<tr class="${rowHref ? "row-link" : ""} ${r._rowClass || ""}" ${rowHref ? html`data-href="${rowHref(r)}"` : ""}>${columns.map(
