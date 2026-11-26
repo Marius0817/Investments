@@ -9,11 +9,16 @@ Sprache der Nutzeroberfläche, Doku und Kommentare: **Deutsch**.
   `engine.py` (Analyse/Plan), `executor.py` (Order-Ablauf), `strategy.py`, `finance.py` (XIRR).
 - `src/stopguard/portfolio/` – Portfolio-Tracking (IRR, Trade-Vergleich, Kredit, Steuern).
   Datenfluss: `sync` → SQLite `store` → `ledger` → `lots` → `credit` → `tax` → `metrics` → `analysis` → `api`/Export.
+  Dazu `exposure` (Diversifikation, ETF-Durchschau über `[instruments.X.exposure]`), `dividends` (Prognose),
+  `insights` (regelbasierte Hinweise), `planning` (Zielgewichte/Rebalancing, Monte-Carlo-Prognose), `watchlist`.
 - `src/stopguard/sc.py` – einziger Zugriff auf Scalable: die **offizielle Scalable CLI** (`sc … --json`).
   Keine inoffiziellen APIs, kein Scraping.
 - `src/stopguard/fake_sc.py` + `demo.py` – simulierte CLI und Demo-Depot für Tests und Entwicklung.
 - `src/stopguard/web/` – Weboberfläche (`stopguard web`): `server.py` (Stdlib-HTTP, Token-Anmeldung, CSRF,
   Host-Prüfung, API `/api/v1/…`), `orders.py` (Vorschau → Bestätigung), `static/` (SPA ohne Build).
+- `deploy/macos/app/` – Mac-App (Swift, WKWebView). Startet `stopguard web --port 0 --announce --exit-with-parent`
+  mit Zufallstoken, meldet sich per Cookie an. Bauen: `deploy/macos/build-app.sh`; CI: `.github/workflows/macos-app.yml`
+  (kompiliert universal und führt `--self-test` aus – lokal unter Linux nicht kompilierbar, also CI abwarten).
 
 ## Harte Regeln
 
@@ -24,6 +29,10 @@ Sprache der Nutzeroberfläche, Doku und Kommentare: **Deutsch**.
   „Platzieren“ auslösen. In der Weboberfläche: `POST orders/preview` → Vorschau-Seite mit Häkchen →
   `POST orders/{id}/confirm` mit `{"confirm": true}`. Diese Trennung nicht aufweichen.
 - Unklare Order-Einreichungen nie automatisch wiederholen (`stopguard resolve`).
+- Hinweise (`insights`) sind Beobachtungen mit Zahl, keine Anlageempfehlungen; Rebalancing und Prognose sind
+  Rechenhilfen – stopguard kauft nichts. Watchlist-Kursalarme sind keine Orders und brauchen eine Bestätigung im UI.
+- Keine fremden Datenquellen für Kurse/Stammdaten einbauen: Kurse nur über die offizielle CLI,
+  Klassifizierung (Branche, Länder, ETF-Gewichte) nur aus der Konfiguration.
 - Keine echten Depotdaten committen (`.gitignore` deckt Konfiguration, `*.db`, `portfolio.json`, `*.csv` ab).
 
 ## Weboberfläche (`src/stopguard/web/static/`)

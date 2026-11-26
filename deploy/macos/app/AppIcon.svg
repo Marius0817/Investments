@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- stopguard – App-Icon (macOS-Raster: 824 px Fläche, 100 px Rand). Farben aus Amboss: clay/primary, on-clay. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e48d6d"/>
+      <stop offset="1" stop-color="#c55f3d"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#2b1409" flood-opacity=".28"/>
+    </filter>
+  </defs>
+  <rect x="100" y="100" width="824" height="824" rx="186" fill="url(#bg)" filter="url(#shadow)"/>
+  <rect x="100" y="100" width="824" height="824" rx="186" fill="none" stroke="#ffffff" stroke-opacity=".18" stroke-width="4"/>
+  <!-- Stop-Linie: läuft gestrichelt unter dem Kurs mit -->
+  <path d="M232 770 L452 770 L452 640 L680 640 L680 540 L792 540" fill="none" stroke="#2b1409" stroke-opacity=".55" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 44"/>
+  <!-- Kursverlauf -->
+  <path d="M232 708 L330 612 L404 652 L520 500 L600 552 L792 340" fill="none" stroke="#fff7f1" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="792" cy="340" r="40" fill="#fff7f1"/>
+</svg>

@@ -28,6 +28,12 @@ class Instrument:
     tags: list[str] = field(default_factory=list)
     security_type: str | None = None
     benchmark: str | None = None  # ISIN eines abweichenden Vergleichsindex
+    asset_class: str | None = None
+    sector: str | None = None
+    country: str | None = None
+    region: str | None = None
+    currency: str | None = None
+    exposure: dict[str, dict[str, float]] = field(default_factory=dict)
 
     @property
     def teilfreistellung(self) -> float:

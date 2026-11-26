@@ -27,6 +27,7 @@ from urllib.parse import parse_qs, urlparse
 SECTIONS = (
     "summary", "positions", "trades", "credit", "taxes", "income", "costs",
     "allocation", "timeseries", "periods", "data_quality", "chart_hints", "settings",
+    "activities", "insights",
 )
 
 

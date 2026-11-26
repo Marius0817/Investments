@@ -59,6 +59,12 @@ def build_instruments(cfg: Config, holdings: list[dict[str, Any]], names: dict[s
             tags=list(ic.tags) if ic else [],
             security_type=types.get(isin),
             benchmark=ic.benchmark if ic else None,
+            asset_class=ic.asset_class if ic else None,
+            sector=ic.sector if ic else None,
+            country=ic.country if ic else None,
+            region=ic.region if ic else None,
+            currency=ic.currency if ic else None,
+            exposure=dict(ic.exposure) if ic else {},
         )
     return out
 

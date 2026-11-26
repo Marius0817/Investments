@@ -1,4 +1,4 @@
-import { meter } from "../charts.js";
+import { meter, mountTreemap } from "../charts.js";
 import { data } from "../data.js";
 import { $, html, on, render } from "../dom.js";
 import * as fmt from "../fmt.js";
@@ -6,13 +6,56 @@ import { badge, money, pageHead, percent, segmented, sortableTable, tag } from "
 import { hasData, noData, protection } from "./common.js";
 
 let statusFilter = "open";
+let view = "table";
+let period = "1m";
 const sortState = { key: null, dir: "desc" };
+
+const PERIODS = [["1w", "1 Woche"], ["1m", "1 Monat"], ["3m", "3 Monate"], ["ytd", "seit Jahresbeginn"], ["1y", "1 Jahr"], ["max", "seit Kauf"]];
+// Schwellen je Zeitraum für die divergierende Farbskala (drei Stufen je Richtung + neutrale Mitte)
+const SCALE = { "1w": 0.03, "1m": 0.06, "3m": 0.1, ytd: 0.15, "1y": 0.2, max: 0.3 };
+
+function perfOf(p) {
+  return period === "max" ? p.unrealized_pct : (p.performance || {})[period];
+}
+
+function heatClass(v) {
+  if (v === null || v === undefined) return "hm-na";
+  const s = SCALE[period];
+  const a = Math.abs(v);
+  const step = a < s / 6 ? 0 : a < s / 2 ? 1 : a < s ? 2 : 3;
+  return step === 0 ? "hm-0" : `hm-${v > 0 ? "p" : "n"}${step}`;
+}
+
+function heatmapHtml() {
+  const s = SCALE[period];
+  return html`<section class="card" aria-label="Heatmap der Positionen">
+    <div class="filter-row"><label class="inline-field">Zeitraum<select id="hm-period">${PERIODS.map(([k, l]) => html`<option value="${k}" ${k === period ? "selected" : ""}>${l}</option>`)}</select></label>
+      <div class="hm-legend" aria-hidden="true"><span>≤ ${fmt.pct(-s, 0)}</span>${["n3", "n2", "n1", "0", "p1", "p2", "p3"].map((k) => html`<span class="hm-swatch hm-${k}"></span>`)}<span>≥ ${fmt.pct(s, 0, true)}</span></div></div>
+    <div class="treemap" id="treemap"></div>
+    <p class="muted small">Fläche = Wert der Position, Farbe = Kursentwicklung im gewählten Zeitraum (blau gestiegen, rot gefallen; „seit Kauf“ = Kursgewinn auf den Einstand). Ein Klick öffnet die Position.</p>
+  </section>`;
+}
 
 export async function render_(main) {
   const doc = await data.portfolio();
   if (!hasData(doc)) { render(main, html`${pageHead("Positionen")}${noData()}`); return null; }
   let stops = data.cached("stops");
+  let disposeMap = () => {};
+  const drawMap = () => {
+    disposeMap();
+    render($("#positions-body", main), heatmapHtml());
+    const open = doc.positions.filter((p) => p.status === "open" && p.value > 0);
+    disposeMap = mountTreemap($("#treemap", main), open.map((p) => ({ ...p, perf: perfOf(p), href: `#/positionen/${encodeURIComponent(p.isin)}` })), {
+      colorClass: (r) => heatClass(r.perf),
+      label: (r) => r.name.replace(/ \(Demo\)$/, ""),
+      sub: (r) => `${r.perf === null || r.perf === undefined ? "keine Kurse" : fmt.pct(r.perf, 1, true)} · Anteil ${fmt.pct(r.value / total, 1)}`,
+    });
+  };
+  const total = doc.positions.filter((p) => p.status === "open").reduce((a, p) => a + (p.value || 0), 0) || 1;
   const draw = () => {
+    if (view === "heatmap") { drawMap(); return; }
+    disposeMap();
+    disposeMap = () => {};
     // Fokus auf einem Sortier-Schalter über das Neuzeichnen retten
     const active = document.activeElement;
     const focusSort = active && main.contains(active) && active.dataset ? active.dataset.sort : null;
@@ -56,16 +99,24 @@ export async function render_(main) {
     ${pageHead("Positionen", {
       meta: html`<span><b>${open}</b> offen</span><span>Depotwert <b>${fmt.eur(doc.summary.securities_value, 0)}</b></span><span>unrealisiert <b>${fmt.signedEur(doc.summary.unrealized_pl, 0)}</b></span>`,
     })}
-    <div class="filter-row" id="pos-filter">${segmented("status", "Positionen filtern", [["open", "Offen"], ["closed", "Geschlossen"], ["all", "Alle"]], statusFilter)}</div>
+    <div class="filter-row" id="pos-filter">${segmented("view", "Darstellung", [["table", "Tabelle"], ["heatmap", "Heatmap"]], view)}
+      <span id="status-filter" ${view === "heatmap" ? "hidden" : ""}>${segmented("status", "Positionen filtern", [["open", "Offen"], ["closed", "Geschlossen"], ["all", "Alle"]], statusFilter)}</span></div>
     <div id="positions-body"></div>
     <p class="muted small">IRR p. a.: Jahresrendite aus allen Käufen, Verkäufen und Ausschüttungen der Position (offene Stücke zum aktuellen Kurs). Kurzfristig gehaltene Positionen zeigen dabei oft extreme Werte.</p>
   `);
   draw();
-  const off = on($("#pos-filter", main), "change", "input[name=status]", (ev, input) => {
-    statusFilter = input.value;
-    $("#pos-filter", main).querySelectorAll("label").forEach((l) => l.classList.toggle("selected", l.contains(input)));
-    draw();
-  });
+  const select = (name, input) => $("#pos-filter", main).querySelectorAll(`input[name=${name}]`).forEach((i) => i.closest("label").classList.toggle("selected", i === input));
+  const offs = [
+    on($("#pos-filter", main), "change", "input[name=status]", (ev, input) => { statusFilter = input.value; select("status", input); draw(); }),
+    on($("#pos-filter", main), "change", "input[name=view]", (ev, input) => {
+      view = input.value;
+      select("view", input);
+      $("#status-filter", main).hidden = view === "heatmap";
+      draw();
+    }),
+    on(main, "change", "#hm-period", (ev, sel) => { period = sel.value; drawMap(); $("#hm-period", main).focus(); }),
+  ];
+  const off = () => { offs.forEach((o) => o()); disposeMap(); };
   // Stop-Schutz kommt von Scalable und dauert länger – Tabelle danach ergänzen.
   if (!stops) data.stops().then((s) => { stops = s; if (main.isConnected) draw(); }).catch(() => {});
   return off;

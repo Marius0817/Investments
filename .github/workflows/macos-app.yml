@@ -1,0 +1,54 @@
+name: macos-app
+
+# Baut die macOS-App auf einem echten Mac-Runner, prüft das Bundle und startet den Selbsttest
+# (Server starten, mit Zufallsschlüssel anmelden, API abfragen). Ergebnis: stopguard-macos.zip als Artefakt.
+# Nur bei Änderungen an App, Weboberfläche oder CLI – macOS-Minuten sind teurer.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "deploy/macos/**"
+      - "src/stopguard/web/**"
+      - "src/stopguard/cli.py"
+      - ".github/workflows/macos-app.yml"
+  pull_request:
+    paths:
+      - "deploy/macos/**"
+      - "src/stopguard/web/**"
+      - "src/stopguard/cli.py"
+      - ".github/workflows/macos-app.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: stopguard installieren
+        run: |
+          python -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet .
+      - name: App bauen (Apple Silicon + Intel)
+        run: STOPGUARD_APP_OUT="$PWD/dist" ./deploy/macos/build-app.sh --app-only --universal --no-install
+      - name: Bundle prüfen
+        run: |
+          plutil -lint dist/stopguard.app/Contents/Info.plist
+          codesign --verify --verbose dist/stopguard.app
+          lipo -archs dist/stopguard.app/Contents/MacOS/stopguard
+          test -s dist/stopguard.app/Contents/Resources/AppIcon.icns
+      - name: Selbsttest (Demo-Depot)
+        run: |
+          "$RUNNER_TEMP/venv/bin/stopguard" demo init "$RUNNER_TEMP/demo"
+          STOPGUARD_BIN="$RUNNER_TEMP/venv/bin/stopguard" \
+            dist/stopguard.app/Contents/MacOS/stopguard --self-test --config "$RUNNER_TEMP/demo/stopguard.toml"
+      - name: App packen
+        run: ditto -c -k --keepParent dist/stopguard.app dist/stopguard-macos.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stopguard-macos
+          path: dist/stopguard-macos.zip
+          retention-days: 30

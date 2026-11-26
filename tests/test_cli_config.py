@@ -56,7 +56,7 @@ def test_status_json(demo, monkeypatch, capsys):
     _patch_runner(monkeypatch)
     assert cli.main(["-c", str(demo.config_path), "status", "--json"]) == 0
     data = json.loads(capsys.readouterr().out)
-    assert len(data["positions"]) == 7  # inkl. Kredit-Trade (nicht konfiguriert → watch)
+    assert len(data["positions"]) == 8  # inkl. Kredit-Trade und Dividenden-ETF (nicht konfiguriert → watch)
     assert {a["kind"] for a in data["actions"]} == {"replace", "place", "alert_set"}
 
 

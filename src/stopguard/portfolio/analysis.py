@@ -15,6 +15,9 @@ from stopguard.config import Config
 from stopguard.finance import xirr
 from stopguard.models import parse_time, utcnow
 from stopguard.portfolio.credit import CreditReport, allocate_credit
+from stopguard.portfolio.dividends import add_growth, build_dividend_forecast
+from stopguard.portfolio.exposure import build_exposure
+from stopguard.portfolio.insights import build_insights
 from stopguard.portfolio.ledger import build_ledger
 from stopguard.portfolio.lots import apply_credit_flags, build_instruments, build_lots, dedupe_manual, manual_to_lots
 from stopguard.portfolio.metrics import Flow, TradeResult, aggregate_positions, irr_of, trade_metrics
@@ -43,6 +46,11 @@ CHART_HINTS = [
     {"dataset": "income.monthly", "chart": "stacked_bar", "x": "month", "y": ["dividends", "interest"], "title": "Erträge je Monat"},
     {"dataset": "periods.years", "chart": "bar", "x": "year", "y": ["twr", "benchmark"], "title": "Rendite je Kalenderjahr (TWR) vs. Benchmark"},
     {"dataset": "taxes.years", "chart": "stacked_bar", "x": "year", "y": ["tax_model", "tax_actual"], "title": "Steuern je Jahr (Modell vs. tatsächlich)"},
+    {"dataset": "income.forecast.monthly", "chart": "bar", "x": "month", "y": ["amount"], "title": "Erwartete Ausschüttungen der nächsten 12 Monate"},
+    {"dataset": "allocation.by_region", "chart": "bar_ranked", "value": "value", "label": "key", "title": "Aufteilung nach Region (mit ETF-Durchschau)"},
+    {"dataset": "allocation.by_sector", "chart": "bar_ranked", "value": "value", "label": "key", "title": "Aufteilung nach Branche"},
+    {"dataset": "allocation.look_through.items", "chart": "bar_stacked", "label": "name", "y": ["direct", "via_funds"], "title": "Größte Einzelwerte direkt und über Fonds"},
+    {"dataset": "positions", "chart": "treemap", "size": "value", "color": "performance.1m", "label": "name", "title": "Heatmap: Gewicht und Kursentwicklung"},
 ]
 
 
@@ -163,6 +171,8 @@ def analyse_portfolio(store: PortfolioStore, cfg: Config, *, now: datetime | Non
     quality["notes"].extend(sorted(tax.notes))
 
     positions = aggregate_positions(results, now, stop_states or {})
+    for pos in positions:
+        pos["performance"] = price_performance(pos["isin"], prices, now) if pos["status"] == "open" else None
     trades = [r.data for r in results]
 
     doc: dict[str, Any] = {
@@ -193,8 +203,12 @@ def analyse_portfolio(store: PortfolioStore, cfg: Config, *, now: datetime | Non
     doc["credit"] = build_credit(results, credit_report, account, events, now)
     doc["taxes"] = build_taxes(results, events, tax, cfg, now, prices)
     doc["income"] = build_income(results, events)
+    doc["income"]["by_year"] = add_growth(doc["income"]["by_year"], min((r.lot.open_date.year for r in results), default=None))
+    doc["income"]["forecast"] = build_dividend_forecast(results, positions, now)
     doc["costs"] = build_costs(results, events, credit_report)
     doc["allocation"] = build_allocation(positions)
+    doc["allocation"].update(build_exposure(positions, instruments))
+    doc["activities"] = build_activities(events, {i: inst.name for i, inst in instruments.items()})
     doc["timeseries"] = build_timeseries(results, events, credit_report, store, cfg, now, prices)
     doc["periods"] = build_periods(doc["timeseries"], events, now)
     doc["summary"]["twr"] = doc["periods"]["twr_summary"]
@@ -215,8 +229,54 @@ def analyse_portfolio(store: PortfolioStore, cfg: Config, *, now: datetime | Non
             "loan_reported": _r(account.get("loaned")) if account else None,
         },
     }
+    doc["insights"] = build_insights(doc, cfg, now)
     doc["chart_hints"] = CHART_HINTS
     return doc
+
+
+PERFORMANCE_PERIODS = (("1w", 7), ("1m", 30), ("3m", 91), ("1y", 365))
+
+
+def price_performance(isin: str, prices: PriceBook, now: datetime) -> dict[str, float | None]:
+    """Kursentwicklung (ohne Zu-/Verkäufe) über feste Zeiträume – Grundlage der Heatmap."""
+    cur = prices.current(isin)
+    out: dict[str, float | None] = {}
+    if not cur:
+        return {k: None for k, _ in PERFORMANCE_PERIODS} | {"ytd": None}
+    for key, days in PERFORMANCE_PERIODS:
+        base = prices.at(isin, now - timedelta(days=days), tolerance_days=3)
+        out[key] = round(cur / base - 1, 5) if base else None
+    jan1 = datetime(now.year, 1, 1, tzinfo=timezone.utc) - timedelta(minutes=1)
+    base = prices.at(isin, jan1, tolerance_days=3)
+    out["ytd"] = round(cur / base - 1, 5) if base else None
+    return out
+
+
+ACTIVITY_KINDS = (
+    "deposit", "withdrawal", "buy", "sell", "dividend", "interest_income", "loan_interest", "fee", "tax", "tax_refund",
+    "transfer_in", "transfer_out", "other",
+)
+
+
+def build_activities(events: list[LedgerEvent], names: dict[str, str]) -> list[dict[str, Any]]:
+    """Alle Buchungen des Verrechnungskontos, neueste zuerst (Scalable-Daten; Importe erscheinen als Trades)."""
+    out = []
+    for e in sorted(events, key=lambda x: x.when, reverse=True):
+        out.append({
+            "id": e.id,
+            "date": e.when.isoformat(),
+            "kind": e.kind if e.kind in ACTIVITY_KINDS else "other",
+            "isin": e.isin,
+            "name": names.get(e.isin, e.isin) if e.isin else None,
+            "units": _r(e.units, 6) if e.units else None,
+            "price": _r(e.price, 4),
+            "amount": _r(e.cash),
+            "fees": _r(e.fees) if e.fees else None,
+            "tax": _r(e.tax) if e.tax else None,
+            "gross": _r(e.gross),
+            "description": e.description,
+        })
+    return out
 
 
 # ---------------------------------------------------------------------------

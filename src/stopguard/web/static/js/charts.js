@@ -129,7 +129,7 @@ function hideTooltip() { if (tooltipEl) tooltipEl.hidden = true; }
 function legendHtml(series, shape) {
   if (series.length < 2) return "";
   return html`<ul class="chart-legend" aria-label="Legende">${series.map(
-    (s) => html`<li><span class="key ${shape} ${s.cls}" aria-hidden="true"></span>${s.name}</li>`,
+    (s) => html`<li><span class="key ${s.band ? "rect band" : s.shape || shape} ${s.cls}" aria-hidden="true"></span>${s.name}</li>`,
   )}</ul>`;
 }
 
@@ -149,7 +149,11 @@ function autoTable(spec) {
     const rows = [];
     for (let i = base.length - 1; i >= 0; i -= step) {
       const t = toTime(base[i][0]);
-      rows.push([fmt.date(base[i][0]), ...spec.series.map((s) => { const p = valueAt(s.points, t); return p === null ? fmt.DASH : yf(p); })]);
+      rows.push([(spec.xLabel || fmt.date)(base[i][0]), ...spec.series.map((s) => {
+        const p = pointAt(s.points, t);
+        if (!p) return fmt.DASH;
+        return s.band ? `${yf(p[1])} – ${yf(p[2])}` : yf(p[1]);
+      })]);
     }
     return { columns: ["Datum", ...spec.series.map((s) => s.name)], rows };
   }
@@ -170,7 +174,7 @@ function autoTable(spec) {
   return { columns: ["", ""], rows: [] };
 }
 
-function valueAt(points, t) {
+function pointAt(points, t) {
   let lo = 0;
   let hi = points.length - 1;
   if (hi < 0 || toTime(points[0][0]) > t) return null;
@@ -178,7 +182,12 @@ function valueAt(points, t) {
     const mid = (lo + hi + 1) >> 1;
     if (toTime(points[mid][0]) <= t) lo = mid; else hi = mid - 1;
   }
-  return points[lo][1];
+  return points[lo];
+}
+
+function valueAt(points, t) {
+  const p = pointAt(points, t);
+  return p ? p[1] : null;
 }
 
 /**
@@ -264,8 +273,9 @@ function drawLine(plot, spec, W) {
   if (!all.length) { plot.innerHTML = '<p class="muted small chart-empty">Für diesen Zeitraum liegen keine Werte vor.</p>'; return null; }
   const t0 = Math.min(...all.map((p) => toTime(p[0])));
   const t1 = Math.max(...all.map((p) => toTime(p[0])));
-  let vmin = Math.min(...all.map((p) => p[1]));
-  let vmax = Math.max(...all.map((p) => p[1]));
+  const vals = all.flatMap((p) => (p.length > 2 ? [p[1], p[2]] : [p[1]]));
+  let vmin = Math.min(...vals);
+  let vmax = Math.max(...vals);
   if (spec.y && spec.y.zero) { vmin = Math.min(0, vmin); vmax = Math.max(0, vmax); }
   const { lo, hi, ticks } = niceTicks(vmin, vmax, H < 200 ? 3 : 4);
   const left = Math.max(...ticks.map((t) => estWidth(axisF(t)))) + 10;
@@ -289,6 +299,13 @@ function drawLine(plot, spec, W) {
   const base = y(Math.max(lo, Math.min(0, hi)));
   spec.series.forEach((s) => {
     if (!s.points.length) return;
+    if (s.band) {
+      // Fläche zwischen Unter- und Obergrenze (z. B. Prognose-Fächer)
+      const top = s.points.map((p, i) => `${i ? "L" : "M"}${x(toTime(p[0]))},${y(p[2])}`).join("");
+      const bottom = s.points.slice().reverse().map((p) => `L${x(toTime(p[0]))},${y(p[1])}`).join("");
+      out += `<path class="mark-band ${s.cls}" d="${top}${bottom}Z"/>`;
+      return;
+    }
     let d = "";
     s.points.forEach((p, i) => {
       const px = x(toTime(p[0]));
@@ -304,8 +321,8 @@ function drawLine(plot, spec, W) {
     }
     out += `<path class="mark-line ${s.cls}" d="${d}"/>`;
   });
-  // Direktbeschriftung: nur der Endwert der ersten Reihe
-  const s0 = spec.series[0];
+  // Direktbeschriftung: nur der Endwert der ersten Linien-Reihe
+  const s0 = spec.series.find((s) => !s.band) || spec.series[0];
   if (s0 && s0.points.length && spec.endLabel !== false) {
     const lp = s0.points[s0.points.length - 1];
     const lx = x(toTime(lp[0]));
@@ -314,7 +331,7 @@ function drawLine(plot, spec, W) {
     out += `<text class="end-label" x="${lx - 6}" y="${Math.max(12, ly - 9)}" text-anchor="end">${escapeHtml(yf(lp[1]))}</text>`;
   }
   out += `<g class="hover" visibility="hidden"><line class="crosshair" y1="${M.t}" y2="${M.t + ph}"/>${spec.series
-    .map((s, i) => `<circle class="mark-dot ${s.cls}" data-i="${i}" r="4"/>`)
+    .map((s, i) => (s.band ? "" : `<circle class="mark-dot ${s.cls}" data-i="${i}" r="4"/>`))
     .join("")}</g>`;
   svg.innerHTML = out;
   plot.replaceChildren(svg);
@@ -331,6 +348,11 @@ function drawLine(plot, spec, W) {
     line.setAttribute("x2", xx);
     const rows = [];
     spec.series.forEach((s, si) => {
+      if (s.band) {
+        const bp = pointAt(s.points, t);
+        if (bp) rows.push({ cls: s.cls, shape: "rect", value: `${yf(bp[1])} – ${yf(bp[2])}`, name: s.name });
+        return;
+      }
       const v = valueAt(s.points, t);
       const dot = hover.querySelector(`circle[data-i="${si}"]`);
       if (v === null) { dot.setAttribute("visibility", "hidden"); return; }
@@ -341,7 +363,7 @@ function drawLine(plot, spec, W) {
     });
     const box = plot.getBoundingClientRect();
     const sx = box.left + (xx / W) * box.width;
-    showTooltip(fmt.date(masterPts[idx][0]), rows, clientX ?? sx, clientY ?? box.top + M.t + 20);
+    showTooltip((spec.xLabel || fmt.date)(masterPts[idx][0]), rows, clientX ?? sx, clientY ?? box.top + M.t + 20);
   };
   return interact(plot, {
     onMove: (ev) => {
@@ -591,6 +613,102 @@ export function meter(ratio) {
   const r = Math.max(0, Math.min(1, ratio || 0));
   const cls = r >= 0.9 ? "danger" : r >= 0.75 ? "warn" : "";
   return html`<div class="meter" role="presentation"><span class="${cls}" style="width:${(r * 100).toFixed(1)}%"></span></div>`;
+}
+
+/** Rangliste mit gestapelten Teilen je Zeile (z. B. direkt + über Fonds), 2-px-Abstand zwischen den Teilen. */
+export function stackedBars(items, parts, { format = (v) => fmt.eur(v, 0) } = {}) {
+  const top = Math.max(...items.map((it) => parts.reduce((a, p) => a + (it[p.key] || 0), 0)), 1);
+  return html`<ul class="hbars">${items.map((it) => {
+    const total = parts.reduce((a, p) => a + (it[p.key] || 0), 0);
+    const desc = parts.filter((p) => it[p.key]).map((p) => `${p.name} ${format(it[p.key])}`).join(", ");
+    return html`<li class="hbar-row">
+      <span class="hbar-label">${it.href ? html`<a href="${it.href}">${it.label}</a>` : it.label}</span>
+      <span class="hbar-track" role="img" aria-label="${it.label}: ${desc}">
+        <span class="hbar-stack" style="width:calc((100% - 120px) * ${Math.max(0.005, total / top).toFixed(4)})">${parts.filter((p) => it[p.key] > 0).map(
+          (p) => html`<span class="hbar-fill ${p.cls}" style="flex-grow:${(it[p.key] / total).toFixed(5)}" title="${p.name}: ${format(it[p.key])}"></span>`,
+        )}</span><span class="hbar-value">${format(total)}</span></span>
+    </li>`;
+  })}</ul>`;
+}
+
+/** Kleine Verlaufslinie ohne Achsen (rein illustrativ – die Zahlen stehen daneben im Text). */
+export function sparkline(points, { cls = "c1", width = 120, height = 32 } = {}) {
+  if (!points || points.length < 2) return html`<span class="sparkline empty" aria-hidden="true"></span>`;
+  const vs = points.map((p) => p[1]);
+  const lo = Math.min(...vs);
+  const hi = Math.max(...vs);
+  const d = points.map((p, i) => {
+    const x = (i / (points.length - 1)) * width;
+    const y = height - 2 - ((p[1] - lo) / (hi - lo || 1)) * (height - 4);
+    return `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join("");
+  return raw(`<svg class="sparkline" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="mark-line ${cls}" d="${d}" vector-effect="non-scaling-stroke"/></svg>`);
+}
+
+// ---------------------------------------------------------------- Heatmap (Treemap)
+
+/** Squarified-Treemap: Flächen proportional zu value; liefert Rechtecke in Pixeln. */
+function squarify(items, x, y, w, h) {
+  const out = [];
+  const total = items.reduce((a, i) => a + i.value, 0);
+  if (!total || w <= 0 || h <= 0) return out;
+  const scale = (w * h) / total;
+  const rest = items.map((i) => ({ item: i, area: i.value * scale }));
+  let box = { x, y, w, h };
+  const worst = (row, side) => {
+    const s = row.reduce((a, r) => a + r.area, 0);
+    const mx = Math.max(...row.map((r) => r.area));
+    const mn = Math.min(...row.map((r) => r.area));
+    return Math.max((side * side * mx) / (s * s), (s * s) / (side * side * mn));
+  };
+  while (rest.length) {
+    const side = Math.min(box.w, box.h);
+    const row = [rest.shift()];
+    while (rest.length && worst([...row, rest[0]], side) <= worst(row, side)) row.push(rest.shift());
+    const s = row.reduce((a, r) => a + r.area, 0);
+    if (box.w >= box.h) {
+      const cw = s / box.h;
+      let cy = box.y;
+      for (const r of row) { const ch = r.area / cw; out.push({ ...r.item, x: box.x, y: cy, w: cw, h: ch }); cy += ch; }
+      box = { x: box.x + cw, y: box.y, w: box.w - cw, h: box.h };
+    } else {
+      const ch = s / box.w;
+      let cx = box.x;
+      for (const r of row) { const cw = r.area / ch; out.push({ ...r.item, x: cx, y: box.y, w: cw, h: ch }); cx += cw; }
+      box = { x: box.x, y: box.y + ch, w: box.w, h: box.h - ch };
+    }
+  }
+  return out;
+}
+
+/**
+ * Heatmap als Treemap: Fläche = Wert, Farbe = Veränderung (divergierend blau ↔ rot, neutrale Mitte).
+ * Jede Kachel ist ein Link mit vollständigem Text – die Farbe ist nie das einzige Signal.
+ */
+export function mountTreemap(el, items, { colorClass, label, sub, height = 420 } = {}) {
+  const sorted = items.filter((i) => i.value > 0).sort((a, b) => b.value - a.value);
+  let lastW = 0;
+  const draw = () => {
+    const W = Math.max(240, el.clientWidth || 600);
+    if (W === lastW) return;
+    lastW = W;
+    const H = W < 560 ? Math.max(320, Math.round(W * 1.1)) : height;
+    el.style.height = `${H}px`;
+    const rects = squarify(sorted, 0, 0, W, H);
+    el.innerHTML = rects.map((r) => {
+      const small = r.w < 90 || r.h < 46;
+      const tiny = r.w < 44 || r.h < 26;
+      return html`<a class="tm-tile ${colorClass(r)}${small ? " small" : ""}${tiny ? " tiny" : ""}" href="${r.href}"
+        style="left:${r.x.toFixed(1)}px;top:${r.y.toFixed(1)}px;width:${Math.max(0, r.w - 2).toFixed(1)}px;height:${Math.max(0, r.h - 2).toFixed(1)}px"
+        aria-label="${label(r)}: ${sub(r)}" title="${label(r)}: ${sub(r)}">
+        ${tiny ? "" : html`<span class="tm-name">${label(r)}</span><span class="tm-sub">${sub(r)}</span>`}
+      </a>`.text;
+    }).join("");
+  };
+  const ro = new ResizeObserver(() => draw());
+  ro.observe(el);
+  draw();
+  return () => ro.disconnect();
 }
 
 export { raw };

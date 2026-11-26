@@ -97,3 +97,12 @@ export function protection(pos) {
   if (!pos.target.stop) return ["wait", "kein Stop vorgesehen"];
   return pos.managed_order ? ["done", "geschützt"] : ["wait", "ohne Order"];
 }
+
+
+/** Unternavigation „Trades | Buchungen“ (Links, kein Tab-Widget – jede Ansicht hat eine eigene Adresse). */
+export function tradesSubnav(active) {
+  return html`<nav class="subnav" aria-label="Trades und Buchungen">
+    <a href="#/trades" class="${active === "trades" ? "active" : ""}" ${active === "trades" ? html`aria-current="page"` : ""}>Trades</a>
+    <a href="#/buchungen" class="${active === "buchungen" ? "active" : ""}" ${active === "buchungen" ? html`aria-current="page"` : ""}>Alle Buchungen</a>
+  </nav>`;
+}

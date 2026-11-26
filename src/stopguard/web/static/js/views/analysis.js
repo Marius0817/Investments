@@ -4,25 +4,35 @@ import { $, html, on, render } from "../dom.js";
 import * as fmt from "../fmt.js";
 import { alertBox, money, pageHead, percent, sortableTable, tiles } from "../ui.js";
 import { hasData, mountCharts, noData, twrChartSpec } from "./common.js";
+import { diversificationPanel } from "./diversification.js";
+import { dividendsPanel } from "./dividends.js";
+import { insightsPanel } from "./insights.js";
+import { projectionPanel, rebalancingPanel } from "./planning.js";
 
 const TABS = [
   ["performance", "Performance"],
+  ["hinweise", "Hinweise"],
+  ["diversifikation", "Diversifikation"],
+  ["dividenden", "Dividenden"],
+  ["rebalancing", "Rebalancing"],
+  ["prognose", "Prognose"],
   ["kredit", "Kredit"],
   ["steuern", "Steuern"],
-  ["ertraege", "Erträge"],
   ["kosten", "Kosten"],
 ];
+const ALIASES = { ertraege: "dividenden" };
 
 let focusTab = false;
 
 export async function render_(main, [tabParam]) {
   const doc = await data.portfolio();
   if (!hasData(doc)) { render(main, html`${pageHead("Auswertung")}${noData()}`); return null; }
-  const tab = TABS.some(([k]) => k === tabParam) ? tabParam : "performance";
+  const wanted = ALIASES[tabParam] || tabParam;
+  const tab = TABS.some(([k]) => k === wanted) ? wanted : "performance";
   render(main, html`
     ${pageHead("Auswertung", { meta: html`<span>Stand <b>${fmt.dateTime(doc.as_of)}</b></span><span>Steuersatz <b>${fmt.pct(doc.settings.tax.effective_rate, 3)}</b></span>` })}
     <div class="tabs" role="tablist" aria-label="Auswertungen">${TABS.map(
-      ([k, l]) => html`<button role="tab" type="button" id="tab-${k}" aria-controls="panel" aria-selected="${k === tab}" tabindex="${k === tab ? 0 : -1}" class="${k === tab ? "active" : ""}" data-tab="${k}">${l}</button>`,
+      ([k, l]) => html`<button role="tab" type="button" id="tab-${k}" aria-controls="panel" aria-selected="${k === tab}" tabindex="${k === tab ? 0 : -1}" class="${k === tab ? "active" : ""}" data-tab="${k}">${l}${k === "hinweise" && (doc.insights || []).length ? html` <span class="tab-count">${doc.insights.length}</span>` : ""}</button>`,
     )}</div>
     <div class="card tab-panel" id="panel" role="tabpanel" aria-labelledby="tab-${tab}"></div>
   `);
@@ -34,7 +44,7 @@ export async function render_(main, [tabParam]) {
   const { content, charts, mount } = PANELS[tab](doc);
   render(panel, content);
   const dispose = mountCharts(panel, charts || {});
-  mount && mount(panel);
+  const unmount = mount ? mount(panel) : null;
   const offTabs = on(main, "click", "[data-tab]", (ev, btn) => { location.hash = `#/auswertung/${btn.dataset.tab}`; });
   const offKeys = on(main, "keydown", "[role=tab]", (ev, btn) => {
     const i = TABS.findIndex(([k]) => k === btn.dataset.tab);
@@ -45,7 +55,7 @@ export async function render_(main, [tabParam]) {
     const k = TABS[(next + TABS.length) % TABS.length][0];
     location.hash = `#/auswertung/${k}`;
   });
-  return () => { dispose(); offTabs(); offKeys(); };
+  return () => { dispose(); offTabs(); offKeys(); if (typeof unmount === "function") unmount(); };
 }
 
 export { render_ as render };
@@ -214,40 +224,6 @@ function steuern(doc) {
 
 // ---------------------------------------------------------------- Erträge
 
-function ertraege(doc) {
-  const inc = doc.income;
-  const months = inc.monthly || [];
-  const total = (inc.by_year || []).reduce((a, y) => a + y.dividends, 0);
-  return {
-    content: html`
-      ${tiles([
-        { label: "Ausschüttungen", side: "12 Monate", value: fmt.eur(inc.trailing_12m, 0), note: "netto, wie gutgeschrieben" },
-        { label: "Rendite", side: "12 Monate", value: fmt.pct(inc.yield_12m, 2), note: "Ausschüttungen ÷ heutiger Depotwert" },
-        { label: "Seit Beginn", value: fmt.eur(total, 0), note: `${(inc.by_position || []).length} Positionen mit Ausschüttungen` },
-      ])}
-      <h2>Erträge je Monat</h2>
-      ${months.length ? html`<figure data-chart="income"></figure>` : html`<p class="muted">Noch keine Ausschüttungen oder Zinsen erfasst.</p>`}
-      <h2>Nach Position</h2>
-      ${(inc.by_position || []).length ? rankedBars(inc.by_position.map((p) => ({ label: p.name, value: p.dividends, href: `#/positionen/${encodeURIComponent(p.isin)}` })), { format: (v) => fmt.eur(v, 2) }) : html`<p class="muted small">–</p>`}
-    `,
-    charts: {
-      income: {
-        type: "bar",
-        stacked: true,
-        label: "Ausschüttungen und Zinserträge je Monat",
-        categories: months.map((m) => m.month),
-        xFormat: (m) => fmt.monthLabel(m),
-        categoryLabel: "Monat",
-        series: [
-          { name: "Ausschüttungen", cls: "c1", values: months.map((m) => m.dividends) },
-          { name: "Zinsen auf Guthaben", cls: "c3", values: months.map((m) => m.interest) },
-        ],
-        y: { format: (v) => fmt.eur(v, 2), axis: (v) => fmt.eur(v, 0) },
-      },
-    },
-  };
-}
-
 // ---------------------------------------------------------------- Kosten
 
 function kosten(doc) {
@@ -302,4 +278,14 @@ function groupCandidates(cands) {
   return [...by.values()].sort((a, b) => b.value - a.value);
 }
 
-const PANELS = { performance, kredit, steuern, ertraege, kosten };
+const PANELS = {
+  performance,
+  hinweise: insightsPanel,
+  diversifikation: diversificationPanel,
+  dividenden: dividendsPanel,
+  rebalancing: rebalancingPanel,
+  prognose: projectionPanel,
+  kredit,
+  steuern,
+  kosten,
+};

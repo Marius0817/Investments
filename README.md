@@ -10,7 +10,16 @@ Dazu kommen Backtests, Kursalarme, Push-Benachrichtigungen aufs Handy, ein Audit
 
 Außerdem gibt es ein **Portfolio-Tracking** (`stopguard portfolio …`, Abschnitt 11) als Ersatz für Notion: IRR je Trade, Position und Depot, Trade-Vergleich gegen einen Benchmark, kreditfinanzierte Trades nach Steuern und Scalable-Zinsen sowie diagrammfertige Daten als JSON/API.
 
-Alles zusammen gibt es auch als **Weboberfläche** (`stopguard web`, Abschnitt 12) mit Diagrammen, Trade-Vergleich und dem Bestätigen von Orders im Browser. Sie läuft im Hell- und Dunkelmodus, auf dem Desktop wie auf dem Handy.
+Alles zusammen gibt es auch als **Weboberfläche** (`stopguard web`, Abschnitt 12) mit Diagrammen, Trade-Vergleich und dem Bestätigen von Orders im Browser. Sie läuft im Hell- und Dunkelmodus, auf dem Desktop wie auf dem Handy – und als **Mac-App** (Abschnitt 4).
+
+Inspiriert von Portfolio-Trackern wie Parqet und getquin kommen hinzu (Abschnitt 13):
+- Dividendenkalender mit Prognose,
+- Diversifikation nach Region, Land, Branche und Währung mit ETF-Durchschau,
+- Rebalancing-Rechner,
+- Vermögensprognose,
+- Heatmap und Watchlist mit Kursalarmen,
+- automatische Hinweise zum Depot,
+- Privatsphäre-Modus.
 
 > **Kein Anlageberater.** stopguard führt nur Regeln aus, die du selbst festlegst. Stop-Orders schützen nicht vor Kurslücken. Teste neue Strategien zuerst mit `execution = "watch"` oder in der Demo.
 
@@ -121,6 +130,20 @@ stopguard status
 ```
 
 Der Job führt `stopguard run` aus und meldet sich über die Mitteilungszentrale. Mit `brew install terminal-notifier` werden die Mitteilungen schöner. Zum Bestätigen `stopguard apply` im Terminal ausführen oder `deploy/macos/stopguard-apply.command` doppelklicken. Log: `~/Library/Logs/stopguard.log`.
+
+**Als Mac-App** – eigenes Fenster statt Browser-Tab:
+
+```bash
+./deploy/macos/build-app.sh        # installiert/aktualisiert stopguard und baut ~/Applications/stopguard.app
+```
+
+Dafür braucht es die Xcode Command Line Tools (`xcode-select --install`). Die App startet `stopguard web` im Hintergrund, und zwar nur auf `127.0.0.1`, mit einem frei gewählten Port und einem neuen Zugangsschlüssel bei jedem Start. Sie meldet sich selbst an. Beim Beenden stoppt der Server mit, auch wenn die App abstürzt.
+
+- **Menü:** „Gehe zu“ (⌘1–⌘6), „Beträge ein-/ausblenden“ (⇧⌘B), „Bei Scalable anmelden …“ (öffnet ein Terminal mit `stopguard login`) und „Log anzeigen“.
+- **Ohne Konfiguration** bietet die App das Demo-Depot oder die Einrichtung im Terminal an.
+- **Dateien:** Exporte fragen nach dem Speicherort, Importe öffnen den Dateidialog.
+
+Der launchd-Job von `install.sh` (Prüfung alle 30 Minuten) ist unabhängig davon. Die App ersetzt ihn nicht, sie ist die Oberfläche dazu. Ein fertiges App-Paket für Apple Silicon und Intel baut auch die CI auf GitHub (Workflow `macos-app`, Artefakt `stopguard-macos.zip`). Da es nicht notariell beglaubigt ist, beim ersten Start im Finder per Rechtsklick → „Öffnen“ starten. Selbst gebaut entfällt das.
 
 **Mac-Besonderheiten:**
 
@@ -280,7 +303,7 @@ remind_after_hours = 24
 
 ```bash
 pip install -e ".[dev]"
-pytest                    # 73 Tests: XIRR (Excel-Referenz), Phasen, Planung, Order-Ablauf, Steuern, Kredit, Portfolio-API, Weboberfläche
+pytest                    # 89 Tests: XIRR (Excel-Referenz), Phasen, Planung, Order-Ablauf, Steuern, Kredit, Portfolio-API, Weboberfläche, Dividenden, Diversifikation, Rebalancing, Watchlist
 ```
 
 | Modul | Aufgabe |
@@ -292,8 +315,9 @@ pytest                    # 73 Tests: XIRR (Excel-Referenz), Phasen, Planung, Or
 | `executor.py` | Zweistufiger Order-Ablauf mit Bestätigung, Recovery |
 | `state.py` | Zustand (Phasen, Hochpunkte, verwaltete Orders), Audit-Log, Prozess-Sperre |
 | `fake_sc.py` | Simulierte Scalable CLI für Demo und Tests |
-| `portfolio/` | Portfolio-Tracking: `store` (SQLite), `sync`, `ledger` (Kassenbuch), `lots` (FIFO), `credit`, `tax`, `metrics`, `analysis`, `api`, `importers` |
+| `portfolio/` | Portfolio-Tracking: `store` (SQLite), `sync`, `ledger` (Kassenbuch), `lots` (FIFO), `credit`, `tax`, `metrics`, `analysis`, `api`, `importers`, `exposure` (Diversifikation/Durchschau), `dividends` (Prognose), `insights` (Hinweise), `planning` (Rebalancing, Prognose), `watchlist` |
 | `web/` | Weboberfläche: `server.py` (HTTP, Anmeldung, CSRF-Schutz, API), `orders.py` (zweistufiger Order-Ablauf), `static/` (Single-Page-App ohne Build-Schritt, Design-System Amboss) |
+| `deploy/macos/app/` | Mac-App: `main.swift` (Fenster, Menü, Serverprozess, Selbsttest), `Info.plist`, Icon; gebaut von `deploy/macos/build-app.sh` |
 
 Die Oberfläche ist reines HTML/CSS/JavaScript (ES-Module) ohne Framework und ohne Build: Datei ändern, Seite neu laden. Zum Ausprobieren eignet sich das Demo-Depot (`stopguard demo init`, dann `portfolio sync` und `web`).
 
@@ -350,12 +374,15 @@ Die Oberfläche nutzt das Design-System **Amboss** und funktioniert im Hell- und
 
 | Seite | Inhalt |
 |---|---|
-| **Übersicht** | Kacheln: Nettovermögen, IRR vor und nach Steuern, TWR gegen den Benchmark, Gewinn, Erträge, Kreditauslastung. Diagramme: Depotwert und Wertentwicklung (6 Monate bis Gesamt). Dazu Aufteilung, Stop-Schutz sowie stärkste und schwächste Trades. |
-| **Positionen** | Sortierbare Tabelle mit Anteil, Kursgewinn, IRR (auch nach Steuern), Erträgen und Stop-Status. Die Detailseite zeigt den Wertverlauf, die Phasen der Strategie und den Rechenweg des Stops. |
-| **Trades** | Streudiagramm Haltedauer × IRR (ein Klick öffnet den Trade). Filter: offen/geschlossen, Herkunft (z. B. ohne Sparpläne), nur kreditfinanziert, Suche. Vergleich mit Benchmark und Alpha. Die Detailseite zeigt Zahlungsströme, Steuern und Kredit. |
+| **Übersicht** | Kacheln: Nettovermögen, IRR vor und nach Steuern, TWR gegen den Benchmark, Gewinn, erwartete Dividenden, Kreditauslastung. Darunter die wichtigsten Hinweise. Diagramme: Depotwert und Wertentwicklung (6 Monate bis Gesamt). Dazu Aufteilung, Stop-Schutz sowie stärkste und schwächste Trades. |
+| **Positionen** | Sortierbare Tabelle mit Anteil, Kursgewinn, IRR (auch nach Steuern), Erträgen und Stop-Status, umschaltbar auf eine **Heatmap**: Fläche = Wert, Farbe = Kursentwicklung über 1 Woche bis 1 Jahr. Die Detailseite zeigt den Wertverlauf, die Phasen der Strategie und den Rechenweg des Stops. |
+| **Trades** | Streudiagramm Haltedauer × IRR (ein Klick öffnet den Trade). Filter: offen/geschlossen, Herkunft (z. B. ohne Sparpläne), nur kreditfinanziert, Suche. Vergleich mit Benchmark und Alpha. Die Detailseite zeigt Zahlungsströme, Steuern und Kredit. Unter **Alle Buchungen** stehen sämtliche Kontobewegungen mit Filter, Suche und CSV-Export. |
 | **Stops** | Empfohlene Änderungen, Schutz je Position, ungeklärte Einreichungen, Kursalarme, Verlauf. |
-| **Auswertung** | Performance (TWR, Drawdown, IRR-Verlauf, Jahre), Kredit (Saldo, Zinsen, Break-even), Steuern (Jahre, Verlusttöpfe, Freibetrag nutzen), Erträge, Kosten. |
+| **Auswertung** | Performance (TWR, Drawdown, IRR-Verlauf, Jahre), Hinweise, Diversifikation, Dividenden, Rebalancing, Prognose, Kredit (Saldo, Zinsen, Break-even), Steuern (Jahre, Verlusttöpfe, Freibetrag nutzen), Kosten. Abschnitt 13 erklärt die neuen Reiter. |
+| **Watchlist** | Wertpapiere beobachten, die noch nicht im Depot sind. Zu sehen sind Kurs, 12-Monats-Verlauf, Veränderung, Abstand zum 52-Wochen-Hoch und zum Zielkurs. Den Zielkurs kannst du als **Kursalarm bei Scalable** hinterlegen; das ist keine Order. |
 | **Daten & Einstellungen** | Daten von Scalable laden (mit Fortschritt), Datenqualität, Notion-CSV-Import, JSON-Export, Hell/Dunkel. |
+
+Das Auge oben rechts schaltet den **Privatsphäre-Modus**: Beträge und Stückzahlen werden ausgeblendet, Prozente bleiben stehen. Das ist praktisch beim Bildschirmteilen.
 
 Jedes Diagramm lässt sich als Tabelle anzeigen. Diagramme und Tabellen sind per Tastatur bedienbar: Pfeiltasten im Diagramm, sortierbare Spaltenköpfe.
 
@@ -378,3 +405,56 @@ stopguard web --host 0.0.0.0 --allowed-host pi.local
 - HTTPS ist nicht eingebaut. Für den Zugriff von unterwegs gehört ein Reverse-Proxy mit TLS (z. B. Caddy) oder ein VPN (z. B. WireGuard oder Tailscale) davor. Meldet der Proxy `X-Forwarded-Proto: https`, wird das Cookie als `Secure` markiert.
 - `GET /api/v1/health` ist ohne Anmeldung erreichbar (nur `ok` und Version) und dient als Healthcheck.
 - Docker: `docker compose --profile web up -d` (Abschnitt 7).
+
+---
+
+## 13. Dividenden, Diversifikation und Planung
+
+Inspiriert von Parqet und getquin. Alles stammt aus den eigenen Scalable-Daten und der Konfiguration. stopguard ruft keine fremden Datenquellen ab.
+
+**Dividendenkalender und Prognose** (Auswertung → Dividenden):
+- **Prognose:** Jede Ausschüttung der letzten 12 Monate wird je Stück auf deinen heutigen Bestand hochgerechnet und ein Jahr später erwartet. Hältst du eine Position noch kein Jahr, ergänzt stopguard den erkannten Rhythmus (monatlich, quartalsweise, halbjährlich).
+- **Datenbasis je Position:** „volles Jahr“, „Rhythmus erkannt“ oder „eine Zahlung“.
+- **Kennzahlen:** Dividendenrendite auf den heutigen Wert und auf deinen Einstand (Yield on Cost) sowie das Wachstum gegenüber dem Vorjahr.
+
+Alle Werte sind Schätzungen, netto nach einbehaltener Steuer.
+
+**Diversifikation und ETF-Durchschau** (Auswertung → Diversifikation):
+- **Aufteilung** nach Region, Land, Branche, Anlageklasse und Währung.
+- **Einzelaktien:** Land, Region und Währung leitet stopguard aus dem Länderkürzel der ISIN ab und kennzeichnet das als Näherung. Die Branche trägst du selbst ein.
+- **ETFs** schlüsselt stopguard mit den Gewichten aus dem Factsheet auf.
+- **Größte Einzelwerte:** Die Durchschau zeigt sie direkt und über ETFs. So fällt auf, wenn eine Aktie zusätzlich in deinen ETFs steckt.
+
+```toml
+[instruments.DE0007164600]          # SAP – Einzelaktie
+sector = "Informationstechnologie"
+
+[instruments.IE00B4L5Y983.exposure]  # iShares Core MSCI World – Werte aus dem Factsheet (Prozent)
+countries  = { US = 72, JP = 5.5, GB = 3.5, CA = 3, FR = 2.7, CH = 2.4, DE = 2.2 }
+sectors    = { "Informationstechnologie" = 26, "Finanzen" = 16, "Industrie" = 11, "Gesundheit" = 10 }
+currencies = { USD = 72, EUR = 9, JPY = 5.5 }
+holdings   = { US0378331005 = 4.8, US67066G1040 = 4.6, "Amazon" = 2.7 }
+```
+
+Fehlende Restgewichte erscheinen als „Sonstige“. Nicht zugeordnete Positionen zeigt die Seite offen an, mit dem passenden Konfigurationsschnipsel.
+
+**Rebalancing** (Auswertung → Rebalancing): Du legst Zielgewichte je Position fest; sie werden in `<state_dir>/targets.json` gespeichert. Der Rechner verteilt einen Betrag, z. B. die nächste Sparrate, in einem von zwei Verfahren:
+- **Nur kaufen:** Zuerst bekommen die Positionen Geld, die am weitesten unter ihrem Ziel liegen (Wasserstand-Verfahren). Es gibt keine Verkäufe und damit keine Steuer. Optional mit Mindestbetrag je Kauf.
+- **Auf Ziel bringen:** Rechnet exakt auf die Zielgewichte, auch mit Verkäufen. Die Steuer darauf wird geschätzt.
+
+stopguard kauft nichts; Käufe führst du selbst in der Scalable-App aus.
+
+**Vermögensprognose** (Auswertung → Prognose):
+- **Simulation:** 2.000 Verläufe (Monte Carlo) mit Startkapital, Sparrate, Zeitraum, erwarteter Rendite, Schwankung, Inflation und optionalem Ziel.
+- **Vorschläge** kommen aus deiner Historie: Ø Einzahlungen, zeitgewichtete Rendite und Schwankung bisher.
+- **Ergebnis:** der mittlere Verlauf, das Band, in dem 80 % der Verläufe landen, und die Wahrscheinlichkeit, das Ziel zu erreichen.
+
+Steuern und Kosten sind nicht eingerechnet.
+
+**Hinweise** (Übersicht und Auswertung → Hinweise): Regeln, die auf Auffälligkeiten aufmerksam machen. Jeder Hinweis nennt die Zahl dahinter und verlinkt die passende Ansicht. Es sind Beobachtungen, keine Empfehlungen:
+- **Risiko:** Einzelaktie über 20 % (`portfolio.concentration_limit_pct`), Überschneidungen von Aktien mit ETFs, Region über 70 %, Branche über 40 %.
+- **Performance:** Abstand zum Benchmark über 12 Monate, Rückgang vom Höchststand.
+- **Kredit:** Kredit-Trades mit negativer Eigenkapital-Rendite, Kreditrahmen über 50 % genutzt, Sollzins über der Depotrendite.
+- **Steuern:** ungenutzter Freibetrag zum Jahresende, offene Verluste bei gezahlter Steuer.
+- **Kosten und Liquidität:** teure Kleinorders, nicht investiertes Guthaben.
+- **Dividenden:** steigende erwartete Ausschüttungen.

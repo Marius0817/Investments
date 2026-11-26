@@ -37,6 +37,8 @@ from stopguard.notify import Notifier
 from stopguard.portfolio.analysis import analyse_portfolio
 from stopguard.portfolio.api import SECTIONS, PortfolioCache, _filter_trades
 from stopguard.portfolio.importers import ImportError_, read_trades_csv
+from stopguard.portfolio.planning import TargetsStore, historic_defaults, project, rebalance
+from stopguard.portfolio.watchlist import WatchlistError, WatchlistStore, add_alert, enrich, normalise_isin
 from stopguard.portfolio.store import PortfolioStore
 from stopguard.portfolio.sync import sync_portfolio
 from stopguard.sc import ScClient, ScError, ScNotInstalled
@@ -132,6 +134,12 @@ class WebApp:
         self._job_lock = threading.Lock()
         self.sessions: dict[str, float] = {}
         self.demo = "stopguard.fake_sc" in " ".join(cfg.scalable.sc_command)
+        self.targets = TargetsStore(cfg.state_dir)
+        self.watchlist = WatchlistStore(cfg.state_dir)
+        self._watch: dict[str, Any] | None = None
+        self._watch_at = 0.0
+        self._watch_lock = threading.Lock()
+        self.watch_workers = 3  # parallele CLI-Aufrufe für Kurse der Watchlist
 
     # ------------------------------------------------------------ Daten
     def _compute_portfolio(self) -> dict[str, Any]:
@@ -166,6 +174,95 @@ class WebApp:
     def invalidate(self) -> None:
         self._stops = None
         self.portfolio._doc = None
+
+    # ------------------------------------------------------------ Planung & Watchlist
+    def targets_payload(self) -> dict[str, Any]:
+        doc = self.portfolio.get(False)
+        saved = self.targets.load()
+        return {
+            **saved,
+            "positions": [
+                {"isin": p["isin"], "name": p["name"], "value": p["value"], "weight": p["weight"], "kind": p["kind"]}
+                for p in doc["positions"] if p["status"] == "open"
+            ],
+        }
+
+    def rebalance(self, amount: float, mode: str, min_order: float) -> dict[str, Any]:
+        doc = self.portfolio.get(False)
+        targets = self.targets.load()["targets"]
+        try:
+            return rebalance(doc["positions"], targets, amount, mode=mode, min_order=min_order,
+                             tax_rate=doc["settings"]["tax"]["effective_rate"])
+        except ValueError as exc:
+            raise ApiError(400, "bad_request", str(exc)) from exc
+
+    def projection(self, q: dict[str, list[str]]) -> dict[str, Any]:
+        doc = self.portfolio.get(False)
+        defaults = historic_defaults(doc, parse_time(doc["as_of"]))
+
+        def num(name: str, default: float | None, lo: float, hi: float, scale: float = 1.0) -> float | None:
+            raw = (q.get(name) or [""])[0].strip().replace(",", ".")
+            if raw == "":
+                return default
+            try:
+                v = float(raw) * scale
+            except ValueError as exc:
+                raise ApiError(400, "bad_request", f"'{name}' ist keine Zahl.") from exc
+            if not lo <= v <= hi:
+                raise ApiError(400, "bad_request", f"'{name}' liegt außerhalb des erlaubten Bereichs.")
+            return v
+
+        params = {
+            "start": num("start", defaults["start"], 0, 1e9),
+            "monthly": num("monthly", defaults["monthly"], 0, 1e7),
+            "years": int(num("years", 15, 1, 50) or 15),
+            "expected_return": num("return", defaults["expected_return"], -0.2, 0.2, 0.01 if "return" in q else 1.0),
+            "volatility": num("volatility", defaults["volatility"], 0, 0.8, 0.01 if "volatility" in q else 1.0),
+            "inflation": num("inflation", defaults["inflation"], 0, 0.1, 0.01 if "inflation" in q else 1.0),
+            "goal": num("goal", None, 1, 1e10),
+        }
+        try:
+            result = project(**params)
+        except ValueError as exc:
+            raise ApiError(400, "bad_request", str(exc)) from exc
+        return {"defaults": defaults, **result}
+
+    def watchlist_payload(self, refresh: bool = False) -> dict[str, Any]:
+        with self._watch_lock:
+            if self._watch is not None and not refresh and time.time() - self._watch_at < 300:
+                return self._watch
+            items = self.watchlist.items()
+            held: dict[str, float] = {}
+            try:
+                doc = self.portfolio.get(False)
+                held = {p["isin"]: p["value"] for p in doc["positions"] if p["status"] == "open"}
+            except Exception:  # noqa: BLE001 – Watchlist funktioniert auch ohne Portfolio-Daten
+                held = {}
+            try:
+                payload = enrich(self.sc, items, held=held, workers=self.watch_workers)
+            except ScNotInstalled as exc:
+                raise ApiError(503, "sc_missing", str(exc)) from exc
+            self._watch = payload
+            self._watch_at = time.time()
+            return payload
+
+    def watchlist_add(self, body: dict[str, Any]) -> dict[str, Any]:
+        try:
+            isin = normalise_isin(str(body.get("isin") or ""))
+            target = body.get("target_price")
+            target_f = float(str(target).replace(",", ".")) if target not in (None, "") else None
+        except (WatchlistError, ValueError) as exc:
+            raise ApiError(400, "bad_request", str(exc) if isinstance(exc, WatchlistError) else "Zielkurs ist keine Zahl.") from exc
+        try:
+            quote = self.sc.quote(isin)
+        except ScError as exc:
+            raise ApiError(422, "unknown_isin", f"Scalable kennt {isin} nicht oder liefert keinen Kurs: {exc.friendly()}") from exc
+        try:
+            item = self.watchlist.upsert(isin, name=quote.name, note=str(body.get("note") or ""), target_price=target_f)
+        except WatchlistError as exc:
+            raise ApiError(400, "bad_request", str(exc)) from exc
+        self._watch = None
+        return item
 
     def app_info(self) -> dict[str, Any]:
         state = self.store.load()
@@ -526,6 +623,19 @@ def make_handler(app: WebApp):
                     return self._json(200, app.orders.get(parts[1]))
                 if parts and parts[0] == "unresolved" and len(parts) == 2:
                     return self._json(200, {"candidates": app.orders.candidates(parts[1].upper())})
+                if parts == ["targets"]:
+                    return self._json(200, app.targets_payload())
+                if parts == ["rebalance"]:
+                    try:
+                        amount = float((q.get("amount") or ["0"])[0].replace(",", ".") or 0)
+                        min_order = float((q.get("min_order") or ["0"])[0].replace(",", ".") or 0)
+                    except ValueError as exc:
+                        raise ApiError(400, "bad_request", "Betrag ist keine Zahl.") from exc
+                    return self._json(200, app.rebalance(amount, (q.get("mode") or ["buy"])[0], min_order))
+                if parts == ["projection"]:
+                    return self._json(200, app.projection(q))
+                if parts == ["watchlist"]:
+                    return self._json(200, app.watchlist_payload(refresh))
                 if parts == ["export"]:
                     doc = app.portfolio.get(refresh)
                     body_bytes = json.dumps(doc, ensure_ascii=False, indent=2, default=str).encode("utf-8")
@@ -591,6 +701,36 @@ def make_handler(app: WebApp):
                 return self._json(200, {"lines": lines})
             if parts == ["import"]:
                 return self._json(200, self._import(body))
+            if parts == ["targets"]:
+                targets = body.get("targets")
+                if not isinstance(targets, dict):
+                    raise ApiError(400, "bad_request", "Feld 'targets' ({ISIN: Prozent}) fehlt.")
+                try:
+                    app.targets.save(targets)
+                except ValueError as exc:
+                    raise ApiError(400, "bad_request", str(exc)) from exc
+                return self._json(200, app.targets_payload())
+            if parts == ["watchlist"]:
+                return self._json(200, app.watchlist_add(body))
+            if len(parts) == 3 and parts[0] == "watchlist" and parts[2] == "remove":
+                try:
+                    removed = app.watchlist.remove(parts[1])
+                except WatchlistError as exc:
+                    raise ApiError(400, "bad_request", str(exc)) from exc
+                app._watch = None
+                if not removed:
+                    raise ApiError(404, "not_found", "Nicht auf der Watchlist.")
+                return self._json(200, {"removed": True})
+            if len(parts) == 3 and parts[0] == "watchlist" and parts[2] == "alert":
+                try:
+                    price = float(str(body.get("price")).replace(",", "."))
+                    alerts = add_alert(app.sc, parts[1], price)
+                except (WatchlistError, ValueError) as exc:
+                    raise ApiError(400, "bad_request", str(exc) if isinstance(exc, WatchlistError) else "Kurs ist keine Zahl.") from exc
+                except ScError as exc:
+                    raise ApiError(502, "scalable_error", exc.friendly()) from exc
+                app._watch = None
+                return self._json(200, {"alerts": alerts})
             raise ApiError(404, "not_found", "Unbekannter Endpunkt.")
 
         def _import(self, body: dict[str, Any]) -> dict[str, Any]:

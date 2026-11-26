@@ -533,8 +533,13 @@ def cmd_web(ctx: Context) -> int:
     server = serve_web(app, host, ctx.args.port)
     shown = "127.0.0.1" if host in ("0.0.0.0", "::") else host
     url = f"http://{shown}:{server.server_address[1]}/"
-    print(ui.c(f"✔ stopguard läuft: {url}", "green") + (ui.c("  (Anmeldung mit Zugangsschlüssel)", "dim") if token else ""))
-    print(ui.c("  Strg+C beendet den Server.", "dim"))
+    if ctx.args.announce:
+        # Maschinenlesbar für die macOS-App (Port 0 = frei gewählter Port)
+        print(f"STOPGUARD_URL={url}", flush=True)
+    print(ui.c(f"✔ stopguard läuft: {url}", "green") + (ui.c("  (Anmeldung mit Zugangsschlüssel)", "dim") if token else ""), flush=True)
+    print(ui.c("  Strg+C beendet den Server.", "dim"), flush=True)
+    if ctx.args.exit_with_parent:
+        _watch_parent(server)
     if ctx.args.open:
         webbrowser.open(url)
     try:
@@ -544,6 +549,34 @@ def cmd_web(ctx: Context) -> int:
     finally:
         server.server_close()
     return EXIT_OK
+
+
+def _watch_parent(server) -> None:
+    """Beendet den Server, sobald der aufrufende Prozess (z. B. die macOS-App) nicht mehr läuft."""
+    import os
+    import threading
+    import time
+
+    # Die App übergibt ihre PID; sonst gilt der Elternprozess beim Start.
+    parent = int(os.environ.get("STOPGUARD_PARENT_PID") or os.getppid())
+
+    def alive() -> bool:
+        try:
+            os.kill(parent, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        return parent != 1
+
+    def watch() -> None:
+        while True:
+            time.sleep(2)
+            if not alive():
+                server.shutdown()
+                return
+
+    threading.Thread(target=watch, daemon=True, name="parent-watch").start()
 
 
 def cmd_resolve(ctx: Context) -> int:
@@ -779,6 +812,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--allowed-host", action="append", help="zusätzlich erlaubter Host-Name, z. B. pi.local (mehrfach möglich)")
     s.add_argument("--open", action="store_true", help="Browser öffnen")
     s.add_argument("--insecure-no-auth", action="store_true", help=argparse.SUPPRESS)
+    s.add_argument("--announce", action="store_true", help=argparse.SUPPRESS)  # für die macOS-App
+    s.add_argument("--exit-with-parent", action="store_true", help=argparse.SUPPRESS)  # für die macOS-App
     s.set_defaults(func=cmd_web)
 
     s = sub.add_parser("resolve", help="unklare Ordereinreichungen klären (Scalable-Recovery-Prozedur)")

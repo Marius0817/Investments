@@ -32,9 +32,11 @@ positions[]   je Wertpapier (aggregiert über alle Trades/Lots)
 trades[]      je Kauf-Lot (FIFO) inkl. Zahlungsströmen, Steuern, Kredit, Benchmark
 credit        Kreditübersicht, Stresstest, Kredit-Trades, Saldo-Verlauf, Zinsen je Monat
 taxes         Steuer-Jahresübersicht, Freibetrag, latente Steuer
-income        Dividenden/Zinserträge je Monat/Jahr/Position
+income        Dividenden/Zinserträge je Monat/Jahr/Position, Prognose der nächsten 12 Monate (forecast)
 costs         Gebühren, Kreditzinsen, Steuern je Monat/Jahr
-allocation    Aufteilung nach Position, Anlageart, Tag
+allocation    Aufteilung nach Position, Anlageart, Tag, Anlageklasse, Region, Land, Branche, Währung; ETF-Durchschau
+activities[]  alle Buchungen des Verrechnungskontos (neueste zuerst)
+insights[]    regelbasierte Hinweise (Klumpenrisiko, Kosten, Kredit, Steuern, Performance)
 timeseries    Zeitreihen für Diagramme (Depotwert, TWR, Drawdown, IRR-Verlauf, Positionen)
 periods       Rendite je Kalenderjahr, TWR-Zusammenfassung
 data_quality  Warnungen, Hinweise, Datenquellen, Abgleich mit Scalable
@@ -99,6 +101,8 @@ weight, unrealized_pl, unrealized_pct, realized_pl, dividends, fees, profit, irr
 irr_after_tax, equity_irr, latent_tax, credit_outstanding, interest, first_buy,
 holding_days, trades, open_trades`. `stopguard` enthält – falls die Stop-Loss-Verwaltung
 für die Position aktiv ist – `{strategy, phase, target_stop, order_id}`.
+`performance = {1w, 1m, 3m, ytd, 1y}` ist die reine Kursentwicklung je Zeitraum (ohne Zu-/Verkäufe;
+`null`, wenn die Kurshistorie nicht so weit zurückreicht) – Grundlage der Heatmap.
 
 ### `credit`
 
@@ -117,9 +121,41 @@ taxable, allowance_used, loss_carryforward_stock, loss_carryforward_other, tax_m
 
 ### `income`, `costs`, `allocation`
 
-- `income.monthly[] = {month, dividends, interest}`, `by_year[]`, `by_position[]`, `trailing_12m`, `yield_12m`
+- `income.monthly[] = {month, dividends, interest}`, `by_year[] = {year, dividends, growth}`, `by_position[]`, `trailing_12m`, `yield_12m`.
+  `growth` = Veränderung gegenüber dem Vorjahr – erst ab dem zweiten vollen Jahr (das erste ist meist angebrochen), sonst `null`.
+- `income.forecast` – **Schätzung** der Ausschüttungen der nächsten 12 Monate:
+  jede Zahlung der letzten 12 Monate je Stück × heutiger Bestand, ein Jahr später; bei Positionen unter einem Jahr
+  ergänzt um den erkannten Rhythmus (monatlich/quartalsweise/halbjährlich).
+  `{basis, estimated: true, next_12m, yield_current, yield_on_cost, monthly[] = {month, amount, items[]},
+  payments[] = {date, isin, name, amount, gross, per_share, units, based_on, pending, estimated},
+  by_position[] = {isin, name, amount, gross, trailing_12m, frequency, frequency_label, payments, yield_on_cost,
+  yield_current, confidence}}`. `confidence`: `high` (volles Jahr gehalten), `medium` (Rhythmus aus ≥ 2 Zahlungen),
+  `low` (eine einzelne Zahlung).
 - `costs.monthly[] = {month, fees, interest, interest_estimated, taxes}`, `by_year[]`
 - `allocation.by_position[] = {isin, name, value, weight}`, `by_kind[]`/`by_tag[] = {key, value, weight}`, `credit_financed`
+- `allocation.by_asset_class[]`, `by_region[]`, `by_country[]`, `by_sector[]`, `by_currency[]` =
+  `{key, value, weight, positions[] = {name, value}}` (Beiträge je Ausprägung). Fonds werden mit den Gewichten aus
+  `[instruments.<ISIN>.exposure]` durchschaut; Einzelaktien ohne Angabe über das Länderkürzel der ISIN (Sitz des
+  Emittenten). Was sich nicht zuordnen lässt, steht als `"Nicht zugeordnet"`, Restgewichte von Fonds als `"Sonstige"`.
+  `coverage = {dimension: Anteil zugeordnet}`, `derived_share = {dimension: Anteil nur über ISIN abgeleitet}`,
+  `unassigned = {dimension: [{isin, name, value}]}`.
+- `allocation.look_through = {items[], overlap[], funds_with_holdings, fund_value_covered}` – größte Einzelwerte
+  direkt und über Fonds (`exposure.holdings`): `{key, isin, name, direct, via_funds, value, weight, sources[]}`;
+  `overlap[]` sind Werte, die direkt *und* über Fonds gehalten werden.
+
+### `activities[]`
+
+Alle Buchungen von Scalable, neueste zuerst: `{id, date, kind, isin, name, units, price, amount, fees, tax, gross,
+description}`. `kind`: `deposit, withdrawal, buy, sell, dividend, interest_income, loan_interest, fee, tax,
+tax_refund, transfer_in, transfer_out, other`; `amount` ist die Wirkung auf das Konto (+ Zufluss, − Abfluss).
+Importierte Notion-Trades sind keine Kontobuchungen und erscheinen nur unter `trades[]`.
+
+### `insights[]`
+
+Regelbasierte Hinweise mit der Zahl dahinter – Beobachtungen, **keine Anlageempfehlungen**:
+`{id, level: warn|info|good, category, title, message, link, value}`. `link` ist ein Pfad der Weboberfläche
+(z. B. `#/auswertung/diversifikation`). Schwellen: `portfolio.concentration_limit_pct` (Einzelaktie, Standard 20 %),
+`portfolio.cash_hint_pct` (Guthaben, Standard 10 %).
 
 ### `timeseries`
 
@@ -167,6 +203,21 @@ stopguard portfolio serve [--host 127.0.0.1] [--port 8765] [--ttl 300] [--allow-
 `?refresh=1` berechnet neu (aus der lokalen Datenbank, ohne Scalable-Abfrage). Daten von
 Scalable holt nur `stopguard portfolio sync` (z. B. per Zeitplan). Die API ist nur lesend,
 ohne Authentifizierung und lauscht standardmäßig nur auf `127.0.0.1`.
+
+### Zusätzlich in `stopguard web` (Weboberfläche)
+
+`stopguard web` liefert dieselben Abschnitte unter `/api/v1/…` (mit Anmeldung, siehe README) und außerdem:
+
+| Methode und Pfad | Inhalt |
+|---|---|
+| `GET /api/v1/targets` | Zielgewichte `{targets: {ISIN: Prozent}, updated_at, positions[]}` (`<state_dir>/targets.json`) |
+| `POST /api/v1/targets` | `{targets: {ISIN: Prozent}}` speichern – Summe 100 % (±0,5), 0 entfernt |
+| `GET /api/v1/rebalance?amount=500&mode=buy\|full&min_order=25` | Verteilung: `rows[] = {isin, name, value, weight_now, target, buy, sell, tax_estimate, weight_after, …}`, `drift_now`, `drift_after`, `total_buy`, `total_sell`, `tax_estimate` |
+| `GET /api/v1/projection?start=&monthly=&years=&return=&volatility=&inflation=&goal=` | Monte-Carlo-Prognose (Prozentwerte in %): `series[] = {month, p10, p25, p50, p75, p90, invested}`, `final`, `goal = {probability, median_months}`, `defaults` aus der eigenen Historie |
+| `GET /api/v1/watchlist` | Einträge mit Kurs, 12-Monats-Verlauf, Veränderung, 52-Wochen-Hoch/-Tief, Abstand zum Zielkurs, Kursalarmen |
+| `POST /api/v1/watchlist` | `{isin, target_price?, note?}` hinzufügen/ändern (ISIN wird bei Scalable geprüft) |
+| `POST /api/v1/watchlist/{isin}/remove` | entfernen |
+| `POST /api/v1/watchlist/{isin}/alert` | `{price}` – Kursalarm bei Scalable anlegen (**keine Order**) |
 
 ## Methodik (Kurzfassung)
 
