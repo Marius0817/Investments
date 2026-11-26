@@ -302,6 +302,7 @@ mode = "auto"
 # Klassifizierung für Diversifikation und ETF-Durchschau.
 # Die Gewichte der ETFs sind vereinfachte DEMO-Werte – für das echte Depot aus dem Factsheet übernehmen.
 [instruments.IE00B4L5Y983]
+ter = 0.20                       # laufende Kosten in % p. a. (DEMO-Wert)
 ticker = "EUNL.DE"
 kind = "equity_fund"
 distributing = false
@@ -314,6 +315,7 @@ currencies = {{ USD = 72, EUR = 9, JPY = 5.5, GBP = 3.5, CAD = 3, CHF = 2.4 }}
 holdings = {{ US0378331005 = 4.8, US67066G1040 = 4.6, US5949181045 = 4.3, "Amazon" = 2.7, "Alphabet" = 2.5, "Meta Platforms" = 1.8 }}
 
 [instruments.LU0274208692]
+ter = 0.45                       # laufende Kosten in % p. a. (DEMO-Wert)
 ticker = "XDWD.DE"
 kind = "equity_fund"
 distributing = false
@@ -326,6 +328,7 @@ currencies = {{ USD = 72, EUR = 9, JPY = 5.5, GBP = 3.5, CAD = 3, CHF = 2.4 }}
 holdings = {{ US0378331005 = 4.8, US67066G1040 = 4.6, US5949181045 = 4.3, "Amazon" = 2.7, "Alphabet" = 2.5, "Meta Platforms" = 1.8 }}
 
 [instruments.IE00BK5BQT80]
+ter = 0.19                       # laufende Kosten in % p. a. (DEMO-Wert)
 ticker = "VWCE.DE"
 kind = "equity_fund"
 distributing = false
@@ -337,6 +340,7 @@ sectors = {{ "Informationstechnologie" = 25, "Finanzen" = 17, "Industrie" = 11, 
 holdings = {{ US0378331005 = 4.0, US67066G1040 = 4.0, US5949181045 = 3.7, "Amazon" = 2.3, "Alphabet" = 2.2 }}
 
 [instruments.IE00B8GKDB10]
+ter = 0.29                       # laufende Kosten in % p. a. (DEMO-Wert)
 ticker = "VHYL.DE"
 kind = "equity_fund"
 distributing = true

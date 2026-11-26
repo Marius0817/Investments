@@ -214,7 +214,7 @@ class WebApp:
 
         params = {
             "start": num("start", defaults["start"], 0, 1e9),
-            "monthly": num("monthly", defaults["monthly"], 0, 1e7),
+            "monthly": num("monthly", defaults["monthly"], -1e7, 1e7),  # negativ = Entnahmeplan
             "years": int(num("years", 15, 1, 50) or 15),
             "expected_return": num("return", defaults["expected_return"], -0.2, 0.2, 0.01 if "return" in q else 1.0),
             "volatility": num("volatility", defaults["volatility"], 0, 0.8, 0.01 if "volatility" in q else 1.0),

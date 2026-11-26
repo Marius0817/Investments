@@ -18,6 +18,8 @@ from stopguard.portfolio.credit import CreditReport, allocate_credit
 from stopguard.portfolio.dividends import add_growth, build_dividend_forecast
 from stopguard.portfolio.exposure import build_exposure
 from stopguard.portfolio.insights import build_insights
+from stopguard.portfolio.ongoing import build_ongoing_costs
+from stopguard.portfolio.risk import monthly_returns, risk_metrics
 from stopguard.portfolio.ledger import build_ledger
 from stopguard.portfolio.lots import apply_credit_flags, build_instruments, build_lots, dedupe_manual, manual_to_lots
 from stopguard.portfolio.metrics import Flow, TradeResult, aggregate_positions, irr_of, trade_metrics
@@ -206,12 +208,18 @@ def analyse_portfolio(store: PortfolioStore, cfg: Config, *, now: datetime | Non
     doc["income"]["by_year"] = add_growth(doc["income"]["by_year"], min((r.lot.open_date.year for r in results), default=None))
     doc["income"]["forecast"] = build_dividend_forecast(results, positions, now)
     doc["costs"] = build_costs(results, events, credit_report)
+    doc["costs"]["ongoing"] = build_ongoing_costs(positions, instruments)
     doc["allocation"] = build_allocation(positions)
     doc["allocation"].update(build_exposure(positions, instruments))
     doc["activities"] = build_activities(events, {i: inst.name for i, inst in instruments.items()})
     doc["timeseries"] = build_timeseries(results, events, credit_report, store, cfg, now, prices)
     doc["periods"] = build_periods(doc["timeseries"], events, now)
     doc["summary"]["twr"] = doc["periods"]["twr_summary"]
+    doc["periods"]["months"] = monthly_returns(doc["timeseries"]["twr"])
+    doc["summary"]["risk"] = risk_metrics(
+        doc["timeseries"]["twr"], cfg.portfolio.resolution, cfg.portfolio.risk_free_pct / 100, doc["periods"]["months"]
+    )
+    doc["taxes"]["vorabpauschale_preview"] = build_vap_preview(results, tax, cfg, now)
     doc["data_quality"] = {
         **quality,
         "sources": {
@@ -232,6 +240,48 @@ def analyse_portfolio(store: PortfolioStore, cfg: Config, *, now: datetime | Non
     doc["insights"] = build_insights(doc, cfg, now)
     doc["chart_hints"] = CHART_HINTS
     return doc
+
+
+def build_vap_preview(results: list[TradeResult], tax: TaxModel, cfg: Config, now: datetime) -> dict[str, Any]:
+    """Voraussichtliche Vorabpauschale des laufenden Jahres (fällig Anfang nächsten Jahres).
+
+    Sie gilt am ersten Werktag des Folgejahres als zugeflossen und wird daher mit dem Freistellungsauftrag
+    des *neuen* Jahres verrechnet. Der heutige Kurs ersetzt den noch unbekannten Jahresendkurs.
+    """
+    by: dict[str, dict[str, Any]] = {}
+    for r in results:
+        est = tax.vap_preview(r.lot, r.inst)
+        if not est:
+            continue
+        vap, taxable = est
+        row = by.setdefault(r.lot.isin, {"isin": r.lot.isin, "name": r.data["name"], "vap": 0.0, "taxable": 0.0,
+                                         "teilfreistellung": r.inst.teilfreistellung})
+        row["vap"] += vap
+        row["taxable"] += taxable
+    rows = sorted(by.values(), key=lambda x: -x["taxable"])
+    for row in rows:
+        row["tax"] = round(row["taxable"] * tax.rate, 2)
+        row["vap"] = round(row["vap"], 2)
+        row["taxable"] = round(row["taxable"], 2)
+    taxable = sum(x["taxable"] for x in rows)
+    allowance = cfg.tax.allowance_eur if cfg.tax.enabled else 0.0
+    year = now.year
+    bz = tax.basiszins.get(year)
+    return {
+        "year": year,
+        "due": f"{year + 1}-01-02",
+        "basiszins": bz,
+        "total_vap": round(sum(x["vap"] for x in rows), 2),
+        "total_taxable": round(taxable, 2),
+        "tax_before_allowance": round(taxable * tax.rate, 2),
+        "allowance_next_year": allowance,
+        "tax_after_allowance": round(max(0.0, taxable - allowance) * tax.rate, 2),
+        "by_position": rows,
+        "available": bz is not None,
+        "note": "Schätzung mit dem heutigen Kurs als Jahresendkurs; nur thesaurierende Fonds. Die Vorabpauschale gilt am "
+                "ersten Werktag des Folgejahres als zugeflossen und wird mit dem Freistellungsauftrag dieses neuen Jahres verrechnet "
+                "(angenommen: gleicher Betrag wie heute, noch nicht anderweitig verbraucht).",
+    }
 
 
 PERFORMANCE_PERIODS = (("1w", 7), ("1m", 30), ("3m", 91), ("1y", 365))

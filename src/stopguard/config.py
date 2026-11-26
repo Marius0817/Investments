@@ -232,6 +232,7 @@ class PortfolioSettings:
     auto_sync_hours: float = 12.0  # 'stopguard run'/'daemon' aktualisiert die Portfolio-Daten in diesem Abstand (0 = aus)
     concentration_limit_pct: float = 20.0  # Hinweis, wenn eine Einzelaktie mehr als diesen Anteil ausmacht
     cash_hint_pct: float = 10.0  # Hinweis auf nicht investiertes Guthaben ab diesem Anteil am Vermögen
+    risk_free_pct: float = 2.0  # risikofreier Zins p. a. für Sharpe- und Sortino-Ratio
 
 
 @dataclass
@@ -273,6 +274,7 @@ class InstrumentConfig:
     currency: str | None = None
     # Durchschau für Fonds/ETFs: Dimension → {Schlüssel: Prozent}; holdings: {ISIN oder Name: Prozent}
     exposure: dict[str, dict[str, float]] = field(default_factory=dict)
+    ter: float | None = None  # laufende Kosten (TER) in Prozent p. a., z. B. 0.20
 
 
 @dataclass
@@ -470,6 +472,18 @@ def _opt_str(v: Any) -> str | None:
     return str(v).strip() or None if v is not None else None
 
 
+def _parse_ter(raw: Any, where: str) -> float | None:
+    if raw is None:
+        return None
+    try:
+        v = float(raw)
+    except (TypeError, ValueError) as exc:
+        raise ConfigError(f"{where}: Prozentwert erwartet, z. B. 0.20") from exc
+    if not 0 <= v <= 5:
+        raise ConfigError(f"{where}: TER in Prozent p. a. zwischen 0 und 5 erwartet (z. B. 0.20 für 0,20 %)")
+    return v
+
+
 def _parse_exposure(raw: Any, where: str) -> dict[str, dict[str, float]]:
     """``[instruments.X.exposure]`` – Gewichte in Prozent je Dimension (z. B. regions = { Nordamerika = 72 })."""
     if raw is None:
@@ -641,7 +655,7 @@ def parse_config(raw: dict[str, Any], source: Path | None = None) -> Config:
         _check_keys(
             spec,
             {"ticker", "name", "kind", "distributing", "tags", "benchmark", "asset_class", "sector", "country", "region",
-             "currency", "exposure"},
+             "currency", "exposure", "ter"},
             where,
         )
         kind = spec.get("kind")
@@ -661,6 +675,7 @@ def parse_config(raw: dict[str, Any], source: Path | None = None) -> Config:
             region=_opt_str(spec.get("region")),
             currency=_opt_str(spec.get("currency")),
             exposure=_parse_exposure(spec.get("exposure"), where + ".exposure"),
+            ter=_parse_ter(spec.get("ter"), where + ".ter"),
         )
 
     credit_flags: list[CreditFlag] = []

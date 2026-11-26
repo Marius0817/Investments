@@ -60,6 +60,7 @@ dedupe_days = 3                   # Import-Trade = Scalable-Trade bei gleicher I
 auto_sync_hours = 12              # 'stopguard run'/'daemon' aktualisiert die Portfolio-Daten alle 12 h (0 = aus)
 concentration_limit_pct = 20      # Hinweis, wenn eine Einzelaktie mehr als diesen Anteil am Depot hat
 cash_hint_pct = 10                # Hinweis auf nicht investiertes Guthaben ab diesem Anteil
+risk_free_pct = 2.0               # risikofreier Zins p. a. für Sharpe- und Sortino-Ratio
 
 [tax]
 enabled = true
@@ -90,6 +91,8 @@ deposit_earmark_days = 5          # Einzahlungen bezahlen zuerst Käufe der näc
 # kind = "equity_fund"
 # distributing = false
 # tags = ["ETF", "Welt"]
+#
+# ter = 0.20                       # laufende Kosten (TER) in % p. a. laut Factsheet → Kostenanalyse
 #
 # Diversifikation (Region, Land, Branche, Anlageklasse, Währung) – alles optional:
 #   Einzelaktien: sector = "Informationstechnologie" (Land/Region/Währung leitet stopguard aus der ISIN ab,

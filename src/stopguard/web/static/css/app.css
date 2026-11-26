@@ -76,7 +76,7 @@ main > .is-stale { opacity: .6; transition: opacity .12s; pointer-events: none; 
 .inline-field.grow input { flex: 1; }
 
 /* ---------- Tabellen ---------- */
-.table-scroll { overflow-x: auto; }
+.table-scroll { overflow-x: auto; position: relative; } /* hält absolut positionierte Screenreader-Texte im Scrollbereich */
 .table th.num, .table td.num { text-align: right; }
 .table td { vertical-align: middle; }
 /* Amboss setzt tabular-nums auf die ganze Tabelle; Schibsted Grotesk sperrt damit auch Punkt und Komma –
@@ -347,6 +347,24 @@ main > .is-stale { opacity: .6; transition: opacity .12s; pointer-events: none; 
 /* Privatsphäre-Schalter */
 .privacy-toggle { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 28px; padding: 0; margin-left: var(--space-2); }
 .privacy-toggle[aria-pressed="true"] { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+
+
+/* ---------- Monatsrenditen, Überschneidungen, Glossar ---------- */
+.month-table { min-width: 760px; }
+.month-table th, .month-table td { padding: 6px 4px; font-size: 12.5px; }
+.month-table thead th { text-align: right; }
+.month-table thead th:first-child { text-align: left; }
+.month-cell { border-radius: 3px; border-bottom: 2px solid var(--card) !important; border-left: 2px solid var(--card); }
+.month-cell.partial { font-style: italic; }
+.month-total { font-weight: 600; }
+.overlap-table th, .overlap-table td { font-size: 13px; white-space: nowrap; }
+.overlap-table thead th { text-transform: none; letter-spacing: 0; font-size: 12px; max-width: 14ch; overflow: hidden; text-overflow: ellipsis; }
+.overlap-cell { border-left: 2px solid var(--card); border-bottom: 2px solid var(--card) !important; }
+.overlap-list li { margin: 4px 0; }
+.glossary { margin: var(--space-2) 0; display: grid; grid-template-columns: max-content 1fr; gap: var(--space-1) var(--space-4); }
+.glossary dt { font-weight: 600; }
+.glossary dd { margin: 0; }
+@media (max-width: 640px) { .glossary { grid-template-columns: 1fr; } .glossary dd { margin-bottom: var(--space-2); } }
 
 @media print {
   .topbar, .footer, .chart-toggle, .filter-row, .btn { display: none !important; }

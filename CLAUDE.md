@@ -10,7 +10,9 @@ Sprache der Nutzeroberfläche, Doku und Kommentare: **Deutsch**.
 - `src/stopguard/portfolio/` – Portfolio-Tracking (IRR, Trade-Vergleich, Kredit, Steuern).
   Datenfluss: `sync` → SQLite `store` → `ledger` → `lots` → `credit` → `tax` → `metrics` → `analysis` → `api`/Export.
   Dazu `exposure` (Diversifikation, ETF-Durchschau über `[instruments.X.exposure]`), `dividends` (Prognose),
-  `insights` (regelbasierte Hinweise), `planning` (Zielgewichte/Rebalancing, Monte-Carlo-Prognose), `watchlist`.
+  `insights` (regelbasierte Hinweise), `planning` (Zielgewichte/Rebalancing, Monte-Carlo-Prognose, Entnahmeplan),
+  `watchlist`, `risk` (Risikokennzahlen/Monatsrenditen aus dem TWR-Index), `ongoing` (TER-Kosten aus der Konfiguration).
+  Basiszins für die Vorabpauschale: `tax.BASISZINS` (BMF-Werte, jährlich im Januar ergänzen).
 - `src/stopguard/sc.py` – einziger Zugriff auf Scalable: die **offizielle Scalable CLI** (`sc … --json`).
   Keine inoffiziellen APIs, kein Scraping.
 - `src/stopguard/fake_sc.py` + `demo.py` – simulierte CLI und Demo-Depot für Tests und Entwicklung.

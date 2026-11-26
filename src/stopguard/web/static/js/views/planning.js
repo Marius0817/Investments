@@ -190,7 +190,7 @@ function calcResult(r) {
 
 // ---------------------------------------------------------------- Prognose
 
-const proj = {};
+const proj = { mode: "save" };
 
 export function projectionPanel() {
   return {
@@ -207,7 +207,10 @@ export function projectionPanel() {
         const q = new URLSearchParams();
         for (const k of ["start", "monthly", "years", "return", "volatility", "inflation", "goal"]) {
           const v = proj[k];
-          if (v !== undefined && v !== "") q.set(k, String(parseNum(v)));
+          if (v === undefined || v === "" || (k === "goal" && proj.mode === "withdraw")) continue;
+          const n = parseNum(v);
+          // Entnahmeplan: positive Eingabe, negativer Monatsbetrag an den Server
+          q.set(k, String(k === "monthly" && proj.mode === "withdraw" ? -Math.abs(n) : k === "monthly" ? Math.abs(n) : n));
         }
         return q.toString();
       };
@@ -216,14 +219,17 @@ export function projectionPanel() {
         ${hint ? html`<span class="muted small" id="hint-${name}">${hint}</span>` : ""}</label>`;
       const drawForm = (d) => {
         render(body, html`
+          <div class="filter-row" id="pj-mode">${segmented("mode", "Art der Planung", [["save", "Sparen"], ["withdraw", "Entnehmen"]], proj.mode)}</div>
           <form id="pj-form" class="pj-form">
             ${field("start", "Startkapital", "€", "heutiges Nettovermögen")}
-            ${field("monthly", "Sparrate pro Monat", "€", html`Ø deiner Einzahlungen der letzten 12 Monate: ${fmt.eur(d.monthly, 0)}`)}
+            ${proj.mode === "withdraw"
+              ? field("monthly", "Entnahme pro Monat", "€", "steigt mit der Inflation (gleiche Kaufkraft)")
+              : field("monthly", "Sparrate pro Monat", "€", html`Ø deiner Einzahlungen der letzten 12 Monate: ${fmt.eur(d.monthly, 0)}`)}
             ${field("years", "Zeitraum", "Jahre", "1 bis 50")}
             ${field("return", "Erwartete Rendite", "% p. a.", d.historic_return !== null && d.historic_return !== undefined ? html`dein Depot bisher (zeitgewichtet): ${fmt.pct(d.historic_return, 1)} p. a.` : "z. B. 5 % für ein breites Aktiendepot (Annahme)")}
             ${field("volatility", "Schwankung", "% p. a.", d.historic_volatility ? html`dein Depot bisher: ${fmt.pct(d.historic_volatility, 1)}` : "Aktien-ETFs historisch oft 15–20 %")}
             ${field("inflation", "Inflation", "% p. a.", "0 = Nominalwerte")}
-            ${field("goal", "Ziel (optional)", "€", "z. B. 100.000")}
+            ${proj.mode === "withdraw" ? "" : field("goal", "Ziel (optional)", "€", "z. B. 100.000")}
           </form>
           <div id="pj-result" aria-live="polite"></div>
         `);
@@ -242,11 +248,13 @@ export function projectionPanel() {
           if (alive) render(out, errorBox(err, "Bitte die Eingaben prüfen."));
         }
       }, 350);
+      let defaults = null;
       (async () => {
         try {
           const first = await api.get("projection?years=15");
           if (!alive) return;
           const d = first.defaults;
+          defaults = d;
           if (proj.start === undefined) {
             Object.assign(proj, {
               start: fmt.num(d.start, 0),
@@ -267,6 +275,15 @@ export function projectionPanel() {
       const offs = [
         on(panel, "input", "#pj-form input", (ev, inp) => { proj[inp.name] = inp.value; run(); }),
         on(panel, "submit", "#pj-form", (ev) => { ev.preventDefault(); run(); }),
+        on(panel, "change", "#pj-mode input[name=mode]", (ev, inp) => {
+          proj.mode = inp.value;
+          // sinnvoller Startwert je Modus: Sparrate aus der Historie bzw. 4 % des Kapitals pro Jahr als Entnahme
+          const start = parseNum(proj.start) || 0;
+          proj.monthly = proj.mode === "withdraw" ? fmt.num(Math.round((start * 0.04) / 12 / 10) * 10, 0) : fmt.num(defaults ? defaults.monthly : 0, 0);
+          drawForm(defaults);
+          $(`#pj-mode input[value=${proj.mode}]`, panel).focus();
+          run();
+        }),
       ];
       return () => { alive = false; dispose(); offs.forEach((o) => o()); };
     },
@@ -285,6 +302,21 @@ function resultView(r) {
   const years = r.params.years;
   const real = r.real_terms ? " (heutige Kaufkraft)" : "";
   const goal = r.goal;
+  const w = r.withdrawal;
+  if (w) {
+    const lasts = 1 - w.depleted_probability;
+    return html`
+      ${tiles([
+        { label: "Kapital reicht", side: `${years} Jahre`, value: fmt.pct(lasts, 0), note: "der Verläufe bis zum Ende des Zeitraums" },
+        { label: "Aufgebraucht", side: "Mitte", value: w.median_months ? `${fmt.num(w.median_months / 12, 1)} J.` : "–", note: w.median_months ? "in der Hälfte der Verläufe früher" : "in weniger als der Hälfte der Verläufe" },
+        { label: "Restkapital", side: "Mitte", value: fmt.eur(f.p50, 0), note: `nach ${years} Jahren${real}` },
+        { label: "Entnommen", side: "Mitte", value: fmt.eur(w.withdrawn_median, 0), note: html`tatsächlich, bis das Kapital endet${real} · geplant ${fmt.eur(w.planned_total, 0)}` },
+      ])}
+      ${w.early_months && (!w.median_months || w.early_months < w.median_months) ? alertBox("warn", html`In jedem zehnten Verlauf ist das Kapital schon nach <b>${fmt.num(w.early_months / 12, 1)} Jahren</b> aufgebraucht – meist nach schwachen ersten Jahren.`, { small: true }) : ""}
+      <figure id="pj-chart"></figure>
+      <p class="muted small">${r.method} Die Entnahme beginnt im ersten Monat. Steuern auf Verkäufe sind nicht berücksichtigt.</p>
+    `;
+  }
   return html`
     ${tiles([
       { label: "Mittlerer Verlauf", side: `in ${years} Jahren`, value: fmt.eur(f.p50, 0), note: `Hälfte der Verläufe darüber${real} · eingezahlt ${fmt.eur(f.invested, 0)}` },
@@ -310,7 +342,7 @@ function chartSpec(r) {
       { name: "10–90 % der Verläufe", cls: "c1 outer", band: true, points: s.map((p) => [monthDate(p.month), p.p10, p.p90]) },
       { name: "25–75 % der Verläufe", cls: "c1 inner", band: true, points: s.map((p) => [monthDate(p.month), p.p25, p.p75]) },
       { name: "Mittlerer Verlauf", cls: "c1", points: s.map((p) => [monthDate(p.month), p.p50]) },
-      { name: "Eingezahlt", cls: "deemph", points: s.map((p) => [monthDate(p.month), p.invested]) },
+      { name: r.withdrawal ? "ohne Rendite" : "Eingezahlt", cls: "deemph", points: s.map((p) => [monthDate(p.month), p.invested]) },
     ],
     y: { format: (v) => fmt.eur(v, 0), axis: (v) => fmt.eurShort(v), zero: true },
   };

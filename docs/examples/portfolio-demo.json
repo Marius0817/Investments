@@ -1,8 +1,8 @@
 {
   "schema": "stopguard.portfolio/1",
   "generator": "stopguard 0.1.0",
-  "generated_at": "2026-11-26T04:44:06.421363+00:00",
-  "as_of": "2026-11-26T04:44:06.395574+00:00",
+  "generated_at": "2026-11-26T05:46:17.444334+00:00",
+  "as_of": "2026-11-26T05:46:17.419413+00:00",
   "currency": "EUR",
   "settings": {
     "benchmark": {
@@ -46,9 +46,9 @@
       "dividends": 0,
       "fees": 1.98,
       "profit": 618.02,
-      "irr": 0.234269,
-      "irr_after_tax": 0.189059,
-      "equity_irr": 0.476709,
+      "irr": 0.23422,
+      "irr_after_tax": 0.18902,
+      "equity_irr": 0.476507,
       "latent_tax": 92.17,
       "credit_outstanding": 1321.1,
       "interest": 63.62,
@@ -87,8 +87,8 @@
       "dividends": 95.4,
       "fees": 0.99,
       "profit": 417.73,
-      "irr": 0.121909,
-      "irr_after_tax": 0.099268,
+      "irr": 0.121896,
+      "irr_after_tax": 0.099258,
       "equity_irr": null,
       "latent_tax": 59.51,
       "credit_outstanding": 0.0,
@@ -128,8 +128,8 @@
       "dividends": 0,
       "fees": 0,
       "profit": 447.24,
-      "irr": 0.261983,
-      "irr_after_tax": 0.212703,
+      "irr": 0.26193,
+      "irr_after_tax": 0.21266,
       "equity_irr": null,
       "latent_tax": 82.03,
       "credit_outstanding": 0.0,
@@ -169,8 +169,8 @@
       "dividends": 0,
       "fees": 0.99,
       "profit": 146.58,
-      "irr": 0.074036,
-      "irr_after_tax": 0.060297,
+      "irr": 0.074025,
+      "irr_after_tax": 0.060288,
       "equity_irr": null,
       "latent_tax": 27.06,
       "credit_outstanding": 0.0,
@@ -210,8 +210,8 @@
       "dividends": 2.32,
       "fees": 0.99,
       "profit": 363.49,
-      "irr": 1.964115,
-      "irr_after_tax": 1.267493,
+      "irr": 1.961868,
+      "irr_after_tax": 1.266197,
       "equity_irr": null,
       "latent_tax": 95.26,
       "credit_outstanding": 0.0,
@@ -248,8 +248,8 @@
       "dividends": 112.44,
       "fees": 0.99,
       "profit": 487.96,
-      "irr": 0.260843,
-      "irr_after_tax": 0.191106,
+      "irr": 0.260812,
+      "irr_after_tax": 0.191084,
       "equity_irr": null,
       "latent_tax": 99.04,
       "credit_outstanding": 0.0,
@@ -286,8 +286,8 @@
       "dividends": 18.8,
       "fees": 0.99,
       "profit": 131.52,
-      "irr": 0.199918,
-      "irr_after_tax": 0.144759,
+      "irr": 0.199859,
+      "irr_after_tax": 0.144717,
       "equity_irr": null,
       "latent_tax": 29.73,
       "credit_outstanding": 0.0,
@@ -327,8 +327,8 @@
       "dividends": 0,
       "fees": 0.99,
       "profit": -52.39,
-      "irr": -0.787029,
-      "irr_after_tax": -0.675646,
+      "irr": -0.786311,
+      "irr_after_tax": -0.674851,
       "equity_irr": null,
       "latent_tax": -13.82,
       "credit_outstanding": 0.0,
@@ -442,7 +442,7 @@
       "unrealized_pl": 60.76,
       "profit": 60.76,
       "return_pct": 0.303802,
-      "irr": 0.257364,
+      "irr": 0.257335,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -452,7 +452,7 @@
         "total": 11.22
       },
       "profit_after_tax": 49.54,
-      "irr_after_tax": 0.210358,
+      "irr_after_tax": 0.210335,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -509,7 +509,7 @@
       "unrealized_pl": 322.33,
       "profit": 417.73,
       "return_pct": 0.139197,
-      "irr": 0.121909,
+      "irr": 0.121896,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -519,13 +519,13 @@
         "total": 77.12
       },
       "profit_after_tax": 340.61,
-      "irr_after_tax": 0.099268,
+      "irr_after_tax": 0.099258,
       "credit": null,
       "benchmark": {
         "isin": "IE00B4L5Y983",
-        "irr": 0.2464,
+        "irr": 0.246372,
         "profit": 865.21,
-        "alpha_irr": -0.124491,
+        "alpha_irr": -0.124476,
         "outperformance": -447.48
       },
       "notes": [],
@@ -614,7 +614,7 @@
       "unrealized_pl": 375.52,
       "profit": 487.96,
       "return_pct": 0.28028,
-      "irr": 0.260843,
+      "irr": 0.260812,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -624,13 +624,13 @@
         "total": 128.7
       },
       "profit_after_tax": 359.26,
-      "irr_after_tax": 0.191106,
+      "irr_after_tax": 0.191084,
       "credit": null,
       "benchmark": {
         "isin": "IE00B4L5Y983",
-        "irr": 0.243007,
+        "irr": 0.242978,
         "profit": 468.43,
-        "alpha_irr": 0.017836,
+        "alpha_irr": 0.017834,
         "outperformance": 19.54
       },
       "notes": [],
@@ -692,7 +692,7 @@
       "unrealized_pl": 55.65,
       "profit": 55.65,
       "return_pct": 0.278238,
-      "irr": 0.256221,
+      "irr": 0.256189,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -702,7 +702,7 @@
         "total": 10.27
       },
       "profit_after_tax": 45.37,
-      "irr_after_tax": 0.209106,
+      "irr_after_tax": 0.209081,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -759,7 +759,7 @@
       "unrealized_pl": 50.73,
       "profit": 50.73,
       "return_pct": 0.253656,
-      "irr": 0.255375,
+      "irr": 0.255341,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -769,7 +769,7 @@
         "total": 9.37
       },
       "profit_after_tax": 41.36,
-      "irr_after_tax": 0.208104,
+      "irr_after_tax": 0.208077,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -826,7 +826,7 @@
       "unrealized_pl": 46.0,
       "profit": 46.0,
       "return_pct": 0.230002,
-      "irr": 0.254886,
+      "irr": 0.254849,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -836,7 +836,7 @@
         "total": 8.49
       },
       "profit_after_tax": 37.51,
-      "irr_after_tax": 0.207399,
+      "irr_after_tax": 0.20737,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -893,7 +893,7 @@
       "unrealized_pl": 41.44,
       "profit": 41.44,
       "return_pct": 0.207225,
-      "irr": 0.254839,
+      "irr": 0.254799,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -903,7 +903,7 @@
         "total": 7.65
       },
       "profit_after_tax": 33.79,
-      "irr_after_tax": 0.20706,
+      "irr_after_tax": 0.207028,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -955,7 +955,7 @@
       "unrealized_pl": 146.58,
       "profit": 146.58,
       "return_pct": 0.060421,
-      "irr": 0.074036,
+      "irr": 0.074025,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -965,13 +965,13 @@
         "total": 27.06
       },
       "profit_after_tax": 119.52,
-      "irr_after_tax": 0.060297,
+      "irr_after_tax": 0.060288,
       "credit": null,
       "benchmark": {
         "isin": "IE00B4L5Y983",
-        "irr": 0.24971,
+        "irr": 0.249669,
         "profit": 487.45,
-        "alpha_irr": -0.175673,
+        "alpha_irr": -0.175644,
         "outperformance": -340.87
       },
       "notes": [],
@@ -1088,7 +1088,7 @@
       "unrealized_pl": 37.05,
       "profit": 37.05,
       "return_pct": 0.185275,
-      "irr": 0.255358,
+      "irr": 0.255313,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -1098,7 +1098,7 @@
         "total": 6.84
       },
       "profit_after_tax": 30.21,
-      "irr_after_tax": 0.207123,
+      "irr_after_tax": 0.207087,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -1215,7 +1215,7 @@
       "unrealized_pl": 32.82,
       "profit": 32.82,
       "return_pct": 0.164109,
-      "irr": 0.25663,
+      "irr": 0.256579,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -1225,7 +1225,7 @@
         "total": 6.06
       },
       "profit_after_tax": 26.76,
-      "irr_after_tax": 0.207786,
+      "irr_after_tax": 0.207746,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -1277,7 +1277,7 @@
       "unrealized_pl": 28.74,
       "profit": 28.74,
       "return_pct": 0.143686,
-      "irr": 0.258951,
+      "irr": 0.258892,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -1287,7 +1287,7 @@
         "total": 5.31
       },
       "profit_after_tax": 23.43,
-      "irr_after_tax": 0.20928,
+      "irr_after_tax": 0.209234,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -1339,7 +1339,7 @@
       "unrealized_pl": 24.79,
       "profit": 24.79,
       "return_pct": 0.123968,
-      "irr": 0.262816,
+      "irr": 0.262747,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -1349,7 +1349,7 @@
         "total": 4.58
       },
       "profit_after_tax": 20.22,
-      "irr_after_tax": 0.211992,
+      "irr_after_tax": 0.211937,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -1402,7 +1402,7 @@
       "unrealized_pl": 499.25,
       "profit": 618.02,
       "return_pct": 0.102986,
-      "irr": 0.234269,
+      "irr": 0.23422,
       "taxes": {
         "method": "model",
         "sale": 21.93,
@@ -1412,26 +1412,26 @@
         "total": 114.1
       },
       "profit_after_tax": 503.91,
-      "irr_after_tax": 0.189059,
+      "irr_after_tax": 0.18902,
       "credit": {
         "financed": 5617.1,
         "leverage": 0.936,
         "outstanding": 1321.1,
         "interest": 63.62,
         "interest_estimated": false,
-        "effective_rate": 0.03642,
+        "effective_rate": 0.03641,
         "equity_invested": 6000.99,
-        "equity_irr": 0.476709,
+        "equity_irr": 0.476507,
         "return_on_equity": 0.07337,
         "profit_net": 440.29,
-        "break_even_irr": 0.044663,
-        "spread": 0.197853
+        "break_even_irr": 0.044659,
+        "spread": 0.197806
       },
       "benchmark": {
         "isin": "IE00B4L5Y983",
-        "irr": 0.210582,
+        "irr": 0.210538,
         "profit": 558.55,
-        "alpha_irr": 0.023687,
+        "alpha_irr": 0.023681,
         "outperformance": 59.47
       },
       "notes": [],
@@ -1610,7 +1610,7 @@
       "unrealized_pl": 112.72,
       "profit": 131.52,
       "return_pct": 0.08215,
-      "irr": 0.199918,
+      "irr": 0.199859,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -1620,13 +1620,13 @@
         "total": 34.69
       },
       "profit_after_tax": 96.83,
-      "irr_after_tax": 0.144759,
+      "irr_after_tax": 0.144717,
       "credit": null,
       "benchmark": {
         "isin": "IE00B4L5Y983",
-        "irr": 0.180409,
+        "irr": 0.180357,
         "profit": 120.58,
-        "alpha_irr": 0.019508,
+        "alpha_irr": 0.019502,
         "outperformance": 10.94
       },
       "notes": [],
@@ -1688,7 +1688,7 @@
       "unrealized_pl": 20.98,
       "profit": 20.98,
       "return_pct": 0.104917,
-      "irr": 0.26912,
+      "irr": 0.269035,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -1698,7 +1698,7 @@
         "total": 3.87
       },
       "profit_after_tax": 17.11,
-      "irr_after_tax": 0.216619,
+      "irr_after_tax": 0.216552,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -1750,7 +1750,7 @@
       "unrealized_pl": 17.3,
       "profit": 17.3,
       "return_pct": 0.086502,
-      "irr": 0.279655,
+      "irr": 0.279544,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -1760,7 +1760,7 @@
         "total": 3.19
       },
       "profit_after_tax": 14.11,
-      "irr_after_tax": 0.224554,
+      "irr_after_tax": 0.224467,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -1812,7 +1812,7 @@
       "unrealized_pl": 13.74,
       "profit": 13.74,
       "return_pct": 0.068691,
-      "irr": 0.298609,
+      "irr": 0.298452,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -1822,7 +1822,7 @@
         "total": 2.54
       },
       "profit_after_tax": 11.2,
-      "irr_after_tax": 0.239045,
+      "irr_after_tax": 0.238921,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -1874,7 +1874,7 @@
       "unrealized_pl": 10.29,
       "profit": 10.29,
       "return_pct": 0.051454,
-      "irr": 0.338577,
+      "irr": 0.338309,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -1884,7 +1884,7 @@
         "total": 1.9
       },
       "profit_after_tax": 8.39,
-      "irr_after_tax": 0.2698,
+      "irr_after_tax": 0.269591,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -1936,7 +1936,7 @@
       "unrealized_pl": 361.17,
       "profit": 363.49,
       "return_pct": 0.201828,
-      "irr": 1.964115,
+      "irr": 1.961868,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -1946,13 +1946,13 @@
         "total": 95.87
       },
       "profit_after_tax": 267.62,
-      "irr_after_tax": 1.267493,
+      "irr_after_tax": 1.266197,
       "credit": null,
       "benchmark": {
         "isin": "IE00B4L5Y983",
-        "irr": 0.355397,
+        "irr": 0.355109,
         "profit": 95.16,
-        "alpha_irr": 1.608718,
+        "alpha_irr": 1.606758,
         "outperformance": 268.33
       },
       "notes": [],
@@ -2014,7 +2014,7 @@
       "unrealized_pl": 6.95,
       "profit": 6.95,
       "return_pct": 0.034764,
-      "irr": 0.462672,
+      "irr": 0.461941,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -2024,7 +2024,7 @@
         "total": 1.28
       },
       "profit_after_tax": 5.67,
-      "irr_after_tax": 0.36483,
+      "irr_after_tax": 0.364272,
       "credit": null,
       "benchmark": null,
       "notes": [],
@@ -2076,7 +2076,7 @@
       "unrealized_pl": -52.39,
       "profit": -52.39,
       "return_pct": -0.08048,
-      "irr": -0.787029,
+      "irr": -0.786311,
       "taxes": {
         "method": "model",
         "sale": 0.0,
@@ -2086,13 +2086,13 @@
         "total": -13.82
       },
       "profit_after_tax": -38.57,
-      "irr_after_tax": -0.675646,
+      "irr_after_tax": -0.674851,
       "credit": null,
       "benchmark": {
         "isin": "IE00B4L5Y983",
-        "irr": 0.625616,
+        "irr": 0.623898,
         "profit": 17.39,
-        "alpha_irr": -1.412645,
+        "alpha_irr": -1.410209,
         "outperformance": -69.78
       },
       "notes": [],
@@ -2129,10 +2129,10 @@
     "latent_tax": 470.98,
     "net_deposits": 17000.0,
     "irr": {
-      "trades": 0.18660450452046118,
-      "trades_after_tax": 0.14619417220860897,
-      "trades_after_tax_and_interest": 0.16141773982890628,
-      "account": 0.16471729931913665
+      "trades": 0.18657353527091958,
+      "trades_after_tax": 0.14617018370485335,
+      "trades_after_tax_and_interest": 0.16138974987970067,
+      "account": 0.16469352327505626
     },
     "counts": {
       "positions_open": 8,
@@ -2146,7 +2146,7 @@
       {
         "id": "L-tx-demo-003",
         "name": "Apple Inc. (Demo)",
-        "irr": 1.964115,
+        "irr": 1.961868,
         "profit": 363.49,
         "status": "open"
       },
@@ -2160,7 +2160,7 @@
       {
         "id": "L-tx-demo-032",
         "name": "iShares Core MSCI World (Demo)",
-        "irr": 0.462672,
+        "irr": 0.461941,
         "profit": 6.95,
         "status": "open"
       }
@@ -2176,14 +2176,14 @@
       {
         "id": "L-tx-demo-041",
         "name": "Vanguard FTSE All-World (Demo)",
-        "irr": 0.074036,
+        "irr": 0.074025,
         "profit": 146.58,
         "status": "open"
       },
       {
         "id": "L-tx-demo-043",
         "name": "Vanguard FTSE All-World High Dividend Yield (Demo)",
-        "irr": 0.121909,
+        "irr": 0.121896,
         "profit": 417.73,
         "status": "open"
       }
@@ -2195,6 +2195,57 @@
       "one_year": 0.15004,
       "benchmark_since_start": 0.3025,
       "max_drawdown": -0.09228
+    },
+    "risk": {
+      "risk_free": 0.02,
+      "resolution": "weekly",
+      "windows": {
+        "since_start": {
+          "from": "2025-09-29",
+          "to": "2026-11-26",
+          "days": 423,
+          "return_cumulative": 0.08736,
+          "return_annualised": 0.07495,
+          "volatility": 0.11154,
+          "sharpe": 0.493,
+          "sortino": 0.724,
+          "max_drawdown": -0.09228,
+          "positive_periods": 0.5738,
+          "beta": 0.153,
+          "correlation": 0.192,
+          "tracking_error": 0.16136,
+          "benchmark_return_cumulative": 0.3025,
+          "benchmark_volatility": 0.13988,
+          "benchmark_max_drawdown": -0.05247
+        },
+        "1y": {
+          "from": "2025-11-24",
+          "to": "2026-11-26",
+          "days": 367,
+          "return_cumulative": 0.15004,
+          "return_annualised": 0.14916,
+          "volatility": 0.1123,
+          "sharpe": 1.15,
+          "sortino": 1.765,
+          "max_drawdown": -0.07671,
+          "positive_periods": 0.6038,
+          "beta": 0.206,
+          "correlation": 0.263,
+          "tracking_error": 0.15727,
+          "benchmark_return_cumulative": 0.23074,
+          "benchmark_volatility": 0.14361,
+          "benchmark_max_drawdown": -0.05247
+        }
+      },
+      "best_month": {
+        "month": "2026-05",
+        "twr": 0.07328
+      },
+      "worst_month": {
+        "month": "2026-01",
+        "twr": -0.05577
+      },
+      "note": "Aus der zeitgewichteten Rendite (TWR). Sharpe/Sortino mit risikofreiem Zins 2.0 % p. a.; erst ab 12 Renditepunkten bzw. einem halben Jahr Historie."
     }
   },
   "credit": {
@@ -2246,7 +2297,7 @@
         "unrealized_pl": 499.25,
         "profit": 618.02,
         "return_pct": 0.102986,
-        "irr": 0.234269,
+        "irr": 0.23422,
         "taxes": {
           "method": "model",
           "sale": 21.93,
@@ -2256,26 +2307,26 @@
           "total": 114.1
         },
         "profit_after_tax": 503.91,
-        "irr_after_tax": 0.189059,
+        "irr_after_tax": 0.18902,
         "credit": {
           "financed": 5617.1,
           "leverage": 0.936,
           "outstanding": 1321.1,
           "interest": 63.62,
           "interest_estimated": false,
-          "effective_rate": 0.03642,
+          "effective_rate": 0.03641,
           "equity_invested": 6000.99,
-          "equity_irr": 0.476709,
+          "equity_irr": 0.476507,
           "return_on_equity": 0.07337,
           "profit_net": 440.29,
-          "break_even_irr": 0.044663,
-          "spread": 0.197853
+          "break_even_irr": 0.044659,
+          "spread": 0.197806
         },
         "benchmark": {
           "isin": "IE00B4L5Y983",
-          "irr": 0.210582,
+          "irr": 0.210538,
           "profit": 558.55,
-          "alpha_irr": 0.023687,
+          "alpha_irr": 0.023681,
           "outperformance": 59.47
         },
         "notes": [],
@@ -2696,7 +2747,8 @@
       "2022": -0.05,
       "2023": 2.55,
       "2024": 2.29,
-      "2025": 2.53
+      "2025": 2.53,
+      "2026": 3.2
     },
     "years": [
       {
@@ -2896,7 +2948,45 @@
       ]
     },
     "latent_total": 470.98,
-    "disclaimer": "Modellrechnung, keine Steuerberatung. Quellensteuer, Verlustverrechnungsreihenfolge und Ersatzbemessungsgrundlagen können abweichen."
+    "disclaimer": "Modellrechnung, keine Steuerberatung. Quellensteuer, Verlustverrechnungsreihenfolge und Ersatzbemessungsgrundlagen können abweichen.",
+    "vorabpauschale_preview": {
+      "year": 2026,
+      "due": "2027-01-02",
+      "basiszins": 3.2,
+      "total_vap": 167.73,
+      "total_taxable": 117.4,
+      "tax_before_allowance": 30.96,
+      "allowance_next_year": 1000.0,
+      "tax_after_allowance": 0.0,
+      "by_position": [
+        {
+          "isin": "LU0274208692",
+          "name": "Xtrackers MSCI World Swap (Demo)",
+          "vap": 70.74,
+          "taxable": 49.52,
+          "teilfreistellung": 0.3,
+          "tax": 13.06
+        },
+        {
+          "isin": "IE00BK5BQT80",
+          "name": "Vanguard FTSE All-World (Demo)",
+          "vap": 53.05,
+          "taxable": 37.13,
+          "teilfreistellung": 0.3,
+          "tax": 9.79
+        },
+        {
+          "isin": "IE00B4L5Y983",
+          "name": "iShares Core MSCI World (Demo)",
+          "vap": 43.94,
+          "taxable": 30.75,
+          "teilfreistellung": 0.3,
+          "tax": 8.11
+        }
+      ],
+      "available": true,
+      "note": "Schätzung mit dem heutigen Kurs als Jahresendkurs; nur thesaurierende Fonds. Die Vorabpauschale gilt am ersten Werktag des Folgejahres als zugeflossen und wird mit dem Freistellungsauftrag dieses neuen Jahres verrechnet (angenommen: gleicher Betrag wie heute, noch nicht anderweitig verbraucht)."
+    }
   },
   "income": {
     "monthly": [
@@ -3353,7 +3443,65 @@
         "interest_estimated": 0.0,
         "taxes": 75.61
       }
-    ]
+    ],
+    "ongoing": {
+      "weighted_ter": 0.002099,
+      "annual_cost": 43.52,
+      "coverage": 1.0,
+      "by_position": [
+        {
+          "isin": "LU0274208692",
+          "name": "Xtrackers MSCI World Swap (Demo)",
+          "value": 4999.99,
+          "ter": 0.0045,
+          "annual_cost": 22.5
+        },
+        {
+          "isin": "IE00B8GKDB10",
+          "name": "Vanguard FTSE All-World High Dividend Yield (Demo)",
+          "value": 3323.32,
+          "ter": 0.0029,
+          "annual_cost": 9.64
+        },
+        {
+          "isin": "IE00B4L5Y983",
+          "name": "iShares Core MSCI World (Demo)",
+          "value": 3247.24,
+          "ter": 0.002,
+          "annual_cost": 6.49
+        },
+        {
+          "isin": "IE00BK5BQT80",
+          "name": "Vanguard FTSE All-World (Demo)",
+          "value": 2572.57,
+          "ter": 0.0019,
+          "annual_cost": 4.89
+        }
+      ],
+      "missing": [],
+      "projection": [
+        {
+          "years": 10,
+          "value_without_costs": 33773.66,
+          "value_with_costs": 33104.57,
+          "cost_effect": 669.1
+        },
+        {
+          "years": 20,
+          "value_without_costs": 55013.74,
+          "value_with_costs": 52855.56,
+          "cost_effect": 2158.18
+        },
+        {
+          "years": 30,
+          "value_without_costs": 89611.59,
+          "value_with_costs": 84390.47,
+          "cost_effect": 5221.12
+        }
+      ],
+      "assumed_return": 0.05,
+      "note": "TER laut Konfiguration (Factsheet). Sie steckt im Kurs und erscheint nicht als Buchung. Kosteneffekt: heutiger Depotwert, 5 % Rendite p. a. vor Kosten, ohne weitere Einzahlungen."
+    }
   },
   "allocation": {
     "by_position": [
@@ -4551,6 +4699,154 @@
           "weight": 0.05213
         }
       ]
+    },
+    "fund_overlap": {
+      "funds": [
+        {
+          "isin": "LU0274208692",
+          "name": "Xtrackers MSCI World Swap (Demo)",
+          "value": 4999.99
+        },
+        {
+          "isin": "IE00B8GKDB10",
+          "name": "Vanguard FTSE All-World High Dividend Yield (Demo)",
+          "value": 3323.32
+        },
+        {
+          "isin": "IE00B4L5Y983",
+          "name": "iShares Core MSCI World (Demo)",
+          "value": 3247.24
+        },
+        {
+          "isin": "IE00BK5BQT80",
+          "name": "Vanguard FTSE All-World (Demo)",
+          "value": 2572.57
+        }
+      ],
+      "pairs": [
+        {
+          "a": {
+            "isin": "LU0274208692",
+            "name": "Xtrackers MSCI World Swap (Demo)",
+            "value": 4999.99
+          },
+          "b": {
+            "isin": "IE00B4L5Y983",
+            "name": "iShares Core MSCI World (Demo)",
+            "value": 3247.24
+          },
+          "countries": 1.0,
+          "sectors": 1.0,
+          "holdings": 0.207,
+          "similarity": 1.0,
+          "shared_holdings": [
+            "Alphabet",
+            "Amazon",
+            "Meta Platforms",
+            "Apple Inc. (Demo)",
+            "Microsoft",
+            "NVIDIA Corp. (Demo)"
+          ]
+        },
+        {
+          "a": {
+            "isin": "LU0274208692",
+            "name": "Xtrackers MSCI World Swap (Demo)",
+            "value": 4999.99
+          },
+          "b": {
+            "isin": "IE00BK5BQT80",
+            "name": "Vanguard FTSE All-World (Demo)",
+            "value": 2572.57
+          },
+          "countries": 0.8784,
+          "sectors": 0.975,
+          "holdings": 0.162,
+          "similarity": 0.9267,
+          "shared_holdings": [
+            "Alphabet",
+            "Amazon",
+            "Apple Inc. (Demo)",
+            "Microsoft",
+            "NVIDIA Corp. (Demo)"
+          ]
+        },
+        {
+          "a": {
+            "isin": "IE00B4L5Y983",
+            "name": "iShares Core MSCI World (Demo)",
+            "value": 3247.24
+          },
+          "b": {
+            "isin": "IE00BK5BQT80",
+            "name": "Vanguard FTSE All-World (Demo)",
+            "value": 2572.57
+          },
+          "countries": 0.8784,
+          "sectors": 0.975,
+          "holdings": 0.162,
+          "similarity": 0.9267,
+          "shared_holdings": [
+            "Alphabet",
+            "Amazon",
+            "Apple Inc. (Demo)",
+            "Microsoft",
+            "NVIDIA Corp. (Demo)"
+          ]
+        },
+        {
+          "a": {
+            "isin": "IE00B8GKDB10",
+            "name": "Vanguard FTSE All-World High Dividend Yield (Demo)",
+            "value": 3323.32
+          },
+          "b": {
+            "isin": "IE00BK5BQT80",
+            "name": "Vanguard FTSE All-World (Demo)",
+            "value": 2572.57
+          },
+          "countries": 0.7471,
+          "sectors": 0.76,
+          "holdings": null,
+          "similarity": 0.7535,
+          "shared_holdings": []
+        },
+        {
+          "a": {
+            "isin": "LU0274208692",
+            "name": "Xtrackers MSCI World Swap (Demo)",
+            "value": 4999.99
+          },
+          "b": {
+            "isin": "IE00B8GKDB10",
+            "name": "Vanguard FTSE All-World High Dividend Yield (Demo)",
+            "value": 3323.32
+          },
+          "countries": 0.6714,
+          "sectors": 0.7462,
+          "holdings": null,
+          "similarity": 0.7088,
+          "shared_holdings": []
+        },
+        {
+          "a": {
+            "isin": "IE00B8GKDB10",
+            "name": "Vanguard FTSE All-World High Dividend Yield (Demo)",
+            "value": 3323.32
+          },
+          "b": {
+            "isin": "IE00B4L5Y983",
+            "name": "iShares Core MSCI World (Demo)",
+            "value": 3247.24
+          },
+          "countries": 0.6714,
+          "sectors": 0.7462,
+          "holdings": null,
+          "similarity": 0.7088,
+          "shared_holdings": []
+        }
+      ],
+      "method": "Je Land und Branche das kleinere der beiden Gewichte, summiert und auf die vollständigere Liste bezogen (Werte aus der Konfiguration); 100 % = gleiche Aufteilung."
     }
   },
   "activities": [
@@ -7945,8 +8241,8 @@
       },
       {
         "date": "2026-11-26",
-        "irr": 0.1866,
-        "irr_after_tax_excl_latent": 0.18081
+        "irr": 0.18657,
+        "irr_after_tax_excl_latent": 0.18078
       }
     ]
   },
@@ -7974,7 +8270,93 @@
       "one_year": 0.15004,
       "benchmark_since_start": 0.3025,
       "max_drawdown": -0.09228
-    }
+    },
+    "months": [
+      {
+        "month": "2025-10",
+        "partial": false,
+        "twr": -0.04204,
+        "benchmark": 0.02364
+      },
+      {
+        "month": "2025-11",
+        "partial": false,
+        "twr": -0.01301,
+        "benchmark": 0.03386
+      },
+      {
+        "month": "2025-12",
+        "partial": false,
+        "twr": 0.03981,
+        "benchmark": 0.00919
+      },
+      {
+        "month": "2026-01",
+        "partial": false,
+        "twr": -0.05577,
+        "benchmark": 0.00067
+      },
+      {
+        "month": "2026-02",
+        "partial": false,
+        "twr": 0.01013,
+        "benchmark": 0.01834
+      },
+      {
+        "month": "2026-03",
+        "partial": false,
+        "twr": 0.02195,
+        "benchmark": 0.01807
+      },
+      {
+        "month": "2026-04",
+        "partial": false,
+        "twr": -0.0448,
+        "benchmark": 0.02888
+      },
+      {
+        "month": "2026-05",
+        "partial": false,
+        "twr": 0.07328,
+        "benchmark": 0.01327
+      },
+      {
+        "month": "2026-06",
+        "partial": false,
+        "twr": 0.00542,
+        "benchmark": -0.00398
+      },
+      {
+        "month": "2026-07",
+        "partial": false,
+        "twr": 0.03191,
+        "benchmark": 0.0401
+      },
+      {
+        "month": "2026-08",
+        "partial": false,
+        "twr": 0.0212,
+        "benchmark": 0.04399
+      },
+      {
+        "month": "2026-09",
+        "partial": false,
+        "twr": 0.00431,
+        "benchmark": -0.01848
+      },
+      {
+        "month": "2026-10",
+        "partial": false,
+        "twr": 0.03642,
+        "benchmark": 0.05366
+      },
+      {
+        "month": "2026-11",
+        "partial": true,
+        "twr": 0.00361,
+        "benchmark": 0.00813
+      }
+    ]
   },
   "data_quality": {
     "warnings": [],
@@ -7985,7 +8367,7 @@
       "imported_trades": 0,
       "price_series": 10,
       "chart_points": 62,
-      "last_sync_at": "2026-11-26T04:44:03.069579+00:00"
+      "last_sync_at": "2026-11-26T05:46:13.356151+00:00"
     },
     "reconciliation": {
       "cash_reconstructed": -1321.1,
@@ -7995,6 +8377,33 @@
     }
   },
   "insights": [
+    {
+      "id": "fund_overlap:LU0274208692:IE00B4L5Y983",
+      "level": "info",
+      "category": "Diversifikation",
+      "title": "Xtrackers MSCI World Swap (Demo) und iShares Core MSCI World (Demo) sind sich zu 100 % ähnlich",
+      "message": "Beide Fonds verteilen sich fast gleich auf Länder und Branchen – zusammen streuen sie kaum breiter als einer allein. Xtrackers MSCI World Swap (Demo) kostet 0,45 % p. a., iShares Core MSCI World (Demo) 0,20 %.",
+      "link": "#/auswertung/diversifikation",
+      "value": 1.0
+    },
+    {
+      "id": "fund_overlap:LU0274208692:IE00BK5BQT80",
+      "level": "info",
+      "category": "Diversifikation",
+      "title": "Xtrackers MSCI World Swap (Demo) und Vanguard FTSE All-World (Demo) sind sich zu 93 % ähnlich",
+      "message": "Beide Fonds verteilen sich fast gleich auf Länder und Branchen – zusammen streuen sie kaum breiter als einer allein. Xtrackers MSCI World Swap (Demo) kostet 0,45 % p. a., Vanguard FTSE All-World (Demo) 0,19 %.",
+      "link": "#/auswertung/diversifikation",
+      "value": 0.9267
+    },
+    {
+      "id": "ter:LU0274208692",
+      "level": "info",
+      "category": "Kosten",
+      "title": "Xtrackers MSCI World Swap (Demo): TER 0,45 %",
+      "message": "Rund 22 € pro Jahr an laufenden Kosten für diesen Fonds.",
+      "link": "#/auswertung/kosten",
+      "value": 0.0045
+    },
     {
       "id": "benchmark",
       "level": "info",

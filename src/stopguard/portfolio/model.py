@@ -34,6 +34,7 @@ class Instrument:
     region: str | None = None
     currency: str | None = None
     exposure: dict[str, dict[str, float]] = field(default_factory=dict)
+    ter: float | None = None  # Prozent p. a.
 
     @property
     def teilfreistellung(self) -> float:

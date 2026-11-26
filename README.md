@@ -12,14 +12,19 @@ Außerdem gibt es ein **Portfolio-Tracking** (`stopguard portfolio …`, Abschni
 
 Alles zusammen gibt es auch als **Weboberfläche** (`stopguard web`, Abschnitt 12) mit Diagrammen, Trade-Vergleich und dem Bestätigen von Orders im Browser. Sie läuft im Hell- und Dunkelmodus, auf dem Desktop wie auf dem Handy – und als **Mac-App** (Abschnitt 4).
 
-Inspiriert von Portfolio-Trackern wie Parqet und getquin kommen hinzu (Abschnitt 13):
+Inspiriert von Portfolio-Trackern wie Parqet, getquin und extraETF kommen hinzu (Abschnitte 13 und 14):
 - Dividendenkalender mit Prognose,
 - Diversifikation nach Region, Land, Branche und Währung mit ETF-Durchschau,
 - Rebalancing-Rechner,
 - Vermögensprognose,
 - Heatmap und Watchlist mit Kursalarmen,
 - automatische Hinweise zum Depot,
-- Privatsphäre-Modus.
+- Privatsphäre-Modus,
+- Risikokennzahlen und Monatsrenditen,
+- laufende Fondskosten (TER),
+- ETF-Überschneidungen,
+- Entnahmeplan,
+- Vorschau auf die Vorabpauschale.
 
 > **Kein Anlageberater.** stopguard führt nur Regeln aus, die du selbst festlegst. Stop-Orders schützen nicht vor Kurslücken. Teste neue Strategien zuerst mit `execution = "watch"` oder in der Demo.
 
@@ -303,7 +308,7 @@ remind_after_hours = 24
 
 ```bash
 pip install -e ".[dev]"
-pytest                    # 89 Tests: XIRR (Excel-Referenz), Phasen, Planung, Order-Ablauf, Steuern, Kredit, Portfolio-API, Weboberfläche, Dividenden, Diversifikation, Rebalancing, Watchlist
+pytest                    # 94 Tests: XIRR (Excel-Referenz), Phasen, Planung, Order-Ablauf, Steuern, Kredit, Portfolio-API, Weboberfläche, Dividenden, Diversifikation, Rebalancing, Watchlist
 ```
 
 | Modul | Aufgabe |
@@ -315,7 +320,7 @@ pytest                    # 89 Tests: XIRR (Excel-Referenz), Phasen, Planung, Or
 | `executor.py` | Zweistufiger Order-Ablauf mit Bestätigung, Recovery |
 | `state.py` | Zustand (Phasen, Hochpunkte, verwaltete Orders), Audit-Log, Prozess-Sperre |
 | `fake_sc.py` | Simulierte Scalable CLI für Demo und Tests |
-| `portfolio/` | Portfolio-Tracking: `store` (SQLite), `sync`, `ledger` (Kassenbuch), `lots` (FIFO), `credit`, `tax`, `metrics`, `analysis`, `api`, `importers`, `exposure` (Diversifikation/Durchschau), `dividends` (Prognose), `insights` (Hinweise), `planning` (Rebalancing, Prognose), `watchlist` |
+| `portfolio/` | Portfolio-Tracking: `store` (SQLite), `sync`, `ledger` (Kassenbuch), `lots` (FIFO), `credit`, `tax`, `metrics`, `analysis`, `api`, `importers`, `exposure` (Diversifikation/Durchschau), `dividends` (Prognose), `insights` (Hinweise), `planning` (Rebalancing, Prognose, Entnahmeplan), `watchlist`, `risk` (Risikokennzahlen, Monatsrenditen), `ongoing` (TER) |
 | `web/` | Weboberfläche: `server.py` (HTTP, Anmeldung, CSRF-Schutz, API), `orders.py` (zweistufiger Order-Ablauf), `static/` (Single-Page-App ohne Build-Schritt, Design-System Amboss) |
 | `deploy/macos/app/` | Mac-App: `main.swift` (Fenster, Menü, Serverprozess, Selbsttest), `Info.plist`, Icon; gebaut von `deploy/macos/build-app.sh` |
 
@@ -410,7 +415,7 @@ stopguard web --host 0.0.0.0 --allowed-host pi.local
 
 ## 13. Dividenden, Diversifikation und Planung
 
-Inspiriert von Parqet und getquin. Alles stammt aus den eigenen Scalable-Daten und der Konfiguration. stopguard ruft keine fremden Datenquellen ab.
+Inspiriert von Parqet und getquin; Abschnitt 14 ergänzt Funktionen nach dem Vorbild von extraETF. Alles stammt aus den eigenen Scalable-Daten und der Konfiguration. stopguard ruft keine fremden Datenquellen ab.
 
 **Dividendenkalender und Prognose** (Auswertung → Dividenden):
 - **Prognose:** Jede Ausschüttung der letzten 12 Monate wird je Stück auf deinen heutigen Bestand hochgerechnet und ein Jahr später erwartet. Hältst du eine Position noch kein Jahr, ergänzt stopguard den erkannten Rhythmus (monatlich, quartalsweise, halbjährlich).
@@ -458,3 +463,39 @@ Steuern und Kosten sind nicht eingerechnet.
 - **Steuern:** ungenutzter Freibetrag zum Jahresende, offene Verluste bei gezahlter Steuer.
 - **Kosten und Liquidität:** teure Kleinorders, nicht investiertes Guthaben.
 - **Dividenden:** steigende erwartete Ausschüttungen.
+
+---
+
+## 14. Risiko, Kosten, ETF-Überschneidungen und Vorabpauschale
+
+Nach dem Vorbild von extraETF. Auch hier kommen alle Werte aus deinen Scalable-Daten und der Konfiguration.
+
+**Risikokennzahlen** (Auswertung → Performance):
+- **Werte:** Schwankung p. a., Sharpe- und Sortino-Ratio, größter Rückgang, Beta, Korrelation und Tracking Error zum Benchmark, dazu der beste und der schwächste Monat.
+- **Grundlage** ist die zeitgewichtete Rendite (TWR). Die Kennzahlen sind dadurch mit Fonds und Indizes vergleichbar, weil deine Ein- und Auszahlungen sie nicht verzerren.
+- **Bei kurzer Historie** bleiben die Felder leer, statt scheinbar genaue Zahlen zu zeigen.
+- **Risikofreier Zins:** `portfolio.risk_free_pct` (Standard 2 %).
+- Unter „Was bedeuten die Kennzahlen?“ werden alle Begriffe erklärt.
+
+**Monatsrenditen** (Auswertung → Performance): eine Tabelle Jahr × Monat für Depot, Benchmark oder die Differenz. Blau heißt gestiegen, Rot gefallen; das Vorzeichen steht immer dabei.
+
+**Laufende Produktkosten** (Auswertung → Kosten):
+- **Warum eine eigene Übersicht:** Die TER der Fonds steckt im Kurs. Sie taucht in keiner Buchung auf, und Scalable liefert sie nicht.
+- **Eintragen:** `ter = 0.20` (Prozent p. a. laut Factsheet) je Fonds in der Konfiguration.
+- **Ergebnis:** gewichtete Kostenquote des Depots (Aktien zählen mit 0 %), Kosten in € pro Jahr und der Kosteneffekt über 10, 20 und 30 Jahre.
+
+**ETF-Überschneidungen** (Auswertung → Diversifikation):
+- **Matrix:** zeigt, wie ähnlich sich deine Fonds nach Ländern und Branchen sind.
+- **Beispiel:** Zwei MSCI-World-ETFs liegen bei 100 %. Ein zweiter Fonds streut dann kaum zusätzlich.
+- **Hinweise:** stopguard meldet Paare ab 90 % Ähnlichkeit. Sind die Kosten unterschiedlich, steht der Kostenunterschied dabei.
+
+**Entnahmeplan** (Auswertung → Prognose → „Entnehmen“):
+- **Was simuliert wird:** wie lange ein Kapital bei einer monatlichen Entnahme reicht. Die Entnahme wächst mit der Inflation, damit die Kaufkraft gleich bleibt.
+- **Ergebnis:** der Anteil der Verläufe, in denen das Geld bis zum Ende reicht, die mittlere Dauer bis zum Aufbrauchen, das Restkapital und der tatsächlich entnommene Betrag.
+- **Startwert:** 4 % des Kapitals pro Jahr als Entnahme.
+
+**Vorabpauschale-Vorschau** (Auswertung → Steuern):
+- **Was:** geschätzte Vorabpauschale des laufenden Jahres für thesaurierende Fonds und die Steuer darauf. Scalable zieht sie Anfang des Folgejahres vom Verrechnungskonto ein.
+- **Freibetrag:** Die Vorabpauschale gilt am ersten Werktag des neuen Jahres als zugeflossen. Deshalb rechnet stopguard mit dem Freistellungsauftrag dieses neuen Jahres.
+- **Basiszins:** Eingebaut sind die Werte bis 2026 (3,20 %, BMF-Schreiben vom 13.01.2026). Spätere Jahre ergänzt du mit `tax.basiszins`.
+- **Hinweis im November und Dezember:** Fällt Steuer an, zeigt stopguard dazu dein aktuelles Guthaben auf dem Konto.

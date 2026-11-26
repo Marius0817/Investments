@@ -8,6 +8,7 @@ import { diversificationPanel } from "./diversification.js";
 import { dividendsPanel } from "./dividends.js";
 import { insightsPanel } from "./insights.js";
 import { projectionPanel, rebalancingPanel } from "./planning.js";
+import { monthlySection, mountMonthly, riskSection, terSection, vapSection } from "./extras.js";
 
 const TABS = [
   ["performance", "Performance"],
@@ -84,6 +85,7 @@ function performance(doc) {
         { label: "Größter Rückgang", value: fmt.pct(t.max_drawdown, 1), note: "vom Höchststand bis zum Tief" },
         { label: "IRR Konto", value: fmt.pct(irr.account, 1, true), toneValue: irr.account, note: "Ein- und Auszahlungen gegen das heutige Nettovermögen" },
       ])}
+      ${riskSection(doc)}
       <h2>Wertentwicklung gegenüber ${bench}</h2>
       <figure data-chart="twr"></figure>
       <div class="two-col">
@@ -92,6 +94,7 @@ function performance(doc) {
       </div>
       <h2>Rendite je Kalenderjahr</h2>
       <figure data-chart="years"></figure>
+      ${monthlySection(doc)}
       <p class="muted small">Zeitgewichtete Rendite (TWR) ist mit einem Index vergleichbar, weil Ein- und Auszahlungen sie nicht verzerren. Die IRR dagegen misst, was dein Geld tatsächlich verdient hat – inklusive des Zeitpunkts deiner Käufe.</p>
     `,
     charts: {
@@ -119,6 +122,7 @@ function performance(doc) {
         caption: "* unvollständiges Jahr (Start bzw. laufendes Jahr)",
       },
     },
+    mount: (panel) => mountMonthly(panel, doc),
   };
 }
 
@@ -204,6 +208,7 @@ function steuern(doc) {
         ${rankedBars(groupCandidates(al.candidates).slice(0, 8), { format: (v) => fmt.eur(v, 0) })}
         <p class="muted small">Verkäufe werden nach FIFO zugeordnet: Es werden immer zuerst die ältesten Stücke einer Position verkauft.</p>
       ` : ""}
+      ${vapSection(doc)}
       ${alertBox("info", tx.disclaimer, { small: true })}
     `,
     charts: {
@@ -241,6 +246,7 @@ function kosten(doc) {
       ${months.length ? html`<figure data-chart="costs"></figure>` : html`<p class="muted">Noch keine Kosten erfasst.</p>`}
       <h2>Je Jahr</h2>
       ${kvTableYears(years)}
+      ${terSection(doc)}
     `,
     charts: {
       costs: {

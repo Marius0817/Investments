@@ -65,6 +65,7 @@ def build_instruments(cfg: Config, holdings: list[dict[str, Any]], names: dict[s
             region=ic.region if ic else None,
             currency=ic.currency if ic else None,
             exposure=dict(ic.exposure) if ic else {},
+            ter=ic.ter if ic else None,
         )
     return out
 

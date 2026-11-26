@@ -200,3 +200,103 @@ def test_demo_document_contains_new_sections(demo):
     ids = {i["id"] for i in doc["insights"]}
     assert "overlap:US0378331005" in ids
     assert all(i["level"] in ("warn", "info", "good") and i["message"] for i in doc["insights"])
+
+
+# ------------------------------------------------------------------ extraETF-Funktionen
+
+def _series(values, bench=None, start=datetime(2025, 1, 5, tzinfo=timezone.utc), step=7):
+    pts = []
+    for i, v in enumerate(values):
+        p = {"date": (start + timedelta(days=step * i)).date().isoformat(), "portfolio": v}
+        p["benchmark"] = bench[i] if bench else v
+        pts.append(p)
+    return pts
+
+
+def test_risk_metrics_and_monthly_returns():
+    from stopguard.portfolio.risk import monthly_returns, risk_metrics
+
+    import math as _m
+    vals = [100 * (1.002 ** i) * (1 + 0.01 * _m.sin(i)) for i in range(60)]  # ~1 Jahr wöchentlich
+    pts = _series(vals)
+    months = monthly_returns(pts)
+    assert months[0]["partial"] and all(isinstance(m["twr"], float) for m in months)
+    assert months[0]["month"] == "2025-01"
+    r = risk_metrics(pts, "weekly", 0.02, months)
+    w = r["windows"]["since_start"]
+    assert w["volatility"] > 0 and w["return_annualised"] is not None
+    assert w["sharpe"] == pytest.approx((w["return_annualised"] - 0.02) / w["volatility"], rel=1e-2)
+    assert w["beta"] == pytest.approx(1.0) and w["correlation"] == pytest.approx(1.0)  # Benchmark = Depot
+    assert w["tracking_error"] == pytest.approx(0.0, abs=1e-9)
+    assert r["best_month"]["twr"] >= r["worst_month"]["twr"]
+    short = risk_metrics(_series(vals[:8]), "weekly", 0.02, [])
+    assert short["windows"]["since_start"] is None  # zu wenig Daten → keine Scheingenauigkeit
+
+
+def test_fund_overlap_identical_and_partial():
+    from stopguard.portfolio.exposure import fund_overlap
+
+    world = {"countries": {"US": 70, "JP": 6, "GB": 4}, "sectors": {"IT": 25, "Finanzen": 15}, "holdings": {"US0378331005": 5}}
+    em = {"countries": {"CN": 25, "TW": 20, "IN": 18}, "sectors": {"IT": 22, "Finanzen": 24}}
+    insts = {
+        "IE00B4L5Y983": Instrument("IE00B4L5Y983", "Welt A", "equity_fund", exposure=world),
+        "LU0274208692": Instrument("LU0274208692", "Welt B", "equity_fund", exposure=world),
+        "IE00BKM4GZ66": Instrument("IE00BKM4GZ66", "EM", "equity_fund", exposure=em),
+    }
+    pos = [{"isin": k, "name": v.name, "value": 1000.0} for k, v in insts.items()]
+    pairs = fund_overlap(pos, insts)["pairs"]
+    top = pairs[0]
+    assert {top["a"]["name"], top["b"]["name"]} == {"Welt A", "Welt B"} and top["similarity"] == pytest.approx(1.0)
+    em_pair = next(p for p in pairs if "EM" in (p["a"]["name"], p["b"]["name"]))
+    assert em_pair["countries"] == 0 and 0 < em_pair["sectors"] < 1
+
+
+def test_ongoing_costs_weighted_ter():
+    from stopguard.portfolio.ongoing import build_ongoing_costs
+
+    insts = {
+        "IE00B4L5Y983": Instrument("IE00B4L5Y983", "ETF", "equity_fund", ter=0.20),
+        "US0378331005": Instrument("US0378331005", "Apple", "stock"),
+        "LU0274208692": Instrument("LU0274208692", "ohne TER", "equity_fund"),
+    }
+    pos = [
+        {"isin": "IE00B4L5Y983", "name": "ETF", "status": "open", "value": 8000.0},
+        {"isin": "US0378331005", "name": "Apple", "status": "open", "value": 2000.0},
+        {"isin": "LU0274208692", "name": "ohne TER", "status": "open", "value": 1000.0},
+    ]
+    o = build_ongoing_costs(pos, insts)
+    assert o["weighted_ter"] == pytest.approx(0.0016)  # 8000 × 0,20 % / 10.000 (Aktie zählt mit 0)
+    assert o["annual_cost"] == pytest.approx(16.0) and [m["name"] for m in o["missing"]] == ["ohne TER"]
+    assert o["projection"][0]["cost_effect"] > 0
+    with pytest.raises(ConfigError, match="TER"):
+        parse_config({"instruments": {"IE00B4L5Y983": {"ter": 20}}})
+
+
+def test_withdrawal_plan_depletes_and_reports():
+    keep = project(start=500000, monthly=-1000, years=10, expected_return=0.04, volatility=0.0)
+    assert keep["withdrawal"]["depleted_probability"] == 0 and keep["final"]["p50"] > 0
+    gone = project(start=10000, monthly=-500, years=5, expected_return=0.0, volatility=0.0)
+    assert gone["withdrawal"]["depleted_probability"] == 1.0 and gone["withdrawal"]["median_months"] == 20
+    assert gone["final"]["p50"] == 0
+    assert gone["withdrawal"]["withdrawn_median"] == pytest.approx(10000)  # nur, was da war – nicht die geplanten 30.000 €
+    assert gone["withdrawal"]["planned_total"] == pytest.approx(30000)
+    real = project(start=100000, monthly=-500, years=10, expected_return=0.0, volatility=0.0, inflation=0.02)
+    assert real["withdrawal"]["planned_total"] > 500 * 120  # Entnahme wächst mit der Inflation
+
+
+def test_demo_has_vap_preview_risk_and_costs(demo):
+    store = PortfolioStore(demo.cfg.state_dir / "portfolio.db")
+    try:
+        sync_portfolio(demo.client, store, demo.cfg, sleep=lambda s: None)
+        doc = analyse_portfolio(store, demo.cfg)
+    finally:
+        store.close()
+    vap = doc["taxes"]["vorabpauschale_preview"]
+    assert vap["basiszins"] == pytest.approx(3.2) and vap["due"].endswith("-01-02")
+    assert {r["isin"] for r in vap["by_position"]} <= {"IE00B4L5Y983", "LU0274208692", "IE00BK5BQT80"}
+    assert vap["tax_after_allowance"] <= vap["tax_before_allowance"]
+    assert doc["costs"]["ongoing"]["weighted_ter"] > 0
+    assert doc["summary"]["risk"]["windows"]["since_start"]["volatility"] > 0
+    assert doc["periods"]["months"] and doc["periods"]["months"][-1]["twr"] is not None
+    ids = {i["id"] for i in doc["insights"]}
+    assert any(i.startswith("fund_overlap:") for i in ids)

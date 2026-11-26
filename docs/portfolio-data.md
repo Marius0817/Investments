@@ -132,6 +132,10 @@ taxable, allowance_used, loss_carryforward_stock, loss_carryforward_other, tax_m
   yield_current, confidence}}`. `confidence`: `high` (volles Jahr gehalten), `medium` (Rhythmus aus ≥ 2 Zahlungen),
   `low` (eine einzelne Zahlung).
 - `costs.monthly[] = {month, fees, interest, interest_estimated, taxes}`, `by_year[]`
+- `costs.ongoing` – laufende Produktkosten (TER aus `[instruments.X] ter`, Prozent p. a.; Einzelaktien 0):
+  `{weighted_ter, annual_cost, coverage, by_position[] = {isin, name, value, ter, annual_cost}, missing[],
+  projection[] = {years, value_without_costs, value_with_costs, cost_effect}, assumed_return, note}`.
+  Die TER steckt im Kurs und erscheint deshalb nicht in `costs.monthly`.
 - `allocation.by_position[] = {isin, name, value, weight}`, `by_kind[]`/`by_tag[] = {key, value, weight}`, `credit_financed`
 - `allocation.by_asset_class[]`, `by_region[]`, `by_country[]`, `by_sector[]`, `by_currency[]` =
   `{key, value, weight, positions[] = {name, value}}` (Beiträge je Ausprägung). Fonds werden mit den Gewichten aus
@@ -139,6 +143,9 @@ taxable, allowance_used, loss_carryforward_stock, loss_carryforward_other, tax_m
   Emittenten). Was sich nicht zuordnen lässt, steht als `"Nicht zugeordnet"`, Restgewichte von Fonds als `"Sonstige"`.
   `coverage = {dimension: Anteil zugeordnet}`, `derived_share = {dimension: Anteil nur über ISIN abgeleitet}`,
   `unassigned = {dimension: [{isin, name, value}]}`.
+- `allocation.fund_overlap = {funds[], pairs[] = {a, b, countries, sectors, holdings, similarity, shared_holdings[]}, method}` –
+  Ähnlichkeit zweier Fonds: je Land/Branche das kleinere Gewicht, summiert und auf die vollständigere Liste bezogen
+  (1 = gleiche Aufteilung); `holdings` = gemeinsamer Anteil der hinterlegten größten Positionen.
 - `allocation.look_through = {items[], overlap[], funds_with_holdings, fund_value_covered}` – größte Einzelwerte
   direkt und über Fonds (`exposure.holdings`): `{key, isin, name, direct, via_funds, value, weight, sources[]}`;
   `overlap[]` sind Werte, die direkt *und* über Fonds gehalten werden.
@@ -171,7 +178,25 @@ Regelbasierte Hinweise mit der Zahl dahinter – Beobachtungen, **keine Anlageem
 
 ### `periods`
 
-`years[] = {year, twr, benchmark, net_deposits, partial}` und `twr_summary` (wie `summary.twr`).
+`years[] = {year, twr, benchmark, net_deposits, partial}`, `twr_summary` (wie `summary.twr`) und
+`months[] = {month, twr, benchmark, partial}` – zeitgewichtete Rendite je Kalendermonat.
+
+### `summary.risk`
+
+Risikokennzahlen aus dem TWR-Index (vergleichbar mit Fonds/Indizes):
+`{risk_free, resolution, windows: {since_start, 1y}, best_month, worst_month, note}`. Jedes Fenster:
+`{from, to, days, return_cumulative, return_annualised, volatility, sharpe, sortino, max_drawdown, positive_periods,
+beta, correlation, tracking_error, benchmark_return_cumulative, benchmark_volatility, benchmark_max_drawdown}`.
+Unter 12 Renditepunkten ist ein Fenster `null`; `return_annualised` (und damit Sharpe/Sortino) erst ab 180 Tagen.
+Risikofreier Zins: `portfolio.risk_free_pct` (Standard 2 %).
+
+### `taxes.vorabpauschale_preview`
+
+Schätzung der Vorabpauschale des laufenden Jahres (fällig Anfang des Folgejahres, heutiger Kurs als Jahresendkurs):
+`{year, due, basiszins, total_vap, total_taxable, tax_before_allowance, allowance_next_year, tax_after_allowance,
+by_position[] = {isin, name, vap, taxable, teilfreistellung, tax}, available, note}`. Sie gilt am ersten Werktag des
+Folgejahres als zugeflossen und wird mit dem Freistellungsauftrag des **neuen** Jahres verrechnet. Eingebauter
+Basiszins bis 2026 (3,20 %), weitere Jahre über `tax.basiszins`.
 
 ### `data_quality`
 
@@ -213,7 +238,7 @@ ohne Authentifizierung und lauscht standardmäßig nur auf `127.0.0.1`.
 | `GET /api/v1/targets` | Zielgewichte `{targets: {ISIN: Prozent}, updated_at, positions[]}` (`<state_dir>/targets.json`) |
 | `POST /api/v1/targets` | `{targets: {ISIN: Prozent}}` speichern – Summe 100 % (±0,5), 0 entfernt |
 | `GET /api/v1/rebalance?amount=500&mode=buy\|full&min_order=25` | Verteilung: `rows[] = {isin, name, value, weight_now, target, buy, sell, tax_estimate, weight_after, …}`, `drift_now`, `drift_after`, `total_buy`, `total_sell`, `tax_estimate` |
-| `GET /api/v1/projection?start=&monthly=&years=&return=&volatility=&inflation=&goal=` | Monte-Carlo-Prognose (Prozentwerte in %): `series[] = {month, p10, p25, p50, p75, p90, invested}`, `final`, `goal = {probability, median_months}`, `defaults` aus der eigenen Historie |
+| `GET /api/v1/projection?start=&monthly=&years=&return=&volatility=&inflation=&goal=` | Monte-Carlo-Prognose (Prozentwerte in %): `series[] = {month, p10, p25, p50, p75, p90, invested}`, `final`, `goal = {probability, median_months}`, `defaults` aus der eigenen Historie. **`monthly` < 0 = Entnahmeplan** (Entnahme wächst mit der Inflation): zusätzlich `withdrawal = {monthly, depleted_probability, median_months, early_months, withdrawn_median, planned_total}` |
 | `GET /api/v1/watchlist` | Einträge mit Kurs, 12-Monats-Verlauf, Veränderung, 52-Wochen-Hoch/-Tief, Abstand zum Zielkurs, Kursalarmen |
 | `POST /api/v1/watchlist` | `{isin, target_price?, note?}` hinzufügen/ändern (ISIN wird bei Scalable geprüft) |
 | `POST /api/v1/watchlist/{isin}/remove` | entfernen |

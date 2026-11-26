@@ -11,11 +11,11 @@ import json
 import math
 import random
 from datetime import datetime, timedelta
-from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
 from stopguard.models import utcnow
+from stopguard.portfolio.risk import annualised_volatility
 
 # ---------------------------------------------------------------------------
 # Zielallokation
@@ -195,15 +195,7 @@ def historic_defaults(doc: dict[str, Any], now: datetime) -> dict[str, Any]:
     since = (now - timedelta(days=365)).isoformat()
     deposits = sum(a["amount"] for a in doc.get("activities", []) if a["kind"] in ("deposit", "withdrawal") and a["date"] >= since)
     ts = (doc.get("timeseries") or {}).get("twr") or []
-    per_year = {"daily": 365, "weekly": 52, "monthly": 12}.get((doc.get("timeseries") or {}).get("resolution"), 52)
-    rets = []
-    for a, b in pairwise(ts):
-        if a.get("portfolio") and b.get("portfolio"):
-            rets.append(math.log(b["portfolio"] / a["portfolio"]))
-    vol = None
-    if len(rets) >= max(12, per_year // 2):
-        mean = sum(rets) / len(rets)
-        vol = math.sqrt(sum((r - mean) ** 2 for r in rets) / (len(rets) - 1)) * math.sqrt(per_year)
+    vol = annualised_volatility(ts, (doc.get("timeseries") or {}).get("resolution") or "weekly")
     twr = (doc.get("summary") or {}).get("twr") or {}
     return {
         "start": round((doc.get("summary") or {}).get("net_worth") or 0.0, 2),
@@ -228,7 +220,11 @@ def project(
     paths: int = 2000,
     seed: int = 7,
 ) -> dict[str, Any]:
-    """Monte-Carlo-Prognose (monatlich, lognormal) mit Perzentilen – reproduzierbar dank festem Seed."""
+    """Monte-Carlo-Prognose (monatlich, lognormal) mit Perzentilen – reproduzierbar dank festem Seed.
+
+    ``monthly`` < 0 ist ein Entnahmeplan: Die Entnahme wächst mit der Inflation (gleiche Kaufkraft),
+    ein Verlauf endet bei 0 € („Kapital aufgebraucht“).
+    """
     if not 1 <= years <= 50:
         raise ValueError("Zeitraum zwischen 1 und 50 Jahren")
     if not -0.5 < expected_return < 0.5 or not 0 <= volatility < 1.5:
@@ -243,9 +239,23 @@ def project(
     marks = {12 * y for y in range(1, years + 1)}
     series: list[dict[str, Any]] = [{"month": 0, "p10": start, "p25": start, "p50": start, "p75": start, "p90": start, "invested": start}]
     reached_month: list[int | None] = [None] * paths
+    depleted_month: list[int | None] = [None] * paths
+    taken = [0.0] * paths  # tatsächlich entnommen je Verlauf (endet, wenn das Kapital aufgebraucht ist)
+    withdraw = monthly < 0
+    flows = 0.0  # Summe der Ein-/Auszahlungen ohne Rendite
     for m in range(1, months + 1):
+        flow = monthly * infl_m ** (m - 1) if withdraw else monthly
+        flows += flow
         for i in range(paths):
-            v = values[i] * math.exp(mu - sigma**2 / 2 + sigma * rng.gauss(0, 1)) + monthly
+            if depleted_month[i] is not None:
+                continue
+            grown = values[i] * math.exp(mu - sigma**2 / 2 + sigma * rng.gauss(0, 1))
+            v = grown + flow
+            if withdraw:
+                taken[i] += min(-flow, grown) / infl_m**m  # in heutiger Kaufkraft, wenn Inflation > 0
+            if v <= 0:
+                v = 0.0
+                depleted_month[i] = m
             values[i] = v
             if goal is not None and reached_month[i] is None and v / infl_m**m >= goal:
                 reached_month[i] = m
@@ -255,7 +265,7 @@ def project(
             series.append({
                 "month": m,
                 **{f"p{q}": round(srt[min(paths - 1, int(paths * q / 100))] / deflate, 2) for q in (10, 25, 50, 75, 90)},
-                "invested": round((start + monthly * m) / deflate, 2),
+                "invested": round(max(0.0, start + flows) / deflate, 2),
             })
     final = series[-1]
     out: dict[str, Any] = {
@@ -266,6 +276,17 @@ def project(
         "real_terms": inflation > 0,
         "method": "Monte-Carlo-Simulation mit monatlichen, lognormal verteilten Renditen; Werte in heutiger Kaufkraft, wenn Inflation > 0.",
     }
+    if withdraw:
+        gone = sorted(m for m in depleted_month if m is not None)
+        out["withdrawal"] = {
+            "monthly": -monthly,
+            "inflation_adjusted": inflation > 0,
+            "depleted_probability": round(len(gone) / paths, 4),
+            "median_months": gone[len(gone) // 2] if len(gone) >= paths / 2 else None,
+            "early_months": gone[int(paths * 0.1)] if len(gone) > paths * 0.1 else None,
+            "withdrawn_median": round(sorted(taken)[paths // 2], 2),
+            "planned_total": round(-flows, 2),
+        }
     if goal is not None:
         hits = sorted(m for m in reached_month if m is not None)
         out["goal"] = {

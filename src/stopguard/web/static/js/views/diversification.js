@@ -5,6 +5,7 @@ import { rankedBars, stackedBars } from "../charts.js";
 import { $, html, on, render } from "../dom.js";
 import * as fmt from "../fmt.js";
 import { alertBox, segmented, tiles } from "../ui.js";
+import { overlapSection } from "./extras.js";
 
 const DIMS = [
   ["region", "Region"],
@@ -76,6 +77,7 @@ export function diversificationPanel(doc) {
           ${stackedBars(items, [{ key: "direct", name: "direkt", cls: "c1" }, { key: "via_funds", name: "über ETFs", cls: "c2" }])}`
         : html`<p class="muted">Keine Einzelwerte.</p>`}
       ${(look.overlap || []).length ? alertBox("info", html`<b>Überschneidungen:</b> ${look.overlap.map((o, i) => html`${i ? "; " : ""}${o.name} – direkt ${fmt.eur(o.direct, 0)}, über ETFs ${fmt.eur(o.via_funds, 0)} (zusammen ${fmt.pct(o.weight, 1)})`)}.`, { small: true }) : ""}
+      ${overlapSection(doc)}
     `,
     mount(panel) {
       return on($("#dim-filter", panel), "change", "input[name=dim]", (ev, input) => {

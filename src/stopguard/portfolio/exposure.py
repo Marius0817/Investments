@@ -186,7 +186,66 @@ def build_exposure(positions: list[dict[str, Any]], instruments: dict[str, Instr
     out["derived_share"] = {k: round(v / total, 4) for k, v in derived_value.items() if v}
     out["unassigned"] = unassigned
     out["look_through"] = _look_through(open_pos, instruments, total)
+    out["fund_overlap"] = fund_overlap(open_pos, instruments)
     return out
+
+
+def _weights(inst: Instrument, dim: str) -> dict[str, float] | None:
+    """Bekannte Gewichte (ohne „Sonstige“-Rest) als Anteile – für den Vergleich zweier Fonds."""
+    exp = inst.exposure or {}
+    raw = exp.get(dim)
+    if not raw and dim == "countries" and exp.get("regions"):
+        return None  # nur Regionen bekannt: Länder nicht vergleichbar
+    if not raw:
+        return None
+    mapper = (lambda k: country_name(k) or k) if dim == "countries" else (lambda k: k)
+    acc: dict[str, float] = defaultdict(float)
+    for k, v in raw.items():
+        acc[mapper(k)] += v / 100
+    return dict(acc)
+
+
+def fund_overlap(open_pos: list[dict[str, Any]], instruments: dict[str, Instrument]) -> dict[str, Any]:
+    """Wie ähnlich sind sich die Fonds im Depot? Je Paar: Σ min(Gewicht A, Gewicht B) über Länder,
+    Branchen und die hinterlegten größten Positionen (0 = nichts gemeinsam, 1 = identisch)."""
+    funds = []
+    for p in open_pos:
+        inst = instruments.get(p["isin"])
+        if inst and inst.is_fund and inst.exposure:
+            funds.append((p, inst))
+    pairs = []
+    for i in range(len(funds)):
+        for j in range(i + 1, len(funds)):
+            (pa, a), (pb, b) = funds[i], funds[j]
+            scores: dict[str, float | None] = {}
+            for dim in ("countries", "sectors", "holdings"):
+                wa, wb = _weights(a, dim), _weights(b, dim)
+                if not (wa and wb):
+                    scores[dim] = None
+                    continue
+                common = sum(min(v, wb.get(k, 0.0)) for k, v in wa.items())
+                # Länder/Branchen: auf die vollständigere Liste beziehen (Unbekanntes zählt nicht als gemeinsam);
+                # größte Positionen: Anteil am Fonds, den beide gemeinsam halten
+                base = max(sum(wa.values()), sum(wb.values())) if dim != "holdings" else 1.0
+                scores[dim] = round(min(1.0, common / base), 4) if base else None
+            known = [v for k, v in scores.items() if k != "holdings" and v is not None]
+            if not known:
+                continue
+            shared = sorted(set(a.exposure.get("holdings", {})) & set(b.exposure.get("holdings", {})))
+            pairs.append({
+                "a": {"isin": pa["isin"], "name": pa["name"], "value": pa["value"]},
+                "b": {"isin": pb["isin"], "name": pb["name"], "value": pb["value"]},
+                **scores,
+                "similarity": round(sum(known) / len(known), 4),
+                "shared_holdings": [instruments[k].name if k in instruments else k for k in shared],
+            })
+    pairs.sort(key=lambda x: -x["similarity"])
+    return {
+        "funds": [{"isin": p["isin"], "name": p["name"], "value": p["value"]} for p, _ in funds],
+        "pairs": pairs,
+        "method": "Je Land und Branche das kleinere der beiden Gewichte, summiert und auf die vollständigere Liste bezogen "
+                  "(Werte aus der Konfiguration); 100 % = gleiche Aufteilung.",
+    }
 
 
 def _look_through(open_pos: list[dict[str, Any]], instruments: dict[str, Instrument], total: float) -> dict[str, Any]:

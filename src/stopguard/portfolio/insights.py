@@ -188,6 +188,47 @@ def build_insights(doc: dict[str, Any], cfg: Config, now: datetime) -> list[dict
             link="#/auswertung/dividenden", value=nxt,
         )
 
+    # --- Laufende Produktkosten (TER) und doppelte ETFs
+    ongoing = (doc.get("costs") or {}).get("ongoing") or {}
+    if ongoing.get("weighted_ter") is not None and ongoing["weighted_ter"] >= 0.004:
+        add(
+            "ter_total", "info", "Kosten", f"Laufende Kosten {_pct(ongoing['weighted_ter'], 2)} p. a. (≈ {_eur(ongoing['annual_cost'])} im Jahr)",
+            "Die TER der Fonds steckt im Kurs und taucht in keiner Buchung auf. Über Jahrzehnte macht sie einen spürbaren Unterschied.",
+            link="#/auswertung/kosten", value=ongoing["weighted_ter"],
+        )
+    for row in [r for r in ongoing.get("by_position", []) if r["ter"] >= 0.004][:2]:
+        add(
+            f"ter:{row['isin']}", "info", "Kosten", f"{row['name']}: TER {_pct(row['ter'], 2)}",
+            f"Rund {_eur(row['annual_cost'])} pro Jahr an laufenden Kosten für diesen Fonds.",
+            link="#/auswertung/kosten", value=row["ter"],
+        )
+    ter_of = {r["isin"]: r["ter"] for r in ongoing.get("by_position", [])}
+    for pair in ((alloc.get("fund_overlap") or {}).get("pairs") or [])[:2]:
+        if pair["similarity"] >= 0.9:
+            a, b = pair["a"], pair["b"]
+            cost = ""
+            ta, tb = ter_of.get(a["isin"]), ter_of.get(b["isin"])
+            if ta is not None and tb is not None and abs(ta - tb) >= 0.0015:
+                hi, lo = (a, b) if ta > tb else (b, a)
+                cost = f" {hi['name']} kostet {_pct(max(ta, tb), 2)} p. a., {lo['name']} {_pct(min(ta, tb), 2)}."
+            add(
+                f"fund_overlap:{a['isin']}:{b['isin']}", "info", "Diversifikation",
+                f"{a['name']} und {b['name']} sind sich zu {_pct(pair['similarity'], 0)} ähnlich",
+                "Beide Fonds verteilen sich fast gleich auf Länder und Branchen – zusammen streuen sie kaum breiter als einer allein." + cost,
+                link="#/auswertung/diversifikation", value=pair["similarity"],
+            )
+
+    # --- Vorabpauschale im Januar: Guthaben bereithalten
+    vap = (doc.get("taxes") or {}).get("vorabpauschale_preview") or {}
+    if now.month >= 11 and (vap.get("tax_after_allowance") or 0) > 0:
+        add(
+            "vap_cash", "warn" if cash < vap["tax_after_allowance"] else "info", "Steuern",
+            f"Anfang Januar ca. {_eur(vap['tax_after_allowance'])} Steuer auf die Vorabpauschale",
+            f"Sie wird vom Verrechnungskonto eingezogen – derzeit liegen dort {_eur(cash)}. "
+            "Der Freistellungsauftrag des neuen Jahres ist schon abgezogen.",
+            link="#/auswertung/steuern", value=vap["tax_after_allowance"],
+        )
+
     # --- Positionen mit großem Verlust (nur Information, mit Bezug zur Stop-Regel)
     for p in sorted(positions, key=lambda x: x["unrealized_pct"] or 0)[:2]:
         if (p["unrealized_pct"] or 0) < -0.25:
