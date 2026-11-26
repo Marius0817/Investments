@@ -515,6 +515,37 @@ def cmd_daemon(ctx: Context) -> int:
         time.sleep(interval)
 
 
+def cmd_web(ctx: Context) -> int:
+    import webbrowser
+
+    from stopguard.web.server import LOOPBACK, WebApp, resolve_token, serve_web
+
+    token = resolve_token(ctx.args.token)
+    host = ctx.args.host
+    if host not in LOOPBACK and not token and not ctx.args.insecure_no_auth:
+        print(ui.c(
+            "Die Oberfläche soll im Netzwerk erreichbar sein, aber es ist kein Zugangsschlüssel gesetzt. "
+            "Setze STOPGUARD_WEB_TOKEN (z. B. 'openssl rand -hex 24') oder starte nur lokal mit --host 127.0.0.1.",
+            "red",
+        ), file=sys.stderr)
+        return EXIT_CONFIG
+    app = WebApp(ctx.cfg, ctx.client, token=token, allowed_hosts=set(ctx.args.allowed_host or []), notifier=ctx.notifier)
+    server = serve_web(app, host, ctx.args.port)
+    shown = "127.0.0.1" if host in ("0.0.0.0", "::") else host
+    url = f"http://{shown}:{server.server_address[1]}/"
+    print(ui.c(f"✔ stopguard läuft: {url}", "green") + (ui.c("  (Anmeldung mit Zugangsschlüssel)", "dim") if token else ""))
+    print(ui.c("  Strg+C beendet den Server.", "dim"))
+    if ctx.args.open:
+        webbrowser.open(url)
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+    return EXIT_OK
+
+
 def cmd_resolve(ctx: Context) -> int:
     with ctx.store.lock():
         state = ctx.store.load()
@@ -740,6 +771,15 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--once", action="store_true", help="nur einen Durchlauf")
     s.add_argument("--dry-run", action="store_true")
     s.set_defaults(func=cmd_daemon)
+
+    s = sub.add_parser("web", help="Weboberfläche starten (Design-System Amboss)")
+    s.add_argument("--host", default="127.0.0.1", help="Adresse (Standard: nur lokal). Im Netzwerk nur mit STOPGUARD_WEB_TOKEN")
+    s.add_argument("--port", type=int, default=8765)
+    s.add_argument("--token", help="Zugangsschlüssel (besser per Umgebungsvariable STOPGUARD_WEB_TOKEN)")
+    s.add_argument("--allowed-host", action="append", help="zusätzlich erlaubter Host-Name, z. B. pi.local (mehrfach möglich)")
+    s.add_argument("--open", action="store_true", help="Browser öffnen")
+    s.add_argument("--insecure-no-auth", action="store_true", help=argparse.SUPPRESS)
+    s.set_defaults(func=cmd_web)
 
     s = sub.add_parser("resolve", help="unklare Ordereinreichungen klären (Scalable-Recovery-Prozedur)")
     s.set_defaults(func=cmd_resolve)

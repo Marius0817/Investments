@@ -5,6 +5,7 @@
 #   4. docker compose run --rm stopguard doctor
 #   5. docker compose up -d                         # Überwachung im Hintergrund
 #   Order-Änderungen bestätigen:  docker compose run --rm stopguard apply
+#   oder in der Weboberfläche:     docker compose --profile web up -d  (siehe unten)
 services:
   stopguard:
     build: .
@@ -22,21 +23,33 @@ services:
       - stopguard-home:/home/stopguard
     command: ["daemon"]
 
-  # Optional: Portfolio-API für eine UI (liest nur die lokale Datenbank, nur vom Host erreichbar)
-  #   docker compose --profile api up -d   →   http://127.0.0.1:8765/api/v1/summary
-  stopguard-api:
+  # Optional: Weboberfläche (inkl. JSON-API unter /api/v1/…)
+  #   echo "STOPGUARD_WEB_TOKEN=$(openssl rand -hex 24)" >> .env
+  #   docker compose --profile web up -d   →   http://127.0.0.1:8765/
+  # Standardmäßig nur vom Host selbst erreichbar. Fürs Heimnetz (z. B. Raspberry Pi) den Port als
+  # "8765:8765" veröffentlichen oder einen Reverse-Proxy mit HTTPS davorsetzen; ohne Token startet
+  # die Oberfläche im Netzwerk nicht.
+  stopguard-web:
     image: stopguard:latest
-    profiles: ["api"]
+    profiles: ["web"]
     restart: unless-stopped
+    init: true
     environment:
       TZ: Europe/Berlin
       STOPGUARD_CONFIG: /config/stopguard.toml
+      STOPGUARD_WEB_TOKEN: ${STOPGUARD_WEB_TOKEN:-}
+      STOPGUARD_NTFY_TOKEN: ${STOPGUARD_NTFY_TOKEN:-}
+      STOPGUARD_TELEGRAM_TOKEN: ${STOPGUARD_TELEGRAM_TOKEN:-}
     volumes:
       - ./config:/config:ro
       - stopguard-home:/home/stopguard
-    command: ["portfolio", "serve", "--host", "0.0.0.0", "--port", "8765"]
+    command: ["web", "--host", "0.0.0.0", "--port", "8765"]
     ports:
       - "127.0.0.1:8765:8765"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/api/v1/health', timeout=5)"]
+      interval: 5m
+      timeout: 10s
 
 volumes:
   stopguard-home:

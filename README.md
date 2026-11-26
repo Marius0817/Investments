@@ -8,7 +8,9 @@
 
 Dazu kommen Backtests, Kursalarme, Push-Benachrichtigungen aufs Handy, ein Audit-Log und ein Betriebsmodus für den Server.
 
-Außerdem gibt es ein **Portfolio-Tracking** (`stopguard portfolio …`, Abschnitt 11) als Ersatz für Notion: IRR je Trade, Position und Depot, Trade-Vergleich gegen einen Benchmark, kreditfinanzierte Trades nach Steuern und Scalable-Zinsen sowie diagrammfertige Daten als JSON/API für eine eigene UI.
+Außerdem gibt es ein **Portfolio-Tracking** (`stopguard portfolio …`, Abschnitt 11) als Ersatz für Notion: IRR je Trade, Position und Depot, Trade-Vergleich gegen einen Benchmark, kreditfinanzierte Trades nach Steuern und Scalable-Zinsen sowie diagrammfertige Daten als JSON/API.
+
+Alles zusammen gibt es auch als **Weboberfläche** (`stopguard web`, Abschnitt 12) mit Diagrammen, Trade-Vergleich und dem Bestätigen von Orders im Browser. Sie läuft im Hell- und Dunkelmodus, auf dem Desktop wie auf dem Handy.
 
 > **Kein Anlageberater.** stopguard führt nur Regeln aus, die du selbst festlegst. Stop-Orders schützen nicht vor Kurslücken. Teste neue Strategien zuerst mit `execution = "watch"` oder in der Demo.
 
@@ -78,6 +80,9 @@ stopguard -c stopguard-demo/stopguard.toml apply                   # Bestätigun
 stopguard -c stopguard-demo/stopguard.toml demo move SAP 6         # Kurs bewegen …
 stopguard -c stopguard-demo/stopguard.toml status                  # … und Reaktion ansehen
 stopguard -c stopguard-demo/stopguard.toml backtest DE0007164600 -s irr_gate -s trailing_5 --timeline
+
+stopguard -c stopguard-demo/stopguard.toml portfolio sync          # Portfolio-Daten laden …
+stopguard -c stopguard-demo/stopguard.toml web --open              # … und im Browser ansehen
 ```
 
 Beispielausgabe von `status`:
@@ -201,6 +206,8 @@ stopguard backtest <ISIN> -s irr_gate -s trailing_5 --timeline
 stopguard strategies        # alle Strategien
 ```
 
+Dasselbe geht in der Weboberfläche (`stopguard web`, Abschnitt 12): Seite **Stops** → „Vorschau von Scalable anfordern“ → prüfen → „Order verbindlich platzieren“.
+
 **Ablauf beim Ersetzen einer Order:** stopguard erstellt zuerst die Vorschau der neuen Order, während die alte noch aktiv ist. Erst nach deinem „ja“ wird die alte storniert und die neue eingereicht. Blockiert die alte Order die Stücke, fragt stopguard, ob zuerst storniert werden soll, und warnt deutlich, solange die Position ungeschützt ist.
 
 **Unklare Einreichungen**, z. B. bei einem Netzwerkfehler in Phase 2, werden gemäß Scalable-Recovery-Prozedur **nie automatisch wiederholt**. Die Position ist dann gesperrt, bis `stopguard resolve` geklärt hat, ob die Order existiert. Ist die Bestätigungs-ID noch gültig, kann sie wiederverwendet werden, der Duplikatschutz bleibt dabei erhalten.
@@ -220,7 +227,13 @@ docker compose run --rm stopguard login     # Device-Login: Link + Code im Brows
 docker compose run --rm stopguard doctor
 docker compose up -d                        # Überwachung (Handelszeiten, sonst Keepalive)
 docker compose run --rm stopguard apply     # Orders bestätigen (z. B. per SSH vom Handy)
+
+# Weboberfläche (Abschnitt 12) – Zugangsschlüssel einmalig erzeugen:
+echo "STOPGUARD_WEB_TOKEN=$(openssl rand -hex 24)" >> .env
+docker compose --profile web up -d          # http://127.0.0.1:8765/
 ```
+
+Die Weboberfläche ist im Container standardmäßig nur vom Host aus erreichbar (`127.0.0.1:8765`). Fürs Heimnetz änderst du in `docker-compose.yml` die Portfreigabe auf `"8765:8765"` oder setzt einen Reverse-Proxy davor (siehe Abschnitt 12).
 
 Die Session liegt dateibasiert im Volume `stopguard-home`. Token für ntfy/Telegram übergibst du per `.env` als `STOPGUARD_NTFY_TOKEN` bzw. `STOPGUARD_TELEGRAM_TOKEN`.
 
@@ -267,7 +280,7 @@ remind_after_hours = 24
 
 ```bash
 pip install -e ".[dev]"
-pytest                    # 59 Tests: XIRR (Excel-Referenz), Phasen, Planung, Order-Ablauf, Steuern, Kredit, Portfolio-API
+pytest                    # 73 Tests: XIRR (Excel-Referenz), Phasen, Planung, Order-Ablauf, Steuern, Kredit, Portfolio-API, Weboberfläche
 ```
 
 | Modul | Aufgabe |
@@ -280,6 +293,9 @@ pytest                    # 59 Tests: XIRR (Excel-Referenz), Phasen, Planung, Or
 | `state.py` | Zustand (Phasen, Hochpunkte, verwaltete Orders), Audit-Log, Prozess-Sperre |
 | `fake_sc.py` | Simulierte Scalable CLI für Demo und Tests |
 | `portfolio/` | Portfolio-Tracking: `store` (SQLite), `sync`, `ledger` (Kassenbuch), `lots` (FIFO), `credit`, `tax`, `metrics`, `analysis`, `api`, `importers` |
+| `web/` | Weboberfläche: `server.py` (HTTP, Anmeldung, CSRF-Schutz, API), `orders.py` (zweistufiger Order-Ablauf), `static/` (Single-Page-App ohne Build-Schritt, Design-System Amboss) |
+
+Die Oberfläche ist reines HTML/CSS/JavaScript (ES-Module) ohne Framework und ohne Build: Datei ändern, Seite neu laden. Zum Ausprobieren eignet sich das Demo-Depot (`stopguard demo init`, dann `portfolio sync` und `web`).
 
 ---
 
@@ -318,6 +334,47 @@ Erkannt werden die Spalten `Name Investment, Ticker, Open, Open (€), Close, Cl
 - Trades, die auch in den Scalable-Daten stehen, werden automatisch als Dubletten erkannt. Ihre Kredit-Markierung wird übernommen.
 - Bei Trades anderer Broker ohne Scalable-Zinsbuchungen werden die Zinsen mit `credit.fallback_rate_pct` geschätzt.
 
-**Für die spätere UI:** Datenvertrag, API und Methodik stehen in [`docs/portfolio-data.md`](docs/portfolio-data.md). Ein Beispiel-Export aus der Demo liegt in [`docs/examples/portfolio-demo.json`](docs/examples/portfolio-demo.json), inklusive `chart_hints` mit Vorschlägen für Diagramme.
+**Daten für eigene Auswertungen:** Datenvertrag, API und Methodik stehen in [`docs/portfolio-data.md`](docs/portfolio-data.md). Ein Beispiel-Export aus der Demo liegt in [`docs/examples/portfolio-demo.json`](docs/examples/portfolio-demo.json), inklusive `chart_hints` mit Vorschlägen für Diagramme.
 
-**Ideen für später:** Bestätigung per Telegram-Button (Vorschau aufs Handy, „Platzieren“ tippen), HTML-Report, Positionsgrößen-/Risiko-Check pro Depot, Take-Profit-Stufen.
+**Ideen für später:** Bestätigung per Telegram-Button (Vorschau aufs Handy, „Platzieren“ tippen), Positionsgrößen-/Risiko-Check pro Depot, Take-Profit-Stufen.
+
+---
+
+## 12. Weboberfläche
+
+```bash
+stopguard web --open        # http://127.0.0.1:8765/ – nur auf diesem Rechner erreichbar
+```
+
+Die Oberfläche nutzt das Design-System **Amboss** und funktioniert im Hell- und Dunkelmodus, vom Desktop bis zum Handy. Sie braucht keinen Build-Schritt und lädt nichts aus dem Internet, denn Schriften und Skripte liegen im Paket.
+
+| Seite | Inhalt |
+|---|---|
+| **Übersicht** | Kacheln: Nettovermögen, IRR vor und nach Steuern, TWR gegen den Benchmark, Gewinn, Erträge, Kreditauslastung. Diagramme: Depotwert und Wertentwicklung (6 Monate bis Gesamt). Dazu Aufteilung, Stop-Schutz sowie stärkste und schwächste Trades. |
+| **Positionen** | Sortierbare Tabelle mit Anteil, Kursgewinn, IRR (auch nach Steuern), Erträgen und Stop-Status. Die Detailseite zeigt den Wertverlauf, die Phasen der Strategie und den Rechenweg des Stops. |
+| **Trades** | Streudiagramm Haltedauer × IRR (ein Klick öffnet den Trade). Filter: offen/geschlossen, Herkunft (z. B. ohne Sparpläne), nur kreditfinanziert, Suche. Vergleich mit Benchmark und Alpha. Die Detailseite zeigt Zahlungsströme, Steuern und Kredit. |
+| **Stops** | Empfohlene Änderungen, Schutz je Position, ungeklärte Einreichungen, Kursalarme, Verlauf. |
+| **Auswertung** | Performance (TWR, Drawdown, IRR-Verlauf, Jahre), Kredit (Saldo, Zinsen, Break-even), Steuern (Jahre, Verlusttöpfe, Freibetrag nutzen), Erträge, Kosten. |
+| **Daten & Einstellungen** | Daten von Scalable laden (mit Fortschritt), Datenqualität, Notion-CSV-Import, JSON-Export, Hell/Dunkel. |
+
+Jedes Diagramm lässt sich als Tabelle anzeigen. Diagramme und Tabellen sind per Tastatur bedienbar: Pfeiltasten im Diagramm, sortierbare Spaltenköpfe.
+
+**Orders im Browser bestätigen** läuft wie im Terminal in zwei Stufen:
+
+1. „Vorschau von Scalable anfordern“ führt nur Phase 1 aus. Die Vorschau erscheint vollständig und unverändert, inklusive Kosten, und noch ist nichts angelegt.
+2. Erst nach dem Häkchen „Ich habe alle Angaben geprüft …“ und einem Klick auf **„Order verbindlich platzieren“** läuft Phase 2. Kein Schalter erledigt beides auf einmal, und die API verlangt für diesen Schritt ausdrücklich `{"confirm": true}`.
+
+Muss vorher eine alte Order storniert werden, fragt die Oberfläche gesondert nach. Solange die Position dann ungeschützt ist, zeigt sie eine deutliche Warnung. Unklare Einreichungen werden nie wiederholt, sondern auf der Seite „Stops“ geklärt: „Offene Order übernehmen“ oder „Keine Order angelegt“.
+
+**Im Heimnetz, auf dem Raspberry Pi oder auf der Schmiede:**
+
+```bash
+export STOPGUARD_WEB_TOKEN=$(openssl rand -hex 24)     # Zugangsschlüssel, z. B. im Passwortmanager ablegen
+stopguard web --host 0.0.0.0 --allowed-host pi.local
+```
+
+- Ohne `STOPGUARD_WEB_TOKEN` startet die Oberfläche nur auf `127.0.0.1`. Mit Token meldest du dich einmal im Browser an. Das Cookie ist HttpOnly und SameSite=Strict und gilt 30 Tage. Skripte schicken stattdessen `Authorization: Bearer <Token>`.
+- Schreibende Anfragen brauchen den Kopf `X-Stopguard: 1` und dieselbe Herkunft (CSRF-Schutz). Unbekannte Host-Namen werden abgewiesen (Schutz vor DNS-Rebinding); erlaubte Namen legst du mit `--allowed-host` fest.
+- HTTPS ist nicht eingebaut. Für den Zugriff von unterwegs gehört ein Reverse-Proxy mit TLS (z. B. Caddy) oder ein VPN (z. B. WireGuard oder Tailscale) davor. Meldet der Proxy `X-Forwarded-Proto: https`, wird das Cookie als `Secure` markiert.
+- `GET /api/v1/health` ist ohne Anmeldung erreichbar (nur `ok` und Version) und dient als Healthcheck.
+- Docker: `docker compose --profile web up -d` (Abschnitt 7).

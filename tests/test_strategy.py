@@ -17,7 +17,7 @@ def test_gate_waits_for_min_holding_days():
     assert advance_phase(IRR_GATE, 0, m(irr=0.40, days=10)).index == 0
     d = advance_phase(IRR_GATE, 0, m(irr=0.051, days=31))
     assert d.index == 1 and d.changed
-    assert "IRR 5.1%" in d.reason
+    assert "IRR 5,1 % p. a." in d.reason
 
 
 def test_gate_is_sticky_once_reached():

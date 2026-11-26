@@ -1,0 +1,202 @@
+/* Design-System „Amboss“ – Token-Ebene (unverändert aus tokens.json generiert). */
+/* Amboss — generated from tokens.json */
+:root, [data-theme="light"] {
+  --bg: #f0eee6; /* Seitenhintergrund hinter allen Karten. Warmes Hafer-Ton statt Reinweiß – Karten sollen sich davon abheben. */
+  --bg-sunken: #e5e1d6; /* Vertiefte Flächen innerhalb einer Karte: Tabellenkopf, Dateibaum im Code-Browser, leere Zustände. */
+  --card: #ffffff; /* Grundfläche jeder Karte, der Topbar, von Eingabefeldern und Dialogen. Träger für text und muted. */
+  --border: #ddd8cc; /* Dekorative Hairline: Kartenrand, Tabellenzeilen, Trenner. Nicht für Bedienelemente – dafür border-strong. */
+  --border-strong: #8f887a; /* Rand von Eingabefeldern, Auswahlfeldern und Checkboxen. Erreicht 3:1 auf card und bg in beiden Themes. */
+  --text: #191817; /* Fließtext und Überschriften auf card, bg und bg-sunken. Warmes Schwarz, nie #000. */
+  --muted: #6b665c; /* Sekundärtext: Metazeilen, Hilfetexte, Spaltenköpfe. Lesbar auf card, bg und bg-sunken (≥4.5:1). */
+  --clay: #d97757; /* Das Markenorange. Große Flächen: Primärschalter, aktiver Stepper-Schritt, Markenzeichen, Cover-Blöcke. Trägt on-clay als Textfarbe. */
+  --on-clay: #2b1409; /* Text und Symbole auf clay-Flächen (5.6:1). Nie Weiß auf clay setzen – das fällt unter 4.5:1. */
+  --primary: #b34a26; /* Orange als Text: Links, Akzentziffern, Fokusring, aktive Tab-Unterkante. Lesbar auf card und bg (≥4.5:1). */
+  --primary-soft: #f8e9e1; /* Getönte Akzentfläche: ausgewählte Option, aktiver Navigationspunkt, Projekt-Chatbox. */
+  --secondary: #e7e3d8; /* Fläche neutraler Schalter, Tags und inaktiver Stepper-Schritte. Trägt text. */
+  --ok: #3f7a55; /* Erfolg: Statuspunkt „verbunden“, erledigter Stepper-Schritt, Antwort der KI im Verlauf. */
+  --warn: #96631a; /* Warnung: Demo-Modus, Docker nicht erreichbar, laufende Arbeit. */
+  --danger: #a3271c; /* Fehler und zerstörende Aktionen: Löschen, Abbrechen, fehlgeschlagener Lauf. Deutlich dunkler als clay, damit beide auch ohne Farbsehen unterscheidbar bleiben. */
+  --info-bg: #e8eeea; /* Fläche neutraler Hinweise (.alert.info). Salbeiton, damit Hinweise nicht mit dem Markenorange konkurrieren. */
+  --warn-bg: #f7efdc; /* Fläche von Warnhinweisen (.alert.warn). Trägt text, nicht warn. */
+  --error-bg: #faeae7; /* Fläche von Fehlerhinweisen (.alert.error). Trägt text, die Überschrift darin danger. */
+  --badge-wait-bg: #e4eaec; /* Badge-Fläche für wartende Phasen (Entwurf, Rückfragen offen). */
+  --badge-wait-ink: #31505c; /* Badge-Text auf badge-wait-bg (≥7:1). */
+  --badge-busy-bg: #f6ecd9; /* Badge-Fläche für laufende Phasen (Konzept wird erstellt, Entwicklung läuft). */
+  --badge-busy-ink: #7a5410; /* Badge-Text auf badge-busy-bg (≥5.7:1). */
+  --badge-done-bg: #e3ede5; /* Badge-Fläche für abgeschlossene Phasen und laufende Container. */
+  --badge-done-ink: #2f6341; /* Badge-Text auf badge-done-bg (≥5.8:1). */
+  --badge-failed-bg: #f7e6e3; /* Badge-Fläche für Fehlschläge und abgebrochene Läufe. */
+  --badge-failed-ink: #8e2418; /* Badge-Text auf badge-failed-bg (≥7:1). */
+  --console: #201e1a; /* Hintergrund von Konsole, Diff und Code-Blöcken. Bleibt in beiden Themes dunkel – ein Log liest sich wie ein Terminal. */
+  --console-text: #d8d3c7; /* Normale Log-Zeile auf console. */
+  --console-step: #9fc0d8; /* Schrittmarken im Log (.t-step) auf console. */
+  --console-tool: #a8c9a8; /* Werkzeugaufrufe im Log (.t-tool) auf console. */
+  --console-warn: #e8c07a; /* Warnzeilen im Log (.lvl-warn) auf console. */
+  --console-error: #f0a08f; /* Fehlerzeilen im Log (.lvl-error) auf console. */
+  --console-debug: #8b867b; /* Debug-Zeilen im Log (.lvl-debug) auf console – bewusst zurückgenommen, aber noch ≥4.5:1. */
+  --diff-add: #9ac99a; /* Hinzugefügte Zeilen im Diff auf console. */
+  --diff-del: #ef9d8f; /* Entfernte Zeilen im Diff auf console. */
+  --focus: var(--primary); /* Fokusring: 2px durchgezogen mit 2px Abstand. Alias auf primary, damit Tastaturfokus immer orange ist. */
+  --shadow-sm: 0 1px 2px rgba(25,24,23,.06); /* Karten, Topbar – zusammen mit einem border. */
+  --shadow-md: 0 1px 2px rgba(25,24,23,.05), 0 8px 24px -12px rgba(25,24,23,.18); /* Karte im Hover-Zustand, aufgeklappte Auswahl. */
+  --shadow-pop: 0 16px 48px -16px rgba(25,24,23,.35); /* Dialog und Toast – alles, was über der Seite schwebt. */
+}
+[data-theme="dark"] {
+  --bg: #1c1b18;
+  --bg-sunken: #141312;
+  --card: #24231f;
+  --border: #35332d;
+  --border-strong: #6a655b;
+  --text: #eeece4;
+  --muted: #a29c8f;
+  --clay: #e08b6c;
+  --on-clay: #241009;
+  --primary: #ee9878;
+  --primary-soft: #3a241b;
+  --secondary: #2f2d28;
+  --ok: #7fbb92;
+  --warn: #d9a441;
+  --danger: #ef8b80;
+  --info-bg: #1f2a25;
+  --warn-bg: #302713;
+  --error-bg: #331a16;
+  --badge-wait-bg: #24333a;
+  --badge-wait-ink: #a9c9d6;
+  --badge-busy-bg: #382c14;
+  --badge-busy-ink: #e2bd77;
+  --badge-done-bg: #1f3328;
+  --badge-done-ink: #8fc7a4;
+  --badge-failed-bg: #3b1e19;
+  --badge-failed-ink: #f0a396;
+  --console: #100f0d;
+  --console-text: #d8d3c7;
+  --console-step: #9fc0d8;
+  --console-tool: #a8c9a8;
+  --console-warn: #e8c07a;
+  --console-error: #f0a08f;
+  --console-debug: #8b867b;
+  --diff-add: #9ac99a;
+  --diff-del: #ef9d8f;
+  --focus: var(--primary);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-md: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  --shadow-pop: 0 16px 48px -16px rgba(0,0,0,.75);
+}
+:root {
+  --space-1: 4px; /* Abstand zwischen Symbol und Beschriftung, Punkt und Text. */
+  --space-2: 8px; /* Abstand in einer Zeile (.row), zwischen Badges, innen in kleinen Schaltern. */
+  --space-3: 12px; /* Vertikaler Abstand in einem Stapel (.stack), Innenabstand von Hinweisen. */
+  --space-4: 16px; /* Gitterabstand zwischen Karten, Innenabstand kompakter Karten. */
+  --space-5: 20px; /* Innenabstand einer Standardkarte. */
+  --space-6: 24px; /* Seitenrand des Inhaltsbereichs, Abstand zwischen Kartengruppen. */
+  --space-8: 32px; /* Abstand zwischen Abschnitten (.section). */
+  --space-12: 48px; /* Innenabstand leerer Zustände, Abstand vor der Fußzeile. */
+  --space-16: 64px; /* Nur im Cover und auf der Anmeldeseite. */
+  --radius-xs: 4px; /* Tags und Inline-Code. */
+  --radius-sm: 6px; /* Navigationspunkte, kleine Schalter (.btn.tiny). */
+  --radius-md: 8px; /* Schalter, Eingabefelder, Hinweise, Konsole, Optionen. */
+  --radius-lg: 12px; /* Karten und Dialoge. */
+  --radius-pill: 999px; /* Badges und Stepper-Schritte. */
+  --font-display: Fraunces, "Iowan Old Style", Georgia, serif;
+  --font-sans: "Schibsted Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --text-display-xl: 600 44px/46px var(--font-display); /* Nur einmal pro Seite: Cover, Anmeldeseite, leerer Dashboard-Zustand. */
+  --text-display-l: 600 32px/36px var(--font-display); /* h1 im Seitenkopf (.page-head h1). */
+  --text-display-m: 600 23px/28px var(--font-display); /* h2 in Karten und Abschnittsköpfen. */
+  --text-title: 600 18px/25px var(--font-sans); /* h3 und Kartentitel, wo die Serife zu laut wäre. */
+  --text-body: 400 15px/23px var(--font-sans); /* Standard-Fließtext. Zeilenlänge höchstens 72 Zeichen. */
+  --text-body-strong: 600 15px/23px var(--font-sans); /* Hervorgehobener Wert im Fließtext (<b> in Metazeilen). */
+  --text-body-sm: 400 13.5px/20px var(--font-sans); /* Metazeilen, Hilfetexte unter Feldern, kompakte Hinweise (.small). */
+  --text-label: 500 14px/20px var(--font-sans); /* Feldbeschriftungen und Schalterbeschriftungen. */
+  --text-caption: 400 12.5px/18px var(--font-sans); /* Fußzeile, Badge-Beitext, Bildunterschriften. */
+  --text-overline: 600 11px/14px var(--font-sans); /* Tabellenspaltenköpfe und Eyebrows. Immer in Versalien gesetzt, immer in muted. */
+  --text-code: 400 13px/20px var(--font-mono); /* Inline-Code, Pfade, Portnummern, Container-Namen. */
+  --text-console-line: 400 12.5px/19px var(--font-mono); /* Log- und Diff-Zeilen in .console und .diff. */
+}
+.display-xl {
+  font-family: var(--font-display);
+  font-size: 44px;
+  line-height: 46px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variation-settings: 'opsz' 96;
+}
+.display-l {
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 36px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  font-variation-settings: 'opsz' 72;
+}
+.display-m {
+  font-family: var(--font-display);
+  font-size: 23px;
+  line-height: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variation-settings: 'opsz' 48;
+}
+.title {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 25px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 23px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.body-strong {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 23px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.body-sm {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.label {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.caption {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  line-height: 18px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.overline {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+}
+.code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.console-line {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 19px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
